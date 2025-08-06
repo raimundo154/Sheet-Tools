@@ -88,7 +88,7 @@ const FacebookTestCalls = () => {
         'pages_show_list'
       ].join(',');
       
-      const loginUrl = `https://www.facebook.com/v16.0/dialog/oauth?` +
+      const loginUrl = `https://www.facebook.com/v23.0/dialog/oauth?` +
         `client_id=${appId}&` +
         `redirect_uri=${encodeURIComponent(redirectUri)}&` +
         `scope=${scope}&` +

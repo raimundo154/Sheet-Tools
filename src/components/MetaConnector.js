@@ -56,7 +56,7 @@ const MetaConnector = ({ onConnectionSuccess }) => {
         'pages_show_list'
       ].join(',');
 
-      const facebookLoginUrl = `https://www.facebook.com/v16.0/dialog/oauth?` + new URLSearchParams({
+      const facebookLoginUrl = `https://www.facebook.com/v23.0/dialog/oauth?` + new URLSearchParams({
         client_id: FACEBOOK_APP_ID,
         redirect_uri: redirectUri,
         scope: scope,

@@ -19,8 +19,8 @@ const environment = {
   // URLs da API do Facebook
   facebook: {
     graphApiUrl: 'https://graph.facebook.com',
-    oauthUrl: 'https://www.facebook.com/v16.0/dialog/oauth',
-    version: 'v16.0'
+    oauthUrl: 'https://www.facebook.com/v23.0/dialog/oauth',
+    version: 'v23.0'
   },
   
   // Configurações de desenvolvimento

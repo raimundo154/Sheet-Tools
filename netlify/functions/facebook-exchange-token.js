@@ -52,7 +52,7 @@ exports.handler = async (event, context) => {
     }
 
     // Trocar código por access token
-    const tokenUrl = `https://graph.facebook.com/v16.0/oauth/access_token?` +
+    const tokenUrl = `https://graph.facebook.com/v23.0/oauth/access_token?` +
       `client_id=${appId}&` +
       `redirect_uri=${encodeURIComponent(redirect_uri)}&` +
       `client_secret=${appSecret}&` +
@@ -74,12 +74,12 @@ exports.handler = async (event, context) => {
     }
 
     // Obter informações do usuário
-    const userUrl = `https://graph.facebook.com/v16.0/me?access_token=${tokenData.access_token}`;
+    const userUrl = `https://graph.facebook.com/v23.0/me?access_token=${tokenData.access_token}`;
     const userResponse = await fetch(userUrl);
     const userData = await userResponse.json();
 
     // Obter contas de anúncios
-    const accountsUrl = `https://graph.facebook.com/v16.0/me/adaccounts?` +
+    const accountsUrl = `https://graph.facebook.com/v23.0/me/adaccounts?` +
       `fields=id,name,currency,account_status&` +
       `access_token=${tokenData.access_token}`;
     

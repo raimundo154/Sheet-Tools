@@ -34,7 +34,7 @@ class FacebookOAuthService {
       auth_type: 'rerequest'
     });
 
-    return `https://www.facebook.com/v16.0/dialog/oauth?${params.toString()}`;
+    return `https://www.facebook.com/v23.0/dialog/oauth?${params.toString()}`;
   }
 
   // Abrir popup de login
@@ -189,7 +189,7 @@ class FacebookOAuthService {
   // Obter contas de anúncios do usuário
   async getUserAdAccounts(accessToken) {
     try {
-      const response = await fetch(`https://graph.facebook.com/v16.0/me/adaccounts?fields=id,name,currency,account_status&access_token=${accessToken}`);
+      const response = await fetch(`https://graph.facebook.com/v23.0/me/adaccounts?fields=id,name,currency,account_status&access_token=${accessToken}`);
       
       if (!response.ok) {
         throw new Error('Erro ao buscar contas de anúncios');
