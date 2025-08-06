@@ -1,8 +1,5 @@
 [build]
-  # Base directory (onde estão os arquivos do projeto)
-  base = "sheet-tools"
-  
-  # Comando para build de produção
+  # Comando para build de produção (arquivos estão na raiz)
   command = "npm run build"
   
   # Diretório onde estão os arquivos compilados
