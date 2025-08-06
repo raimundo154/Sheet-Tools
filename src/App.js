@@ -2,23 +2,31 @@ import React, { useState } from 'react';
 import CampaignDashboard from './components/CampaignDashboard';
 import FacebookTestCalls from './components/FacebookTestCalls';
 import PrivacyPolicy from './components/PrivacyPolicy';
+import TermsOfService from './components/TermsOfService';
 import './App.css';
 
 function App() {
   const [showTestCalls, setShowTestCalls] = useState(false);
-  const [currentPage, setCurrentPage] = useState('dashboard'); // 'dashboard' or 'privacy'
+  const [currentPage, setCurrentPage] = useState('dashboard'); // 'dashboard', 'privacy', or 'terms'
 
-  // Verificar se está na rota de privacy policy
+  // Verificar se está na rota específica
   React.useEffect(() => {
     const path = window.location.pathname;
     if (path === '/privacy' || path === '/privacy-policy') {
       setCurrentPage('privacy');
+    } else if (path === '/terms' || path === '/terms-of-service') {
+      setCurrentPage('terms');
     }
   }, []);
 
   const navigateToPrivacy = () => {
     setCurrentPage('privacy');
     window.history.pushState(null, '', '/privacy-policy');
+  };
+
+  const navigateToTerms = () => {
+    setCurrentPage('terms');
+    window.history.pushState(null, '', '/terms-of-service');
   };
 
   const navigateToDashboard = () => {
@@ -65,6 +73,18 @@ function App() {
           >
             Privacy Policy
           </button>
+          <button 
+            onClick={navigateToTerms}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#6c757d',
+              cursor: 'pointer',
+              marginRight: '15px'
+            }}
+          >
+            Terms of Service
+          </button>
         </div>
       </nav>
 
@@ -110,6 +130,7 @@ function App() {
       {/* Conteúdo principal */}
       {currentPage === 'dashboard' && <CampaignDashboard />}
       {currentPage === 'privacy' && <PrivacyPolicy />}
+      {currentPage === 'terms' && <TermsOfService />}
     </div>
   );
 }
