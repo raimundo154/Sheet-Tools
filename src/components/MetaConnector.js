@@ -116,7 +116,7 @@ const MetaConnector = ({ onConnectionSuccess }) => {
   const handleLoginSuccess = async (authData) => {
     try {
       // Buscar informações do usuário
-      const userResponse = await fetch(`https://graph.facebook.com/me?access_token=${authData.access_token}`);
+      const userResponse = await fetch(`https://graph.facebook.com/v23.0/me?access_token=${authData.access_token}`);
       const userData = await userResponse.json();
 
       // Definir usuário atual no sistema multi-tenant
@@ -190,7 +190,7 @@ const MetaConnector = ({ onConnectionSuccess }) => {
       for (const accountId of selectedAccounts) {
         try {
           const campaignsResponse = await fetch(
-            `https://graph.facebook.com/${accountId}/campaigns?fields=id,name,status,objective,daily_budget,lifetime_budget,created_time&access_token=${accessToken}`
+            `https://graph.facebook.com/v23.0/${accountId}/campaigns?fields=id,name,status,objective,daily_budget,lifetime_budget,created_time&access_token=${accessToken}`
           );
           const campaignsData = await campaignsResponse.json();
           
@@ -200,7 +200,7 @@ const MetaConnector = ({ onConnectionSuccess }) => {
               campaignsData.data.map(async (campaign) => {
                 try {
                   const insightsResponse = await fetch(
-                    `https://graph.facebook.com/${campaign.id}/insights?fields=spend,impressions,clicks,actions,cpc,cpm,ctr&date_preset=last_7d&access_token=${accessToken}`
+                    `https://graph.facebook.com/v23.0/${campaign.id}/insights?fields=spend,impressions,clicks,actions,cpc,cpm,ctr&date_preset=last_7d&access_token=${accessToken}`
                   );
                   const insightsData = await insightsResponse.json();
                   
