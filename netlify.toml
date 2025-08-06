@@ -4,11 +4,11 @@
   
   # Diretório onde estão os arquivos compilados
   publish = "build"
-  
-  # Node.js version
-  environment = { NODE_VERSION = "18" }
 
 [build.environment]
+  # Node.js version
+  NODE_VERSION = "18"
+  
   # Variáveis de ambiente para produção
   REACT_APP_FACEBOOK_APP_ID = "1525902928789947"
   REACT_APP_ENV = "production"
