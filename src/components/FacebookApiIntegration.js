@@ -282,9 +282,14 @@ const FacebookApiIntegration = ({ onCampaignsSync }) => {
       {connectionStatus === 'connected' && (
         <div>
           <div className="flex justify-between items-center mb-4">
-            <h3 className="font-semibold text-gray-800">
-              Campanhas do Facebook ({campaigns.length})
-            </h3>
+            <div>
+              <h3 className="font-semibold text-gray-800">
+                Todas as Campanhas do Facebook ({campaigns.length})
+              </h3>
+              <p className="text-xs text-gray-500">
+                Incluindo campanhas ativas, pausadas e inativas
+              </p>
+            </div>
             <div className="flex space-x-2">
               <button
                 onClick={handleSyncCampaigns}
@@ -323,6 +328,7 @@ const FacebookApiIntegration = ({ onCampaignsSync }) => {
                     <th>Nome da Campanha</th>
                     <th>Status</th>
                     <th>Objetivo</th>
+                    <th>Criada</th>
                     <th>Gasto (7d)</th>
                     <th>Impressões</th>
                     <th>Cliques</th>
@@ -339,11 +345,32 @@ const FacebookApiIntegration = ({ onCampaignsSync }) => {
                           <div className="text-xs text-gray-500">ID: {campaign.id}</div>
                         </td>
                         <td>
-                          <span className={`badge ${campaign.status === 'ACTIVE' ? 'badge-success' : 'badge-warning'}`}>
-                            {campaign.status}
-                          </span>
+                          <div className="space-y-1">
+                            <span className={`badge ${
+                              campaign.status === 'ACTIVE' ? 'badge-success' : 
+                              campaign.status === 'PAUSED' ? 'badge-warning' : 
+                              'badge-secondary'
+                            }`}>
+                              {campaign.status}
+                            </span>
+                            {campaign.effective_status && campaign.effective_status !== campaign.status && (
+                              <div className="text-xs text-gray-500">
+                                Efetivo: {campaign.effective_status}
+                              </div>
+                            )}
+                          </div>
                         </td>
-                        <td>{campaign.objective}</td>
+                        <td>{campaign.objective || 'N/A'}</td>
+                        <td>
+                          <div className="text-sm">
+                            {campaign.created_time ? new Date(campaign.created_time).toLocaleDateString('pt-PT') : 'N/A'}
+                          </div>
+                          {campaign.updated_time && (
+                            <div className="text-xs text-gray-500">
+                              Atualizada: {new Date(campaign.updated_time).toLocaleDateString('pt-PT')}
+                            </div>
+                          )}
+                        </td>
                         <td>€{parseFloat(insights.spend || 0).toFixed(2)}</td>
                         <td>{parseInt(insights.impressions || 0).toLocaleString()}</td>
                         <td>{parseInt(insights.clicks || 0).toLocaleString()}</td>
@@ -358,7 +385,7 @@ const FacebookApiIntegration = ({ onCampaignsSync }) => {
             <div className="text-center py-8 text-gray-500">
               <Settings size={48} className="mx-auto mb-4 text-gray-300" />
               <p>Nenhuma campanha encontrada</p>
-              <p className="text-sm">Verifique se possui campanhas ativas no Facebook Ads Manager</p>
+              <p className="text-sm">Verifique se possui campanhas no Facebook Ads Manager</p>
             </div>
           )}
         </div>

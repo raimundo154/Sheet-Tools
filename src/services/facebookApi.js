@@ -58,15 +58,16 @@ class FacebookApiService {
     });
   }
 
-  // Buscar campanhas ativas
+  // Buscar todas as campanhas (ativas, pausadas, inativas)
   async getCampaigns() {
     if (!this.adAccountId) {
       throw new Error('Account ID não configurado');
     }
 
     return await this.makeRequest(`/act_${this.adAccountId}/campaigns`, {
-      fields: 'id,name,objective,status,created_time,updated_time,start_time,stop_time',
-      effective_status: JSON.stringify(['ACTIVE', 'PAUSED'])
+      fields: 'id,name,objective,status,effective_status,created_time,updated_time,start_time,stop_time',
+      // Remover filtro effective_status para obter todas as campanhas
+      limit: 100 // Aumentar limite para obter mais campanhas
     });
   }
 
@@ -94,19 +95,19 @@ class FacebookApiService {
     return await this.makeRequest(`/${campaignId}/insights`, params);
   }
 
-  // Buscar ad sets de uma campanha
+  // Buscar todos os ad sets de uma campanha
   async getAdSets(campaignId) {
     return await this.makeRequest(`/${campaignId}/adsets`, {
-      fields: 'id,name,status,daily_budget,lifetime_budget,targeting',
-      effective_status: JSON.stringify(['ACTIVE', 'PAUSED'])
+      fields: 'id,name,status,effective_status,daily_budget,lifetime_budget,targeting',
+      limit: 100 // Remover filtro para obter todos os ad sets
     });
   }
 
-  // Buscar ads de um ad set
+  // Buscar todos os ads de um ad set
   async getAds(adSetId) {
     return await this.makeRequest(`/${adSetId}/ads`, {
-      fields: 'id,name,status,creative',
-      effective_status: JSON.stringify(['ACTIVE', 'PAUSED'])
+      fields: 'id,name,status,effective_status,creative',
+      limit: 100 // Remover filtro para obter todos os ads
     });
   }
 
