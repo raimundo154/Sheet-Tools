@@ -5,7 +5,7 @@ class FacebookOAuthService {
   constructor() {
     // Configurações da App Facebook
     this.appId = process.env.REACT_APP_FACEBOOK_APP_ID || null; 
-    this.redirectUri = window.location.origin + '/facebook-callback.html';
+    this.redirectUri = window.location.origin + '/meta-callback';
     this.scope = [
       'ads_management',
       'ads_read', 
@@ -148,14 +148,14 @@ class FacebookOAuthService {
     }
   }
 
-  // Trocar código por access token (precisa de backend)
+  // Trocar código por access token usando Netlify Function
   async exchangeCodeForToken(code) {
-    // IMPORTANTE: Esta operação DEVE ser feita no backend por segurança
+    // IMPORTANTE: Esta operação é feita na Netlify Function por segurança
     // O app secret nunca deve estar no frontend
     
     try {
-      // Chamada para seu backend
-      const response = await fetch('/api/facebook/exchange-token', {
+      // Chamada para Netlify Function
+      const response = await fetch('/.netlify/functions/facebook-exchange-token', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -167,18 +167,22 @@ class FacebookOAuthService {
       });
 
       if (!response.ok) {
-        throw new Error('Erro ao trocar código por token');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Erro ao trocar código por token');
       }
 
       const data = await response.json();
+      
+      // Verificar se recebemos os dados necessários
+      if (!data.access_token) {
+        throw new Error('Token de acesso não recebido');
+      }
+      
       return data;
       
     } catch (error) {
       console.error('Erro na troca do token:', error);
-      
-      // Fallback: sem dados hardcoded
-      // EM PRODUÇÃO, IMPLEMENTAR BACKEND PARA TROCA DE TOKENS
-      throw new Error('Backend necessário para trocar código por token. Veja FACEBOOK_OAUTH_SETUP.md');
+      throw new Error('Erro ao trocar código por token: ' + error.message);
     }
   }
 
