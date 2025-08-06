@@ -11,9 +11,6 @@ const FacebookTestCalls = () => {
     setResults([]);
     
     try {
-      // Simular login do Facebook (modo demo para teste)
-      const testToken = 'demo_token_for_testing';
-      
       // Lista de chamadas de teste para desbloquear permissões
       const testCalls = [
         { name: 'User Profile', endpoint: '/me', permission: 'public_profile' },
