@@ -1,0 +1,10 @@
+# Netlify redirects para React SPA
+# Redireciona todas as rotas para index.html para React Router funcionar
+
+/*    /index.html   200
+
+# Específico para meta-callback (caso necessário)
+/meta-callback    /meta-callback.html   200
+
+# API redirects (caso implemente backend)
+/api/*  https://your-backend-api.com/api/:splat  200

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, RefreshCw, AlertCircle, CheckCircle, Building2 } from 'lucide-react';
 import userService from '../services/userService';
-import config from '../config/config';
 
 const MetaConnector = ({ onConnectionSuccess }) => {
   const [isConnected, setIsConnected] = useState(false);
@@ -11,8 +10,8 @@ const MetaConnector = ({ onConnectionSuccess }) => {
   const [selectedAccounts, setSelectedAccounts] = useState([]);
   const [error, setError] = useState('');
 
-  // Configurações da sua Facebook App
-  const FACEBOOK_APP_ID = config.facebookAppId;
+  // Sua Facebook App - Campaign Manager Pro
+  const FACEBOOK_APP_ID = process.env.REACT_APP_FACEBOOK_APP_ID || '1525902928789947';
 
   useEffect(() => {
     checkExistingConnection();
@@ -44,11 +43,20 @@ const MetaConnector = ({ onConnectionSuccess }) => {
     setError('');
 
     try {
-      // Construir URL usando configurações
-      const redirectUri = config.callbackUrl;
-      const scope = config.facebook.scope;
+      // Construir URL igual ao TrackBee
+      const redirectUri = `${window.location.origin}/meta-callback`;
+      const scope = [
+        'ads_management',
+        'ads_read', 
+        'business_management',
+        'page_events',
+        'pages_manage_ads',
+        'pages_manage_cta',
+        'pages_read_engagement',
+        'pages_show_list'
+      ].join(',');
 
-      const facebookLoginUrl = `${config.facebook.loginUrl}?` + new URLSearchParams({
+      const facebookLoginUrl = `https://www.facebook.com/v16.0/dialog/oauth?` + new URLSearchParams({
         client_id: FACEBOOK_APP_ID,
         redirect_uri: redirectUri,
         scope: scope,
@@ -108,7 +116,7 @@ const MetaConnector = ({ onConnectionSuccess }) => {
   const handleLoginSuccess = async (authData) => {
     try {
       // Buscar informações do usuário
-      const userResponse = await fetch(`${config.facebook.graphUrl}/me?access_token=${authData.access_token}`);
+      const userResponse = await fetch(`https://graph.facebook.com/me?access_token=${authData.access_token}`);
       const userData = await userResponse.json();
 
       // Definir usuário atual no sistema multi-tenant
@@ -116,7 +124,7 @@ const MetaConnector = ({ onConnectionSuccess }) => {
 
       // Buscar todas as ad accounts do Business Manager
       const accountsResponse = await fetch(
-        `${config.facebook.graphUrl}/me/adaccounts?fields=id,name,currency,account_status,business&access_token=${authData.access_token}`
+        `https://graph.facebook.com/me/adaccounts?fields=id,name,currency,account_status,business&access_token=${authData.access_token}`
       );
       const accountsData = await accountsResponse.json();
 

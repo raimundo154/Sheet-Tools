@@ -26,7 +26,6 @@ const DayModal = ({ campaign, onSave, onClose }) => {
   const calculateMetrics = (data) => {
     const spend = parseFloat(data.spend) || 0;
     const sales = parseInt(data.sales) || 0;
-    const atc = parseInt(data.atc) || 0;
     const clicks = parseInt(data.clicks) || 0;
     const impressions = parseInt(data.impressions) || 0;
     const unitsSold = parseInt(data.unitsSold) || sales; // Default to sales if not provided

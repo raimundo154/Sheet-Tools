@@ -138,9 +138,15 @@
                     
                     // Fallback: usar Graph API diretamente (apenas para demonstração)
                     // NOTA: Em produção, isto deve ser feito no backend por segurança
+                    
+                    // Construir redirect URI dinamicamente baseado no ambiente
+                    const redirectUri = window.location.protocol === 'https:' 
+                        ? `${window.location.origin}/meta-callback`
+                        : 'http://localhost:3000/meta-callback';
+                    
                     const tokenResponse = await fetch('https://graph.facebook.com/v16.0/oauth/access_token?' + new URLSearchParams({
                         client_id: '1525902928789947', // Seu App ID - Campaign Manager Pro
-                        redirect_uri: window.location.href.split('?')[0], // URL atual sem parâmetros
+                        redirect_uri: redirectUri,
                         client_secret: '29dcb85842a8089cfd7878d850b19267', // NUNCA fazer isto em produção!
                         code: code
                     }));
