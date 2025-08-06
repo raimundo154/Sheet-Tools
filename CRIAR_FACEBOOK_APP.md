@@ -10,7 +10,7 @@ https://developers.facebook.com/apps/
 ### **Criar Nova App:**
 1. Clique **"Criar app"**
 2. Selecione **"Negócios"** (Business)
-3. **Nome da app:** `Campaign Manager Pro` (ou o nome que preferir)
+3. **Nome da app:** `Sheet Tools` (ou o nome que preferir)
 4. **Email:** seu@email.com
 5. Clique **"Criar app"**
 

@@ -44,7 +44,7 @@ https://developers.facebook.com/apps/
 
 # 2. Criar nova App
 - Tipo: Business
-- Nome: "Campaign Manager Pro"
+- Nome: "Sheet Tools"
 - Email: seu@email.com
 
 # 3. Adicionar produtos:

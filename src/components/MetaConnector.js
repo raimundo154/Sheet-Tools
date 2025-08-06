@@ -10,7 +10,7 @@ const MetaConnector = ({ onConnectionSuccess }) => {
   const [selectedAccounts, setSelectedAccounts] = useState([]);
   const [error, setError] = useState('');
 
-  // Sua Facebook App - Campaign Manager Pro
+  // Sua Facebook App - Sheet Tools
   const FACEBOOK_APP_ID = process.env.REACT_APP_FACEBOOK_APP_ID || '1525902928789947';
 
   useEffect(() => {

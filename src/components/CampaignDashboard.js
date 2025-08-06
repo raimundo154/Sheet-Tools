@@ -143,7 +143,7 @@ const CampaignDashboard = () => {
             <div>
               <h1 className="text-3xl font-bold text-gray-800 flex items-center">
                 <TrendingUp className="mr-3 text-blue-600" size={32} />
-                Campaign Manager Pro
+                Sheet Tools
               </h1>
               <div className="flex items-center space-x-4 mt-2">
                 <p className="text-gray-600">
