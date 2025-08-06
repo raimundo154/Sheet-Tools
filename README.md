@@ -1,70 +1,192 @@
-# Getting Started with Create React App
+# Facebook Ads Campaign Manager
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Uma plataforma interativa para gestão inteligente de campanhas Facebook Ads com decisões automáticas baseadas em performance.
 
-## Available Scripts
+## 🚀 Funcionalidades
 
-In the project directory, you can run:
+### 🔗 Sistema OAuth Multi-usuário (NOVO!)
+- ✅ **Login OAuth do Facebook** - Sistema profissional igual ao TrackBee
+- ✅ **Múltiplos usuários** - Cada pessoa conecta sua própria conta
+- ✅ **Gerenciador de contas** - Interface para gerenciar usuários conectados
+- ✅ **Importação automática** - Campanhas sincronizadas automaticamente
+- ✅ **Regras aplicadas** aos dados reais do Facebook Ads
 
-### `npm start`
+### Gestão de Campanhas
+- ✅ Criar e editar campanhas manualmente
+- ✅ Configurar produto, preço e COGS
+- ✅ Definir tipo de mercado (CPC Baixo/Alto)
+- ✅ Definir orçamentos iniciais e atuais
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Análise Automática
+- ✅ Cálculos automáticos de todas as métricas:
+  - ROAS (Return on Ad Spend)
+  - BER (Break Even Rate)
+  - CPC (Cost per Click)
+  - CPA (Cost per Acquisition)
+  - CTR (Click Through Rate)
+  - Taxa de Conversão
+  - Profit Margin (em € e %)
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### Decisões Automáticas
 
-### `npm test`
+#### 🎯 NOVA REGRA PRIORITÁRIA - Análise de Profit Margin
+**Aplicada desde o Dia 1:**
+- **Profit Margin Negativo** = **KILL** (imediato)
+- **Profit Margin > 20%** = **SCALE** (imediato)
+- **Profit Margin Positivo (0-20%)** = **MAINTAIN** + aplicar regras abaixo
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+#### Mercados CPC Baixo (< 0.7€)
+**Exemplos:** Espanha, Itália, França, Portugal, Grécia
 
-### `npm run build`
+**Dia 1:**
+- 10€ spend + CPC > 1€ + 0 sales + 0 ATC = **KILL**
+- 20€ spend + 0 sales + <2 ATC = **KILL**
+- 25€ spend + 0 sales = **KILL**
+- Se pelo menos 1 venda → deixar rodar o dia todo
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+**Dia 2:**
+- 10€ spend + 0 sales + <2 ATC = **KILL**
+- 25€ spend + 0 sales = **KILL**
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+#### Mercados CPC Alto (> 0.7€)
+**Exemplos:** Reino Unido, Alemanha, Suíça, Dinamarca
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+**Dia 1:**
+- 10€ spend + CPC > 1€ + 0 sales + 0 ATC = **KILL**
+- 20€ spend + 0 sales + <2 ATC = **KILL**
+- 30€ spend + 0 sales = **KILL**
+- Se pelo menos 1 venda → deixar rodar o dia todo
 
-### `npm run eject`
+**Dia 2:**
+- 15€ spend + 0 sales + <2 ATC = **KILL**
+- 25€ spend + 0 sales = **KILL**
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+#### Regras de Scaling/Descaling (48h+)
+**Orçamentos de Scaling:** 50€ → 70€ → 100€ → 140€ → 200€ → 300€ → 400€ → +20% a partir daqui
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+**Scaling (Dia 3+):**
+- Profit margin médio > 20% E ambos os dias > 15% = **SCALE**
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+**Descaling:**
+- Profit margin médio ≤ 0% = **DESCALE** para orçamento anterior
+- Se já está em 50€ e continua em loss por 48h = **KILL**
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## 🛠️ Instalação
 
-## Learn More
+```bash
+# Instalar dependências
+npm install --legacy-peer-deps
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+# Iniciar servidor de desenvolvimento
+npm start
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## 📊 Como Usar
 
-### Code Splitting
+### 🔗 Integração Facebook Ads
+1. **Conectar:** Clique em "Conectar Facebook Ads" no dashboard
+2. **Configurar:** Insira Access Token e ID da conta (demonstração aceita qualquer valor)
+3. **Sincronizar:** Veja suas campanhas sendo importadas automaticamente
+4. **Configurar:** Defina preços e COGS para ativar regras automáticas
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### 📝 Gestão Manual  
+1. **Primeira vez:** Clique em "Carregar Dados de Exemplo" para ver exemplos funcionais
+2. **Criar Campanha:** Clique em "Nova Campanha" e preencha os dados
+3. **Adicionar Dias:** Clique no botão "+" na tabela para adicionar dados diários
+4. **Visualizar Análise:** Clique na linha da campanha para expandir e ver detalhes
 
-### Analyzing the Bundle Size
+## 🎯 Métricas Calculadas Automaticamente
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+- **Receita:** Vendas × Preço do Produto
+- **COGS:** Unidades Vendidas × Custo do Produto
+- **Lucro:** Receita - Gasto - COGS
+- **Profit Margin:** (Lucro / Receita) × 100
+- **ROAS:** Receita / Gasto
+- **BER:** (Gasto / Receita) × 100
+- **CPC:** Gasto / Cliques
+- **CPA:** Gasto / Vendas
+- **CTR:** (Cliques / Impressões) × 100
+- **Taxa Conversão:** (Vendas / Cliques) × 100
 
-### Making a Progressive Web App
+## 🎨 Interface
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+- **Dashboard:** Visão geral com estatísticas totais
+- **Tabela Interativa:** Lista todas as campanhas com métricas
+- **Modais:** Para criar/editar campanhas e adicionar dados diários
+- **Badges de Status:** Indicam a decisão automática (KILL/SCALE/MAINTAIN/DESCALE)
+- **Filtros:** Por tipo de mercado (CPC Baixo/Alto)
+- **Dados Expansíveis:** Clique numa campanha para ver dados diários detalhados
 
-### Advanced Configuration
+## 🔧 Configuração
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+### Instalação
+```bash
+cd sheet-tools
+npm install
+npm start
+```
 
-### Deployment
+### Facebook OAuth Setup
+Para permitir login de múltiplos usuários:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+1. **Criar Facebook App:**
+   - Vá para [Facebook Developer Console](https://developers.facebook.com/apps/)
+   - Crie nova app "Business"
+   - Adicione "Marketing API" e "Facebook Login"
 
-### `npm run build` fails to minify
+2. **Configurar OAuth:**
+   - Valid OAuth Redirect URIs: `http://localhost:3000/facebook-callback.html`
+   - Deauthorize Callback URL: `http://localhost:3000/api/facebook/deauth`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+3. **Configurar variáveis de ambiente:**
+   ```bash
+   # Copie env.example para .env
+   cp env.example .env
+   
+   # Configure seu Facebook App ID
+   REACT_APP_FACEBOOK_APP_ID=seu_app_id_aqui
+   ```
+
+4. **Implementar backend:**
+   - Veja `FACEBOOK_OAUTH_SETUP.md` para instruções completas
+   - Backend necessário para trocar códigos OAuth por tokens
+
+## 🔧 Tecnologias
+
+- **React 19** - Framework principal
+- **Facebook OAuth** - Login seguro multi-usuário
+- **Facebook Marketing API** - Integração com campanhas reais
+- **Lucide React** - Ícones
+- **CSS Custom** - Estilização responsiva
+- **LocalStorage** - Persistência de dados local
+
+## 📱 Responsivo
+
+A interface adapta-se automaticamente a diferentes tamanhos de ecrã:
+- Desktop: Layout completo com todas as colunas
+- Tablet: Layout adaptado com colunas reorganizadas
+- Mobile: Layout em coluna única com navegação otimizada
+
+## 🚨 Alertas e Decisões
+
+O sistema fornece explicações detalhadas para cada decisão:
+- **Razão da Decisão:** Explica porque a ação foi recomendada
+- **Novo Orçamento:** Sugere o próximo orçamento quando aplicável
+- **Regras Aplicadas:** Mostra quais regras foram ativadas
+
+## 💾 Dados
+
+Os dados são salvos automaticamente no localStorage do navegador. Para limpar todos os dados, use as ferramentas de desenvolvedor do navegador ou crie uma nova campanha e delete as antigas.
+
+## 🎯 Casos de Uso
+
+Ideal para:
+- **Media Buyers** que gerem múltiplas campanhas
+- **Agências de Marketing Digital**
+- **E-commerce** com campanhas Facebook Ads
+- **Freelancers** que precisam de análise rápida
+- **Equipas** que querem padronizar decisões
+
+---
+
+**Nota:** Esta ferramenta implementa as regras específicas fornecidas e calcula automaticamente todas as métricas necessárias para tomada de decisão em campanhas Facebook Ads.
