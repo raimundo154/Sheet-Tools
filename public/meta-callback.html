@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meta Login - Processando...</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #1877f2 0%, #42a5f5 100%);
+            color: white;
+        }
+        .container {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid white;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1.5rem;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .success {
+            color: #4CAF50;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        .error {
+            color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.2);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            border: 1px solid rgba(255, 107, 107, 0.3);
+        }
+        .meta-logo {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-weight: bold;
+            color: #1877f2;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="meta-logo">M</div>
+        <div class="spinner"></div>
+        <h2>Conectando ao Meta Business Manager...</h2>
+        <p>Processando sua autenticação e buscando ad accounts.</p>
+        <div id="status"></div>
+        <div id="error-container"></div>
+    </div>
+
+    <script>
+        (function() {
+            const statusDiv = document.getElementById('status');
+            const errorDiv = document.getElementById('error-container');
+
+            try {
+                // Verificar se estamos em popup
+                if (!window.opener) {
+                    showError('Esta página deve ser aberta em popup.');
+                    return;
+                }
+
+                // Obter parâmetros da URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const code = urlParams.get('code');
+                const error = urlParams.get('error');
+                const errorDescription = urlParams.get('error_description');
+
+                if (error) {
+                    showError(errorDescription || error);
+                    return;
+                }
+
+                if (!code) {
+                    showError('Código de autorização não recebido');
+                    return;
+                }
+
+                // Processar código de autorização
+                processAuthCode(code);
+
+            } catch (err) {
+                showError('Erro inesperado: ' + err.message);
+            }
+        })();
+
+        async function processAuthCode(code) {
+            try {
+                updateStatus('Trocando código por token de acesso...');
+
+                // Tentar trocar código por token via backend
+                let authData;
+                try {
+                    const response = await fetch('/api/facebook/exchange-token', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            code: code,
+                            redirect_uri: window.location.origin + '/meta-callback'
+                        })
+                    });
+
+                    if (response.ok) {
+                        authData = await response.json();
+                    } else {
+                        throw new Error('Backend não disponível');
+                    }
+                } catch (backendError) {
+                    console.warn('Backend não disponível, usando Graph API diretamente');
+                    
+                    // Fallback: usar Graph API diretamente (apenas para demonstração)
+                    // NOTA: Em produção, isto deve ser feito no backend por segurança
+                    
+                    // Construir redirect URI dinamicamente baseado no ambiente
+                    const redirectUri = window.location.protocol === 'https:' 
+                        ? `${window.location.origin}/meta-callback`
+                        : 'http://localhost:3000/meta-callback';
+                    
+                    const tokenResponse = await fetch('https://graph.facebook.com/v16.0/oauth/access_token?' + new URLSearchParams({
+                        client_id: '1525902928789947', // Seu App ID - Campaign Manager Pro
+                        redirect_uri: redirectUri,
+                        client_secret: '29dcb85842a8089cfd7878d850b19267', // NUNCA fazer isto em produção!
+                        code: code
+                    }));
+
+                    if (!tokenResponse.ok) {
+                        throw new Error('Erro ao obter token de acesso');
+                    }
+
+                    const tokenData = await tokenResponse.json();
+                    authData = {
+                        access_token: tokenData.access_token,
+                        expires_in: tokenData.expires_in || 3600
+                    };
+                }
+
+                updateStatus('Login realizado com sucesso!');
+                
+                // Enviar dados para janela pai
+                window.opener.postMessage({
+                    type: 'META_LOGIN_SUCCESS',
+                    authData: authData
+                }, window.location.origin);
+
+                // Mostrar sucesso
+                showSuccess();
+
+            } catch (err) {
+                console.error('Erro no processamento:', err);
+                showError('Erro ao processar login: ' + err.message);
+                
+                // Enviar erro para janela pai
+                window.opener.postMessage({
+                    type: 'META_LOGIN_ERROR',
+                    error: err.message
+                }, window.location.origin);
+            }
+        }
+
+        function updateStatus(message) {
+            document.getElementById('status').innerHTML = `<p style="color: #e3f2fd; font-size: 14px;">${message}</p>`;
+        }
+
+        function showSuccess() {
+            document.querySelector('.container').innerHTML = `
+                <div class="meta-logo">M</div>
+                <div class="success">✓</div>
+                <h2 style="color: #4CAF50;">Conectado com sucesso!</h2>
+                <p>Redirecionando para importar suas campanhas...</p>
+            `;
+            
+            // Fechar popup após 2 segundos
+            setTimeout(() => {
+                window.close();
+            }, 2000);
+        }
+
+        function showError(message) {
+            document.querySelector('.spinner').style.display = 'none';
+            document.getElementById('error-container').innerHTML = `
+                <div class="error">
+                    <strong>Erro:</strong> ${message}
+                </div>
+            `;
+            
+            // Fechar popup após 5 segundos
+            setTimeout(() => {
+                window.close();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
