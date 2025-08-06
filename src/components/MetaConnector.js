@@ -124,7 +124,7 @@ const MetaConnector = ({ onConnectionSuccess }) => {
 
       // Buscar todas as ad accounts do Business Manager
       const accountsResponse = await fetch(
-        `https://graph.facebook.com/me/adaccounts?fields=id,name,currency,account_status,business&access_token=${authData.access_token}`
+        `https://graph.facebook.com/v23.0/me/adaccounts?fields=id,name,currency,account_status,business&access_token=${authData.access_token}`
       );
       const accountsData = await accountsResponse.json();
 
