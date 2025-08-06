@@ -6,7 +6,7 @@
   command = "npm run build"
   
   # Diretório onde estão os arquivos compilados
-  publish = "sheet-tools/build"
+  publish = "build"
 
 [build.environment]
   # Node.js version
