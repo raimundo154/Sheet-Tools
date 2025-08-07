@@ -10,9 +10,7 @@ import {
   CreditCard, 
   TrendingUp, 
   LogOut, 
-  HelpCircle,
-  FileText,
-  Shield
+  HelpCircle
 } from 'lucide-react';
 
 const Sidebar = ({ currentPage, onPageChange }) => {
