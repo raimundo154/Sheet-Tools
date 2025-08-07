@@ -5,7 +5,9 @@
       "Bash(del .env)",
       "Bash(rm:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(npm start)",
+      "Bash(npm run build:*)"
     ],
     "deny": []
   }
