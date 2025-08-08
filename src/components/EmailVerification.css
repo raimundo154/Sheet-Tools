@@ -1,22 +1,18 @@
 /* Email Verification Styles */
+/* Herdar estilos da LoginPage: container lado direito semelhante */
 .email-verification-container {
   display: flex;
-  align-items: center;
-  justify-content: center;
   min-height: 100vh;
-  background: linear-gradient(180deg, #1e3a3a 0%, #2c5f6f 50%, #4a9bb8 100%);
-  padding: 2rem;
-  font-family: 'Inter', sans-serif;
 }
 
 .email-verification-content {
+  margin: auto;
   background-color: rgba(255, 255, 255, 0.95);
-  border-radius: 1rem;
-  padding: 2.5rem;
+  border-radius: 12px;
+  padding: 2rem;
   width: 100%;
-  max-width: 500px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(10px);
+  max-width: 420px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
 }
 
 /* Header */
@@ -129,11 +125,11 @@
 /* Botões */
 .verify-button {
   width: 100%;
-  padding: 1rem;
-  background: linear-gradient(135deg, #4a9bb8 0%, #2c5f6f 100%);
-  color: #ffffff;
-  border: none;
-  border-radius: 0.75rem;
+  padding: 0.95rem 1.25rem;
+  background: linear-gradient(135deg, #ffffff 0%, #eaeaea 100%);
+  color: #0b0b0b;
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 12px;
   font-size: 1rem;
   font-weight: 600;
   font-family: 'Inter', sans-serif;
@@ -145,10 +141,7 @@
   gap: 0.5rem;
 }
 
-.verify-button:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 25px rgba(74, 155, 184, 0.25);
-}
+.verify-button:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 10px 25px rgba(0,0,0,0.18);} 
 
 .verify-button:active:not(:disabled) {
   transform: translateY(0);

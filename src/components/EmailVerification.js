@@ -4,6 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import emailService from '../services/emailService';
 import authService from '../services/authService';
+import './LoginPage.css';
 import './EmailVerification.css';
 
 const EmailVerification = ({ onVerificationSuccess, onBackToSignup }) => {
@@ -166,131 +167,79 @@ const EmailVerification = ({ onVerificationSuccess, onBackToSignup }) => {
   };
 
   return (
-    <div className="email-verification-container">
-      <div className="email-verification-content">
-        <div className="verification-header">
-          <h1 className="verification-title">Verificar Email</h1>
-          <p className="verification-subtitle">
-            Enviamos um código de 8 dígitos para
-          </p>
-          <p className="verification-email">
-            {signupData ? signupData.email : 'seu email'}
-          </p>
-          
-          {timeLeft > 0 && (
-            <p className="verification-timer">
-              ⏱️ Código expira em: <strong>{formatTimeLeft(timeLeft)}</strong>
-            </p>
-          )}
+    <div className="login-container">
+      {/* Painel Esquerdo - Logo */}
+      <div className="login-left-panel">
+        <div className="logo-container">
+          <img src="/logo/sheet-tools-logo-backgroundremover.png" alt="Sheet Tools" className="login-logo" />
         </div>
+      </div>
 
-        <form onSubmit={handleVerifyCode} className="verification-form">
-          <div className="code-input-container">
-            <input
-              type="text"
-              value={verificationCode}
-              onChange={(e) => {
-                // Permitir apenas números e limitar a 8 dígitos
-                const value = e.target.value.replace(/\D/g, '').slice(0, 8);
-                setVerificationCode(value);
-              }}
-              placeholder="12345678"
-              className="code-input"
-              maxLength="8"
-              required
-              disabled={loading || timeLeft <= 0}
-            />
-            <div className="code-format-hint">
-              Insira o código de 8 dígitos
-            </div>
+      {/* Painel Direito - Conteúdo */}
+      <div className="login-right-panel">
+        <div className="login-form-container">
+          <div className="verification-header">
+            <h1 className="verification-title">VERIFY EMAIL</h1>
+            <p className="verification-subtitle">Enviámos um código de 8 dígitos para:</p>
+            <p className="verification-email">{signupData ? signupData.email : 'seu email'}</p>
+            {timeLeft > 0 && (
+              <p className="verification-timer">⏱️ Código expira em: <strong>{formatTimeLeft(timeLeft)}</strong></p>
+            )}
           </div>
 
-          {/* Mensagens de erro e sucesso */}
-          {error && (
-            <div className="error-message">
-              {error}
+          <form onSubmit={handleVerifyCode} className="verification-form">
+            <div className="code-input-container">
+              <input
+                type="text"
+                value={verificationCode}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/\D/g, '').slice(0, 8);
+                  setVerificationCode(value);
+                }}
+                placeholder="12345678"
+                className="code-input"
+                maxLength="8"
+                required
+                disabled={loading || timeLeft <= 0}
+              />
+              <div className="code-format-hint">Insira o código de 8 dígitos</div>
             </div>
-          )}
 
-          {resendMessage && (
-            <div className="success-message">
-              {resendMessage}
-            </div>
-          )}
+            {error && <div className="error-message">{error}</div>}
+            {resendMessage && <div className="success-message">{resendMessage}</div>}
 
-          <button 
-            type="submit" 
-            className="verify-button"
-            disabled={loading || timeLeft <= 0 || verificationCode.length !== 8}
-          >
-            {loading ? (
-              <>
-                <span className="loading-spinner"></span>
-                Verificando...
-              </>
-            ) : (
-              'Verificar e Criar Conta'
-            )}
-          </button>
-        </form>
-
-        <div className="verification-actions">
-          <button 
-            onClick={handleResendCode}
-            className="resend-button"
-            disabled={resendLoading || timeLeft > 540} // Permitir reenvio só nos últimos 1 min
-          >
-            {resendLoading ? (
-              <>
-                <span className="loading-spinner"></span>
-                Reenviando...
-              </>
-            ) : timeLeft > 540 ? (
-              `Reenviar em ${formatTimeLeft(timeLeft - 540)}`
-            ) : (
-              '📧 Reenviar código'
-            )}
-          </button>
-
-          <button 
-            onClick={onBackToSignup}
-            className="back-button"
-          >
-            ← Voltar ao cadastro
-          </button>
-
-          {/* Botão de auto-preenchimento para desenvolvimento */}
-          {process.env.NODE_ENV === 'development' && signupData && (
-            <button 
-              onClick={handleAutoFillCode}
-              className="dev-autofill-button"
-              type="button"
-            >
-              🔧 Auto-preencher (DEV)
+            <button type="submit" className="verify-button" disabled={loading || timeLeft <= 0 || verificationCode.length !== 8}>
+              {loading ? (<><span className="loading-spinner"></span>Verificando...</>) : 'Verificar e Criar Conta'}
             </button>
+          </form>
+
+          <div className="verification-actions">
+            <button onClick={handleResendCode} className="resend-button" disabled={resendLoading || timeLeft > 540}>
+              {resendLoading ? (<><span className="loading-spinner"></span>Reenviando...</>) : (timeLeft > 540 ? `Reenviar em ${formatTimeLeft(timeLeft - 540)}` : '📧 Reenviar código')}
+            </button>
+
+            <button onClick={onBackToSignup} className="back-button">← Voltar ao cadastro</button>
+
+            {process.env.NODE_ENV === 'development' && signupData && (
+              <button onClick={handleAutoFillCode} className="dev-autofill-button" type="button">🔧 Auto-preencher (DEV)</button>
+            )}
+          </div>
+
+          <div className="verification-info">
+            <p className="info-text">📱 Verifique sua caixa de entrada e pasta de spam</p>
+            <p className="info-text">🔒 Seu email será verificado e a conta será criada automaticamente</p>
+          </div>
+
+          {process.env.NODE_ENV === 'development' && signupData && (
+            <div className="dev-info">
+              <h4>🔧 Informações de Desenvolvimento</h4>
+              <p><strong>Email:</strong> {signupData.email}</p>
+              <p><strong>Código:</strong> {signupData.verificationCode}</p>
+              <p><strong>Expira em:</strong> {new Date(signupData.expiresAt).toLocaleTimeString()}</p>
+              <p><strong>Tempo restante:</strong> {formatTimeLeft(timeLeft)}</p>
+            </div>
           )}
         </div>
-
-        {/* Informações adicionais */}
-        <div className="verification-info">
-          <p className="info-text">
-            📱 Verifique sua caixa de entrada e pasta de spam
-          </p>
-          <p className="info-text">
-            🔒 Seu email será verificado e a conta será criada automaticamente
-          </p>
-        </div>
-
-        {/* Informações para desenvolvimento */}
-        {process.env.NODE_ENV === 'development' && signupData && (
-          <div className="dev-info">
-            <h4>🔧 Informações de Desenvolvimento</h4>
-            <p><strong>Email:</strong> {signupData.email}</p>
-            <p><strong>Código:</strong> {signupData.verificationCode}</p>
-            <p><strong>Expira em:</strong> {new Date(signupData.expiresAt).toLocaleTimeString()}</p>
-            <p><strong>Tempo restante:</strong> {formatTimeLeft(timeLeft)}</p>
-          </div>
-        )}
       </div>
     </div>
   );

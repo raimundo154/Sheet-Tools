@@ -8,18 +8,20 @@
 
 /* Painel Esquerdo - Logo */
 .login-left-panel {
-  flex: 0 0 40%;
-  background-color: #000000;
+  flex: 0 0 55%;
+  background-color: #091618;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
+  padding: 0;
 }
 
 .logo-container {
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 100%;
+  height: 100%;
 }
 
 .login-logo {
@@ -32,8 +34,13 @@
 
 /* Painel Direito - Formulário */
 .login-right-panel {
-  flex: 0 0 60%;
-  background: linear-gradient(180deg, #1e3a3a 0%, #2c5f6f 50%, #4a9bb8 100%);
+  flex: 0 0 45%;
+  background: linear-gradient(to bottom,
+    rgba(9, 22, 24, 1) 9%,         /* #091618 @ 100% (top at 9%) */
+    rgba(15, 58, 50, 0.68) 41%,    /* mais verde: #0F3A32 @ 68% */
+    rgba(28, 111, 91, 0.71) 71%,   /* mais verde: #1C6F5B @ 71% */
+    rgba(150, 242, 215, 0.79) 100% /* mais verde: #96F2D7 @ 79% (bottom) */
+  );
   display: flex;
   align-items: center;
   justify-content: center;
@@ -44,6 +51,11 @@
   width: 100%;
   max-width: 400px;
   padding: 0 1rem;
+}
+
+/* Formulário */
+.login-form {
+  margin-bottom: 1.25rem;
 }
 
 /* Header */
@@ -97,28 +109,29 @@
 /* Botões Sociais */
 .social-buttons {
   display: flex;
-  gap: 1rem;
+  align-items: center;
   justify-content: center;
+  gap: 1rem;
   margin-bottom: 2rem;
+  width: 65px;
+  height: 65px;
+  border-radius: 5px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .social-button {
-  width: 100%;
-  height: 60px;
-  border-radius: 2rem;
+  width: 65px;
+  height: 65px;
+  border-radius: 12px;
   border: none;
   background-color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.75rem;
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  font-size: 1rem;
-  font-weight: 600;
-  font-family: 'Inter', sans-serif;
-  color: #374151;
 }
 
 .social-button:hover {
@@ -129,6 +142,55 @@
 .social-button:active {
   transform: translateY(0);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Botão Sign up estilizado */
+.signup-button {
+  width: 100%;
+  padding: 0.95rem 1.25rem;
+  background: linear-gradient(135deg, #ffffff 0%, #eaeaea 100%);
+  color: #0b0b0b;
+  border: 1px solid rgba(255,255,255,0.35);
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease, transform 0.2s ease, background 0.2s ease;
+  text-transform: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.signup-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
+}
+
+.signup-button:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.signup-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Barra e texto "Or continue with" */
+.divider-line {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+  margin: 1.25rem 0 0.5rem 0;
+}
+
+.or-text {
+  text-align: center;
+  color: #b0b7c0;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
 }
 
 /* Footer */
@@ -217,6 +279,8 @@
   }
   
   .social-button {
-    height: 50px;
+    width: 65px;
+    height: 65px;
+    border-radius: 12px;
   }
 }
