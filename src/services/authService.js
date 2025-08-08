@@ -76,6 +76,11 @@ class AuthService {
           throw new Error('Serviço de email temporariamente indisponível. Tente fazer login com Google ou entre em contato com o suporte.')
         }
         
+        // Tratamento específico para rate limit de email
+        if (error.status === 429 || error.message.includes('rate limit exceeded')) {
+          throw new Error('Muitas tentativas de envio de email. Aguarde alguns minutos e tente novamente, ou use o login com Google.')
+        }
+        
         throw new Error(error.message)
       }
 
