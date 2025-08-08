@@ -13,7 +13,7 @@ import {
   HelpCircle
 } from 'lucide-react';
 
-const Sidebar = ({ currentPage, onPageChange }) => {
+const Sidebar = ({ currentPage, onPageChange, onSignOut }) => {
   const menuItems = [
     {
       group: 'Principal',
@@ -49,7 +49,11 @@ const Sidebar = ({ currentPage, onPageChange }) => {
   ];
 
   const handleItemClick = (itemId) => {
-    onPageChange(itemId);
+    if (itemId === 'sign-out') {
+      onSignOut();
+    } else {
+      onPageChange(itemId);
+    }
   };
 
   return (

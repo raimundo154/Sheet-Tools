@@ -1,6 +1,9 @@
 # Netlify redirects para React SPA
 # Redireciona todas as rotas para index.html para React Router funcionar
 
+# Supabase auth callback
+/auth/callback    /index.html   200
+
 /*    /index.html   200
 
 # Específico para meta-callback (caso necessário)
