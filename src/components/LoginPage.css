@@ -68,46 +68,7 @@
   font-weight: 400;
 }
 
-/* Formulário */
-.login-form {
-  margin-bottom: 1.5rem;
-}
 
-.email-input-container {
-  position: relative;
-  margin-bottom: 1.5rem;
-}
-
-.email-icon {
-  position: absolute;
-  left: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 2;
-}
-
-.email-input {
-  width: 100%;
-  padding: 1rem 1rem 1rem 3rem;
-  background-color: #2a2a2a;
-  border: none;
-  border-radius: 0.75rem;
-  color: #ffffff;
-  font-size: 1rem;
-  font-family: 'Inter', sans-serif;
-  outline: none;
-  box-sizing: border-box;
-}
-
-.email-input::placeholder {
-  color: #9ca3af;
-  font-size: 0.95rem;
-}
-
-.email-input:focus {
-  background-color: #333333;
-  box-shadow: 0 0 0 2px rgba(74, 155, 184, 0.3);
-}
 
 /* Error Message */
 .error-message {
@@ -131,64 +92,7 @@
   font-size: 0.85rem;
 }
 
-/* Botão Sign up */
-.signup-button {
-  width: 100%;
-  padding: 1rem;
-  background-color: #ffffff;
-  color: #000000;
-  border: none;
-  border-radius: 2rem;
-  font-size: 1rem;
-  font-weight: 600;
-  font-family: 'Inter', sans-serif;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-transform: none;
-}
 
-.signup-button:hover:not(:disabled) {
-  background-color: #f0f0f0;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.signup-button:active:not(:disabled) {
-  transform: translateY(0);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-
-.signup-button:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-  transform: none;
-}
-
-/* Separador */
-.separator {
-  margin: 2rem 0;
-  text-align: center;
-  position: relative;
-}
-
-.separator::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background-color: #6b7280;
-}
-
-.separator-text {
-  background: linear-gradient(180deg, #1e3a3a 0%, #2c5f6f 50%, #4a9bb8 100%);
-  color: #b0b7c0;
-  padding: 0 1rem;
-  font-size: 0.875rem;
-  position: relative;
-  z-index: 1;
-}
 
 /* Botões Sociais */
 .social-buttons {
@@ -199,17 +103,22 @@
 }
 
 .social-button {
-  width: 60px;
+  width: 100%;
   height: 60px;
-  border-radius: 50%;
+  border-radius: 2rem;
   border: none;
   background-color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 0.75rem;
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  color: #374151;
 }
 
 .social-button:hover {
@@ -228,7 +137,8 @@
 }
 
 .terms-text,
-.signin-text {
+.signin-text,
+.signup-text {
   font-size: 0.875rem;
   color: #b0b7c0;
   margin: 0.5rem 0;
@@ -236,14 +146,20 @@
 }
 
 .terms-link,
-.signin-link {
+.signin-link,
+.signup-link {
   color: #4a9bb8;
   text-decoration: none;
   transition: color 0.2s ease;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: inherit;
 }
 
 .terms-link:hover,
-.signin-link:hover {
+.signin-link:hover,
+.signup-link:hover {
   color: #5bb3d1;
   text-decoration: underline;
 }
@@ -301,7 +217,6 @@
   }
   
   .social-button {
-    width: 50px;
     height: 50px;
   }
 }

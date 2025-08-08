@@ -6,6 +6,8 @@ import FacebookTestCalls from './components/FacebookTestCalls';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import TermsOfService from './components/TermsOfService';
 import LoginPage from './components/LoginPage';
+import SignupPage from './components/SignupPage';
+import EmailVerification from './components/EmailVerification';
 import AuthCallback from './components/AuthCallback';
 import authService from './services/authService';
 import './App.css';
@@ -14,8 +16,11 @@ function App() {
   const [currentPage, setCurrentPage] = useState('login');
   const [showTestCalls, setShowTestCalls] = useState(false);
 
-  // Verificar se estamos na página de callback
-  const isAuthCallback = window.location.pathname === '/auth/callback';
+  // Verificar rotas baseadas na URL
+  const currentPath = window.location.pathname;
+  const isAuthCallback = currentPath === '/auth/callback';
+  const isSignupPage = currentPath === '/signup';
+  const isVerificationPage = currentPath === '/verify-email';
 
   const handlePageChange = (pageId) => {
     setCurrentPage(pageId);
@@ -42,10 +47,38 @@ function App() {
     setCurrentPage('login');
   };
 
+  const handleSignupRequest = (signupData) => {
+    console.log('Código enviado para:', signupData.email);
+    // Redirecionar para página de verificação
+    window.history.pushState({}, '', '/verify-email');
+    setCurrentPage('verify-email');
+  };
+
+  const handleVerificationSuccess = (user) => {
+    console.log('Conta criada com sucesso:', user);
+    setCurrentPage('home');
+    // Limpar URL
+    window.history.pushState({}, '', '/');
+  };
+
+  const handleBackToLogin = () => {
+    window.history.pushState({}, '', '/');
+    setCurrentPage('login');
+  };
+
+  const handleBackToSignup = () => {
+    window.history.pushState({}, '', '/signup');
+    setCurrentPage('signup');
+  };
+
   const renderContent = () => {
     switch (currentPage) {
       case 'login':
         return <LoginPage onLogin={handleLogin} />;
+      case 'signup':
+        return <SignupPage onSignupRequest={handleSignupRequest} onBackToLogin={handleBackToLogin} />;
+      case 'verify-email':
+        return <EmailVerification onVerificationSuccess={handleVerificationSuccess} onBackToSignup={handleBackToSignup} />;
       case 'home':
         return <HomePage />;
       case 'campaigns':
@@ -59,6 +92,17 @@ function App() {
     }
   };
 
+  // Inicializar página baseada na URL
+  React.useEffect(() => {
+    if (isSignupPage) {
+      setCurrentPage('signup');
+    } else if (isVerificationPage) {
+      setCurrentPage('verify-email');
+    } else if (!isAuthCallback) {
+      setCurrentPage('login');
+    }
+  }, [isSignupPage, isVerificationPage, isAuthCallback]);
+
   // Se estiver na página de callback de autenticação
   if (isAuthCallback) {
     return (
@@ -71,8 +115,8 @@ function App() {
     );
   }
 
-  // Se estiver na página de login, renderiza apenas o login
-  if (currentPage === 'login') {
+  // Se estiver nas páginas de autenticação (login, signup, verificação), renderiza apenas essas páginas
+  if (currentPage === 'login' || currentPage === 'signup' || currentPage === 'verify-email') {
     return (
       <div className="App">
         {renderContent()}
