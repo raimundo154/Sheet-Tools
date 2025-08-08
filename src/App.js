@@ -7,6 +7,7 @@ import PrivacyPolicy from './components/PrivacyPolicy';
 import TermsOfService from './components/TermsOfService';
 import LoginPage from './components/LoginPage';
 import AuthCallback from './components/AuthCallback';
+import authService from './services/authService';
 import './App.css';
 
 function App() {
@@ -27,8 +28,7 @@ function App() {
 
   const handleSignOut = async () => {
     try {
-      const authService = await import('./services/authService');
-      await authService.default.signOut();
+      await authService.signOut();
       setCurrentPage('login');
     } catch (error) {
       console.error('Erro ao fazer logout:', error);
