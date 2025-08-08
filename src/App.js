@@ -12,7 +12,6 @@ import './App.css';
 function App() {
   const [currentPage, setCurrentPage] = useState('login');
   const [showTestCalls, setShowTestCalls] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   // Verificar se estamos na página de callback
   const isAuthCallback = window.location.pathname === '/auth/callback';
@@ -22,7 +21,6 @@ function App() {
   };
 
   const handleLogin = (user) => {
-    setIsLoggedIn(true);
     setCurrentPage('home');
     console.log('Usuário logado:', user);
   };
@@ -31,12 +29,10 @@ function App() {
     try {
       const authService = await import('./services/authService');
       await authService.default.signOut();
-      setIsLoggedIn(false);
       setCurrentPage('login');
     } catch (error) {
       console.error('Erro ao fazer logout:', error);
       // Forçar logout mesmo se houver erro
-      setIsLoggedIn(false);
       setCurrentPage('login');
     }
   };

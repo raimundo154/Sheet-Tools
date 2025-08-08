@@ -195,11 +195,11 @@ const LoginPage = ({ onLogin }) => {
           <div className="login-footer">
             <p className="terms-text">
               Ao se registrar, você concorda com nossos{' '}
-              <a href="#" className="terms-link">Termos e Condições</a>
+              <button type="button" className="terms-link">Termos e Condições</button>
             </p>
             <p className="signin-text">
               Já tem uma conta?{' '}
-              <a href="#" className="signin-link">faça login aqui</a>
+              <button type="button" className="signin-link">faça login aqui</button>
             </p>
           </div>
         </div>
