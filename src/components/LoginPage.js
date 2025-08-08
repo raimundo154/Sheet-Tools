@@ -160,6 +160,11 @@ const LoginPage = ({ onLogin }) => {
             {error && (
               <div className="error-message">
                 {error}
+                {error.includes('temporariamente indisponível') && (
+                  <div className="error-suggestion">
+                    💡 Sugestão: Use o botão "Continuar com Google" abaixo
+                  </div>
+                )}
               </div>
             )}
 

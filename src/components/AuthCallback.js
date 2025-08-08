@@ -16,6 +16,8 @@ const AuthCallback = ({ onAuthSuccess, onAuthError }) => {
           setMessage('Login realizado com sucesso! Redirecionando...');
           setTimeout(() => {
             onAuthSuccess && onAuthSuccess(session.user);
+            // Redirecionar para a página principal
+            window.location.href = '/';
           }, 1500);
         } else {
           throw new Error('Falha na autenticação');
@@ -62,7 +64,7 @@ const AuthCallback = ({ onAuthSuccess, onAuthError }) => {
         {message}
       </p>
       
-      <style jsx>{`
+      <style>{`
         @keyframes spin {
           0% { transform: rotate(0deg); }
           100% { transform: rotate(360deg); }

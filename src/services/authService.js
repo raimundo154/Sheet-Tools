@@ -70,12 +70,24 @@ class AuthService {
 
       if (error) {
         console.error('Erro ao enviar magic link:', error)
+        
+        // Tratamento específico para erro de servidor de email
+        if (error.status === 500 || error.message.includes('Error sending confirmation email')) {
+          throw new Error('Serviço de email temporariamente indisponível. Tente fazer login com Google ou entre em contato com o suporte.')
+        }
+        
         throw new Error(error.message)
       }
 
       return data
     } catch (error) {
       console.error('Erro no signInWithMagicLink:', error)
+      
+      // Se for erro de rede ou servidor
+      if (error.message.includes('Error sending confirmation email') || error.status === 500) {
+        throw new Error('Serviço de email temporariamente indisponível. Tente fazer login com Google.')
+      }
+      
       throw error
     }
   }
