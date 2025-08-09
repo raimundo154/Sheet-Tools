@@ -450,7 +450,7 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  padding: 2rem;
+  padding: 1rem;
 }
 
 .product-modal {
@@ -464,18 +464,21 @@
   border: 1px solid rgba(150, 242, 215, 0.2);
   border-radius: 20px;
   width: 100%;
-  max-width: 500px;
-  max-height: 90vh;
-  overflow-y: auto;
+  max-width: 600px;
+  max-height: 85vh;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 2rem 2rem 1rem 2rem;
+  padding: 1.5rem 1.5rem 1rem 1.5rem;
   border-bottom: 1px solid rgba(150, 242, 215, 0.1);
+  flex-shrink: 0;
 }
 
 .modal-header h2 {
@@ -504,10 +507,19 @@
 }
 
 .modal-content {
-  padding: 2rem;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.25rem;
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
 }
 
 .form-group {
@@ -555,7 +567,7 @@
 .image-upload-label {
   display: block;
   width: 100%;
-  height: 150px;
+  height: 120px;
   border: 2px dashed rgba(150, 242, 215, 0.3);
   border-radius: 12px;
   cursor: pointer;
@@ -627,8 +639,9 @@
 .modal-actions {
   display: flex;
   gap: 1rem;
-  padding: 1rem 2rem 2rem 2rem;
+  padding: 1rem 1.5rem 1.5rem 1.5rem;
   border-top: 1px solid rgba(150, 242, 215, 0.1);
+  flex-shrink: 0;
 }
 
 .cancel-btn,
@@ -705,11 +718,17 @@
   }
   
   .modal-overlay {
-    padding: 1rem;
+    padding: 0.5rem;
   }
   
   .product-modal {
     max-height: 95vh;
+    max-width: 95vw;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 1rem;
   }
 }
 
@@ -730,5 +749,18 @@
   
   .modal-actions {
     flex-direction: column;
+  }
+  
+  .modal-header {
+    padding: 1rem;
+  }
+  
+  .modal-content {
+    padding: 1rem;
+    gap: 1rem;
+  }
+  
+  .modal-actions {
+    padding: 1rem;
   }
 }

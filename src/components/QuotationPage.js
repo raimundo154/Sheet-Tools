@@ -62,7 +62,7 @@ const QuotationPage = () => {
 
   const createProduct = () => {
     if (!newProduct.name || !newProduct.price) {
-      alert('Por favor, preencha pelo menos o nome e preço do produto.');
+      alert('Please fill in at least the product name and price.');
       return;
     }
 
@@ -101,7 +101,7 @@ const QuotationPage = () => {
       <div className="quotation-loading">
         <div className="loading-content">
           <Package size={48} className="loading-icon" />
-          <p>Carregando produtos...</p>
+          <p>Loading products...</p>
         </div>
       </div>
     );
@@ -115,10 +115,10 @@ const QuotationPage = () => {
           <div className="header-info">
             <h1 className="quotation-title">
               <Package size={32} />
-              Cotação de Produtos
+              Product Quotation
             </h1>
             <p className="quotation-subtitle">
-              Gerencie seus produtos e crie cotações personalizadas
+              Manage your products quotations!
             </p>
           </div>
           <button className="add-new-product-btn" onClick={() => setShowProductModal(true)}>
@@ -131,7 +131,7 @@ const QuotationPage = () => {
       {/* Products Section */}
       {availableProducts.length > 0 && (
         <div className="selected-products-section">
-          <h2>Produtos na Cotação</h2>
+          <h2>Products in Quotation</h2>
           <div className="selected-products-list">
             {availableProducts.map((product) => (
               <div key={product.id} className="selected-product-dropdown">
@@ -169,11 +169,11 @@ const QuotationPage = () => {
                   <div className="dropdown-content">
                     <div className="product-details">
                       <div className="detail-row">
-                        <span className="detail-label">Preço:</span>
+                        <span className="detail-label">Price:</span>
                         <span className="detail-value">€{parseFloat(product.price).toFixed(2)}</span>
                       </div>
                       <div className="detail-row">
-                        <span className="detail-label">Tempo de Envio:</span>
+                        <span className="detail-label">Shipping Time:</span>
                         <span className="detail-value">{product.shippingTime}</span>
                       </div>
                       <div className="detail-row">
@@ -182,12 +182,12 @@ const QuotationPage = () => {
                           {product.inStock ? (
                             <>
                               <CheckCircle size={16} />
-                              Disponível
+                              Available
                             </>
                           ) : (
                             <>
                               <XCircle size={16} />
-                              Indisponível
+                              Unavailable
                             </>
                           )}
                         </span>
@@ -207,7 +207,7 @@ const QuotationPage = () => {
         <div className="modal-overlay">
           <div className="product-modal">
             <div className="modal-header">
-              <h2>Criar Novo Produto</h2>
+              <h2>Create New Product</h2>
               <button 
                 className="modal-close-btn"
                 onClick={() => setShowProductModal(false)}
@@ -218,7 +218,7 @@ const QuotationPage = () => {
 
             <div className="modal-content">
               <div className="form-group">
-                <label>Imagem do Produto</label>
+                <label>Product Image</label>
                 <div className="image-upload-area">
                   <input
                     type="file"
@@ -233,65 +233,69 @@ const QuotationPage = () => {
                     ) : (
                       <div className="upload-placeholder">
                         <Upload size={32} />
-                        <span>Clique para fazer upload da imagem</span>
+                        <span>Click to upload image</span>
                       </div>
                     )}
                   </label>
                 </div>
               </div>
 
-              <div className="form-group">
-                <label>Nome do Produto</label>
-                <input
-                  type="text"
-                  value={newProduct.name}
-                  onChange={(e) => setNewProduct({...newProduct, name: e.target.value})}
-                  placeholder="Digite o nome do produto"
-                  className="form-input"
-                />
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Product Name</label>
+                  <input
+                    type="text"
+                    value={newProduct.name}
+                    onChange={(e) => setNewProduct({...newProduct, name: e.target.value})}
+                    placeholder="Enter product name"
+                    className="form-input"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Price (€)</label>
+                  <input
+                    type="number"
+                    value={newProduct.price}
+                    onChange={(e) => setNewProduct({...newProduct, price: e.target.value})}
+                    placeholder="0.00"
+                    className="form-input"
+                    step="0.01"
+                    min="0"
+                  />
+                </div>
               </div>
 
-              <div className="form-group">
-                <label>Preço (€)</label>
-                <input
-                  type="number"
-                  value={newProduct.price}
-                  onChange={(e) => setNewProduct({...newProduct, price: e.target.value})}
-                  placeholder="0.00"
-                  className="form-input"
-                  step="0.01"
-                  min="0"
-                />
-              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Shipping Time</label>
+                  <input
+                    type="text"
+                    value={newProduct.shippingTime}
+                    onChange={(e) => setNewProduct({...newProduct, shippingTime: e.target.value})}
+                    placeholder="e.g. 3-5 business days"
+                    className="form-input"
+                  />
+                </div>
 
-              <div className="form-group">
-                <label>Tempo de Envio</label>
-                <input
-                  type="text"
-                  value={newProduct.shippingTime}
-                  onChange={(e) => setNewProduct({...newProduct, shippingTime: e.target.value})}
-                  placeholder="Ex: 3-5 dias úteis"
-                  className="form-input"
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Disponibilidade</label>
-                <div className="stock-toggle">
-                  <button
-                    className={`stock-btn ${newProduct.inStock ? 'in-stock' : ''}`}
-                    onClick={() => setNewProduct({...newProduct, inStock: true})}
-                  >
-                    <CheckCircle size={16} />
-                    Em Stock
-                  </button>
-                  <button
-                    className={`stock-btn ${!newProduct.inStock ? 'out-stock' : ''}`}
-                    onClick={() => setNewProduct({...newProduct, inStock: false})}
-                  >
-                    <XCircle size={16} />
-                    Sem Stock
-                  </button>
+                <div className="form-group">
+                  <label>Availability</label>
+                  <div className="stock-toggle">
+                    <button
+                      className={`stock-btn ${newProduct.inStock ? 'in-stock' : ''}`}
+                      onClick={() => setNewProduct({...newProduct, inStock: true})}
+                    >
+                      <CheckCircle size={16} />
+                      In Stock
+                    </button>
+                    <button
+                      className={`stock-btn ${!newProduct.inStock ? 'out-stock' : ''}`}
+                      onClick={() => setNewProduct({...newProduct, inStock: false})}
+                    >
+                      <XCircle size={16} />
+                      Out of Stock
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -301,14 +305,14 @@ const QuotationPage = () => {
                 className="cancel-btn"
                 onClick={() => setShowProductModal(false)}
               >
-                Cancelar
+                Cancel
               </button>
               <button 
                 className="create-btn"
                 onClick={createProduct}
               >
                 <Plus size={16} />
-                Criar Produto
+                Create Product
               </button>
             </div>
           </div>
