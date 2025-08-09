@@ -44,29 +44,8 @@ const QuotationPage = () => {
     // Simular carregamento de dados
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    // Carregar produtos existentes (simulados)
-    const mockProducts = [
-      {
-        id: 1,
-        name: 'iPhone 15 Pro',
-        price: '999.00',
-        shippingTime: '2-3 dias úteis',
-        inStock: true,
-        image: null,
-        imagePreview: 'https://via.placeholder.com/150x150/1c6f5b/ffffff?text=iPhone'
-      },
-      {
-        id: 2,
-        name: 'MacBook Air M2',
-        price: '1299.00',
-        shippingTime: '5-7 dias úteis',
-        inStock: true,
-        image: null,
-        imagePreview: 'https://via.placeholder.com/150x150/96f2d7/091618?text=MacBook'
-      }
-    ];
-
-    setAvailableProducts(mockProducts);
+    // Carregar produtos existentes (vazio inicialmente)
+    setAvailableProducts([]);
     setIsLoading(false);
   };
 
