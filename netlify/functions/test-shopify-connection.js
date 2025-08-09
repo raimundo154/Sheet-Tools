@@ -245,35 +245,16 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // 3. Criar webhook automaticamente
+    // 3. Tentar criar webhook (não crítico)
     let webhookResult = { success: false, message: 'Webhook não configurado' };
     try {
-      console.log('Criando webhook automaticamente...');
       webhookResult = await createWebhook(
         shopName,
         accessToken,
         webhookUrl || `${process.env.URL}/.netlify/functions/shopify-webhook`
       );
-      
-      if (webhookResult.success) {
-        console.log('✅ Webhook criado automaticamente');
-        
-        // Atualizar configuração para marcar webhook como criado
-        await supabase
-          .from('shopify_configs')
-          .update({ 
-            webhook_created: true,
-            webhook_id: webhookResult.data.id?.toString(),
-            updated_at: new Date().toISOString()
-          })
-          .eq('user_id', user.id);
-      }
     } catch (webhookError) {
       console.warn('Aviso: Não foi possível criar webhook automaticamente:', webhookError);
-      webhookResult = { 
-        success: false, 
-        message: `Erro ao criar webhook: ${webhookError.message}` 
-      };
     }
 
     // Resposta de sucesso
@@ -288,8 +269,7 @@ exports.handler = async (event, context) => {
           config: saveResult.data,
           webhook: webhookResult.data
         },
-        webhook_status: webhookResult.success ? 'criado' : 'manual_required',
-        webhook_message: webhookResult.message
+        webhook_status: webhookResult.success ? 'criado' : 'manual_required'
       })
     };
 

@@ -110,21 +110,13 @@ class ShopifyService {
    */
   async testConnection(shopName, accessToken, webhookUrl = null) {
     try {
-      // Verificar se estamos em produção (Netlify)
-      const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
-      
-      if (isProduction) {
-        // Em produção, usar função Netlify que cria webhook automaticamente
-        return await this.testConnectionProduction(shopName, accessToken, webhookUrl);
-      } else {
-        // Em desenvolvimento, tentar usar função Netlify local ou simular
-        try {
-          return await this.testConnectionProduction(shopName, accessToken, webhookUrl);
-        } catch (netlifyError) {
-          console.warn('Função Netlify não disponível localmente, simulando conexão:', netlifyError.message);
-          return await this.testConnectionDevelopment(shopName, accessToken, webhookUrl);
-        }
+      // Em desenvolvimento, simular sucesso e salvar configuração diretamente
+      if (process.env.NODE_ENV === 'development') {
+        return await this.testConnectionDevelopment(shopName, accessToken, webhookUrl);
       }
+
+      // Em produção, usar função Netlify
+      return await this.testConnectionProduction(shopName, accessToken, webhookUrl);
     } catch (error) {
       console.error('Erro ao testar conexão Shopify:', error);
       return {

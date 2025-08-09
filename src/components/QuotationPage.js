@@ -362,10 +362,9 @@ const QuotationPage = () => {
       // Mostrar mensagem com status do webhook
       let successMessage = result.message;
       if (result.webhook_status === 'manual_required') {
-        const webhookMsg = result.webhook_message || 'Webhook deve ser configurado manualmente';
-        successMessage += `\n⚠️ ${webhookMsg}`;
+        successMessage += '\n⚠️ Webhook deve ser configurado manualmente.';
       } else if (result.webhook_status === 'criado') {
-        successMessage += '\n✅ Webhook configurado automaticamente! Pedidos aparecerão automaticamente.';
+        successMessage += '\n✅ Webhook configurado automaticamente.';
       }
       
       setSuccess(successMessage);
