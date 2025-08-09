@@ -1,135 +1,135 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  DollarSign, 
   Package,
-  RefreshCw, 
-  Calculator,
-  ArrowRight,
-  ArrowLeftRight,
-  Clock,
-  Info,
   Plus,
   Trash2,
   CheckCircle,
   XCircle,
   Save,
-  FileText
+  FileText,
+  Upload,
+  ChevronDown,
+  ChevronUp,
+  Edit,
+  X
 } from 'lucide-react';
 import './QuotationPage.css';
 
 const QuotationPage = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const [exchangeRates, setExchangeRates] = useState({});
-  const [fromCurrency, setFromCurrency] = useState('USD');
-  const [toCurrency, setToCurrency] = useState('EUR');
-  const [lastUpdated, setLastUpdated] = useState('');
+  const [showProductModal, setShowProductModal] = useState(false);
   
   // Product states
-  const [products, setProducts] = useState([{
-    id: 1,
+  const [availableProducts, setAvailableProducts] = useState([]);
+  const [selectedProducts, setSelectedProducts] = useState([]);
+  const [expandedProduct, setExpandedProduct] = useState(null);
+  
+  // New product form state
+  const [newProduct, setNewProduct] = useState({
     name: '',
     price: '',
     shippingTime: '',
     inStock: true,
-    convertedPrice: 0
-  }]);
-
-  const currencies = [
-    { code: 'USD', name: 'US Dollar', flag: '🇺🇸' },
-    { code: 'EUR', name: 'Euro', flag: '🇪🇺' },
-    { code: 'GBP', name: 'British Pound', flag: '🇬🇧' },
-    { code: 'BRL', name: 'Brazilian Real', flag: '🇧🇷' },
-    { code: 'CAD', name: 'Canadian Dollar', flag: '🇨🇦' },
-    { code: 'AUD', name: 'Australian Dollar', flag: '🇦🇺' },
-    { code: 'JPY', name: 'Japanese Yen', flag: '🇯🇵' },
-    { code: 'CHF', name: 'Swiss Franc', flag: '🇨🇭' },
-    { code: 'CNY', name: 'Chinese Yuan', flag: '🇨🇳' },
-    { code: 'INR', name: 'Indian Rupee', flag: '🇮🇳' }
-  ];
+    image: null,
+    imagePreview: null
+  });
 
   useEffect(() => {
-    loadExchangeRates();
+    loadInitialData();
   }, []);
 
-  useEffect(() => {
-    if (exchangeRates[fromCurrency] && exchangeRates[toCurrency]) {
-      calculateAllProductPrices();
-    }
-  }, [fromCurrency, toCurrency, exchangeRates, products]);
-
-  const loadExchangeRates = async () => {
+  const loadInitialData = async () => {
     setIsLoading(true);
     
-    // Simular carregamento de dados de câmbio
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    // Simular carregamento de dados
+    await new Promise(resolve => setTimeout(resolve, 1000));
     
-    // Dados simulados de câmbio (normalmente viriam de uma API real)
-    const mockRates = {
-      USD: 1.00,
-      EUR: 0.85,
-      GBP: 0.73,
-      BRL: 5.12,
-      CAD: 1.25,
-      AUD: 1.35,
-      JPY: 110.50,
-      CHF: 0.92,
-      CNY: 6.45,
-      INR: 74.85
-    };
+    // Carregar produtos existentes (simulados)
+    const mockProducts = [
+      {
+        id: 1,
+        name: 'iPhone 15 Pro',
+        price: '999.00',
+        shippingTime: '2-3 dias úteis',
+        inStock: true,
+        image: null,
+        imagePreview: 'https://via.placeholder.com/150x150/1c6f5b/ffffff?text=iPhone'
+      },
+      {
+        id: 2,
+        name: 'MacBook Air M2',
+        price: '1299.00',
+        shippingTime: '5-7 dias úteis',
+        inStock: true,
+        image: null,
+        imagePreview: 'https://via.placeholder.com/150x150/96f2d7/091618?text=MacBook'
+      }
+    ];
 
-    setExchangeRates(mockRates);
-    setLastUpdated(new Date().toLocaleString());
+    setAvailableProducts(mockProducts);
     setIsLoading(false);
   };
 
-  const calculateAllProductPrices = () => {
-    const fromRate = exchangeRates[fromCurrency];
-    const toRate = exchangeRates[toCurrency];
-    
-    if (fromRate && toRate) {
-      setProducts(prevProducts => 
-        prevProducts.map(product => ({
-          ...product,
-          convertedPrice: product.price ? (parseFloat(product.price) / fromRate) * toRate : 0
-        }))
-      );
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setNewProduct({
+          ...newProduct,
+          image: file,
+          imagePreview: reader.result
+        });
+      };
+      reader.readAsDataURL(file);
     }
   };
 
-  const addProduct = () => {
-    const newId = Math.max(...products.map(p => p.id), 0) + 1;
-    setProducts([...products, {
-      id: newId,
+  const createProduct = () => {
+    if (!newProduct.name || !newProduct.price) {
+      alert('Por favor, preencha pelo menos o nome e preço do produto.');
+      return;
+    }
+
+    const product = {
+      id: Date.now(),
+      ...newProduct,
+      imagePreview: newProduct.imagePreview || 'https://via.placeholder.com/150x150/b0b7c0/ffffff?text=Produto'
+    };
+
+    setAvailableProducts([...availableProducts, product]);
+    setNewProduct({
       name: '',
       price: '',
       shippingTime: '',
       inStock: true,
-      convertedPrice: 0
-    }]);
+      image: null,
+      imagePreview: null
+    });
+    setShowProductModal(false);
   };
 
-  const removeProduct = (id) => {
-    if (products.length > 1) {
-      setProducts(products.filter(product => product.id !== id));
+  const addToQuotation = (product) => {
+    const isAlreadySelected = selectedProducts.find(p => p.id === product.id);
+    if (!isAlreadySelected) {
+      setSelectedProducts([...selectedProducts, product]);
     }
   };
 
-  const updateProduct = (id, field, value) => {
-    setProducts(prevProducts =>
-      prevProducts.map(product =>
-        product.id === id ? { ...product, [field]: value } : product
-      )
-    );
+  const removeFromQuotation = (productId) => {
+    setSelectedProducts(selectedProducts.filter(p => p.id !== productId));
+    if (expandedProduct === productId) {
+      setExpandedProduct(null);
+    }
   };
 
-  const swapCurrencies = () => {
-    setFromCurrency(toCurrency);
-    setToCurrency(fromCurrency);
+  const toggleProductExpansion = (productId) => {
+    setExpandedProduct(expandedProduct === productId ? null : productId);
   };
 
   const getTotalQuotation = () => {
-    return products.reduce((total, product) => {
-      return total + (product.convertedPrice || 0);
+    return selectedProducts.reduce((total, product) => {
+      return total + (parseFloat(product.price) || 0);
     }, 0);
   };
 
@@ -137,8 +137,8 @@ const QuotationPage = () => {
     return (
       <div className="quotation-loading">
         <div className="loading-content">
-          <RefreshCw size={48} className="loading-icon" />
-          <p>Carregando cotações de produtos...</p>
+          <Package size={48} className="loading-icon" />
+          <p>Carregando produtos...</p>
         </div>
       </div>
     );
@@ -155,236 +155,266 @@ const QuotationPage = () => {
               Cotação de Produtos
             </h1>
             <p className="quotation-subtitle">
-              Gerencie preços, estoque e envios dos seus produtos com conversão de moedas
+              Gerencie seus produtos e crie cotações personalizadas
             </p>
           </div>
-          <div className="last-updated">
-            <Clock size={16} />
-            <span>Atualizado: {lastUpdated}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Currency Selector */}
-      <div className="currency-section">
-        <div className="currency-card">
-          <div className="currency-header">
-            <h2>Configuração de Moeda</h2>
-            <button className="refresh-btn" onClick={loadExchangeRates}>
-              <RefreshCw size={16} />
-              Atualizar Taxa
-            </button>
-          </div>
-
-          <div className="currency-selector">
-            <div className="from-currency">
-              <label>Moeda Base (Custo)</label>
-              <select 
-                value={fromCurrency} 
-                onChange={(e) => setFromCurrency(e.target.value)}
-                className="currency-select"
-              >
-                {currencies.map(currency => (
-                  <option key={currency.code} value={currency.code}>
-                    {currency.flag} {currency.code} - {currency.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <button className="swap-btn" onClick={swapCurrencies} title="Trocar moedas">
-              <ArrowLeftRight size={20} />
-            </button>
-
-            <div className="to-currency">
-              <label>Moeda de Venda</label>
-              <select 
-                value={toCurrency} 
-                onChange={(e) => setToCurrency(e.target.value)}
-                className="currency-select"
-              >
-                {currencies.map(currency => (
-                  <option key={currency.code} value={currency.code}>
-                    {currency.flag} {currency.code} - {currency.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {exchangeRates[fromCurrency] && exchangeRates[toCurrency] && (
-            <div className="exchange-rate-display">
-              1 {fromCurrency} = {(exchangeRates[toCurrency] / exchangeRates[fromCurrency]).toFixed(4)} {toCurrency}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Products Section */}
-      <div className="products-section">
-        <div className="products-header">
-          <h2>Lista de Produtos</h2>
-          <button className="add-product-btn" onClick={addProduct}>
+          <button className="add-new-product-btn" onClick={() => setShowProductModal(true)}>
             <Plus size={16} />
-            Adicionar Produto
+            Add New Product
           </button>
         </div>
+      </div>
 
-        <div className="products-list">
-          {products.map((product) => (
-            <div key={product.id} className="product-card">
-              <div className="product-header">
-                <h3>Produto #{product.id}</h3>
-                {products.length > 1 && (
-                  <button 
-                    className="remove-product-btn"
-                    onClick={() => removeProduct(product.id)}
-                    title="Remover produto"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                )}
+      {/* Available Products Section */}
+      <div className="available-products-section">
+        <h2>Produtos Disponíveis</h2>
+        <div className="available-products-grid">
+          {availableProducts.map((product) => (
+            <div key={product.id} className="available-product-card">
+              <img 
+                src={product.imagePreview} 
+                alt={product.name}
+                className="product-image"
+              />
+              <div className="product-info">
+                <h3>{product.name}</h3>
+                <p className="product-price">€{parseFloat(product.price).toFixed(2)}</p>
               </div>
-
-              <div className="product-form">
-                <div className="form-row">
-                  <div className="form-group">
-                    <label>Nome do Produto</label>
-                    <input
-                      type="text"
-                      value={product.name}
-                      onChange={(e) => updateProduct(product.id, 'name', e.target.value)}
-                      placeholder="Digite o nome do produto"
-                      className="form-input"
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>Preço ({fromCurrency})</label>
-                    <input
-                      type="number"
-                      value={product.price}
-                      onChange={(e) => updateProduct(product.id, 'price', e.target.value)}
-                      placeholder="0.00"
-                      className="form-input"
-                      step="0.01"
-                      min="0"
-                    />
-                  </div>
-                </div>
-
-                <div className="form-row">
-                  <div className="form-group">
-                    <label>Tempo de Envio</label>
-                    <input
-                      type="text"
-                      value={product.shippingTime}
-                      onChange={(e) => updateProduct(product.id, 'shippingTime', e.target.value)}
-                      placeholder="Ex: 3-5 dias úteis"
-                      className="form-input"
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>Disponibilidade</label>
-                    <div className="stock-toggle">
-                      <button
-                        className={`stock-btn ${product.inStock ? 'in-stock' : ''}`}
-                        onClick={() => updateProduct(product.id, 'inStock', true)}
-                      >
-                        <CheckCircle size={16} />
-                        Em Stock
-                      </button>
-                      <button
-                        className={`stock-btn ${!product.inStock ? 'out-stock' : ''}`}
-                        onClick={() => updateProduct(product.id, 'inStock', false)}
-                      >
-                        <XCircle size={16} />
-                        Sem Stock
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Price Conversion Display */}
-                {product.price && (
-                  <div className="price-conversion">
-                    <div className="conversion-display">
-                      <span className="original-price">
-                        {parseFloat(product.price || 0).toLocaleString(undefined, { 
-                          minimumFractionDigits: 2, 
-                          maximumFractionDigits: 2 
-                        })} {fromCurrency}
-                      </span>
-                      <ArrowRight size={16} className="arrow-icon" />
-                      <span className="converted-price">
-                        {product.convertedPrice.toLocaleString(undefined, { 
-                          minimumFractionDigits: 2, 
-                          maximumFractionDigits: 2 
-                        })} {toCurrency}
-                      </span>
-                    </div>
-                  </div>
-                )}
-              </div>
+              <button 
+                className="add-to-quotation-btn"
+                onClick={() => addToQuotation(product)}
+              >
+                <Plus size={16} />
+              </button>
             </div>
           ))}
         </div>
       </div>
 
+      {/* Selected Products Section */}
+      {selectedProducts.length > 0 && (
+        <div className="selected-products-section">
+          <h2>Produtos na Cotação</h2>
+          <div className="selected-products-list">
+            {selectedProducts.map((product) => (
+              <div key={product.id} className="selected-product-dropdown">
+                <div 
+                  className="dropdown-header"
+                  onClick={() => toggleProductExpansion(product.id)}
+                >
+                  <div className="dropdown-left">
+                    <img 
+                      src={product.imagePreview} 
+                      alt={product.name}
+                      className="dropdown-image"
+                    />
+                    <span className="dropdown-name">{product.name}</span>
+                  </div>
+                  <div className="dropdown-right">
+                    <button 
+                      className="remove-from-quotation-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeFromQuotation(product.id);
+                      }}
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                    {expandedProduct === product.id ? (
+                      <ChevronUp size={20} />
+                    ) : (
+                      <ChevronDown size={20} />
+                    )}
+                  </div>
+                </div>
+
+                {expandedProduct === product.id && (
+                  <div className="dropdown-content">
+                    <div className="product-details">
+                      <div className="detail-row">
+                        <span className="detail-label">Preço:</span>
+                        <span className="detail-value">€{parseFloat(product.price).toFixed(2)}</span>
+                      </div>
+                      <div className="detail-row">
+                        <span className="detail-label">Tempo de Envio:</span>
+                        <span className="detail-value">{product.shippingTime}</span>
+                      </div>
+                      <div className="detail-row">
+                        <span className="detail-label">Stock:</span>
+                        <span className={`detail-value ${product.inStock ? 'in-stock' : 'out-of-stock'}`}>
+                          {product.inStock ? (
+                            <>
+                              <CheckCircle size={16} />
+                              Disponível
+                            </>
+                          ) : (
+                            <>
+                              <XCircle size={16} />
+                              Indisponível
+                            </>
+                          )}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Total Summary */}
-      <div className="summary-section">
-        <div className="summary-card">
-          <div className="summary-header">
-            <Calculator size={24} />
-            <h2>Resumo da Cotação</h2>
-          </div>
-          
-          <div className="summary-content">
-            <div className="summary-row">
-              <span>Total de Produtos:</span>
-              <span className="summary-value">{products.length}</span>
+      {selectedProducts.length > 0 && (
+        <div className="summary-section">
+          <div className="summary-card">
+            <div className="summary-header">
+              <h2>Resumo da Cotação</h2>
             </div>
-            <div className="summary-row">
-              <span>Produtos em Stock:</span>
-              <span className="summary-value">{products.filter(p => p.inStock).length}</span>
+            
+            <div className="summary-content">
+              <div className="summary-row">
+                <span>Total de Produtos:</span>
+                <span className="summary-value">{selectedProducts.length}</span>
+              </div>
+              <div className="summary-row">
+                <span>Produtos em Stock:</span>
+                <span className="summary-value">{selectedProducts.filter(p => p.inStock).length}</span>
+              </div>
+              <div className="summary-row total-row">
+                <span>Valor Total:</span>
+                <span className="total-value">
+                  €{getTotalQuotation().toFixed(2)}
+                </span>
+              </div>
             </div>
-            <div className="summary-row total-row">
-              <span>Valor Total:</span>
-              <span className="total-value">
-                {getTotalQuotation().toLocaleString(undefined, { 
-                  minimumFractionDigits: 2, 
-                  maximumFractionDigits: 2 
-                })} {toCurrency}
-              </span>
-            </div>
-          </div>
 
-          <div className="summary-actions">
-            <button className="save-btn">
-              <Save size={16} />
-              Salvar Cotação
-            </button>
-            <button className="export-btn">
-              <FileText size={16} />
-              Exportar PDF
-            </button>
+            <div className="summary-actions">
+              <button className="save-btn">
+                <Save size={16} />
+                Salvar Cotação
+              </button>
+              <button className="export-btn">
+                <FileText size={16} />
+                Exportar PDF
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* Info Section */}
-      <div className="info-section">
-        <div className="info-card">
-          <Info size={20} />
-          <div className="info-content">
-            <h4>Sobre as Cotações de Produtos</h4>
-            <p>
-              Os preços são convertidos automaticamente usando taxas de câmbio atualizadas.
-              Gerencie o estoque, tempos de envio e preços dos seus produtos de forma centralizada.
-              Todas as informações podem ser exportadas para relatórios.
-            </p>
+      {/* Product Creation Modal */}
+      {showProductModal && (
+        <div className="modal-overlay">
+          <div className="product-modal">
+            <div className="modal-header">
+              <h2>Criar Novo Produto</h2>
+              <button 
+                className="modal-close-btn"
+                onClick={() => setShowProductModal(false)}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="modal-content">
+              <div className="form-group">
+                <label>Imagem do Produto</label>
+                <div className="image-upload-area">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="image-input"
+                    id="product-image"
+                  />
+                  <label htmlFor="product-image" className="image-upload-label">
+                    {newProduct.imagePreview ? (
+                      <img src={newProduct.imagePreview} alt="Preview" className="image-preview" />
+                    ) : (
+                      <div className="upload-placeholder">
+                        <Upload size={32} />
+                        <span>Clique para fazer upload da imagem</span>
+                      </div>
+                    )}
+                  </label>
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label>Nome do Produto</label>
+                <input
+                  type="text"
+                  value={newProduct.name}
+                  onChange={(e) => setNewProduct({...newProduct, name: e.target.value})}
+                  placeholder="Digite o nome do produto"
+                  className="form-input"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Preço (€)</label>
+                <input
+                  type="number"
+                  value={newProduct.price}
+                  onChange={(e) => setNewProduct({...newProduct, price: e.target.value})}
+                  placeholder="0.00"
+                  className="form-input"
+                  step="0.01"
+                  min="0"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Tempo de Envio</label>
+                <input
+                  type="text"
+                  value={newProduct.shippingTime}
+                  onChange={(e) => setNewProduct({...newProduct, shippingTime: e.target.value})}
+                  placeholder="Ex: 3-5 dias úteis"
+                  className="form-input"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Disponibilidade</label>
+                <div className="stock-toggle">
+                  <button
+                    className={`stock-btn ${newProduct.inStock ? 'in-stock' : ''}`}
+                    onClick={() => setNewProduct({...newProduct, inStock: true})}
+                  >
+                    <CheckCircle size={16} />
+                    Em Stock
+                  </button>
+                  <button
+                    className={`stock-btn ${!newProduct.inStock ? 'out-stock' : ''}`}
+                    onClick={() => setNewProduct({...newProduct, inStock: false})}
+                  >
+                    <XCircle size={16} />
+                    Sem Stock
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="modal-actions">
+              <button 
+                className="cancel-btn"
+                onClick={() => setShowProductModal(false)}
+              >
+                Cancelar
+              </button>
+              <button 
+                className="create-btn"
+                onClick={createProduct}
+              >
+                <Plus size={16} />
+                Criar Produto
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
