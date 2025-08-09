@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Sidebar from './components/Sidebar';
 import HomePage from './components/HomePage';
+import NewHomePage from './components/NewHomePage';
 import CampaignDashboard from './components/CampaignDashboard';
 import FacebookTestCalls from './components/FacebookTestCalls';
 import PrivacyPolicy from './components/PrivacyPolicy';
@@ -79,6 +80,8 @@ function App() {
         return <SignupPage onSignupRequest={handleSignupRequest} onBackToLogin={handleBackToLogin} />;
       case 'verify-email':
         return <EmailVerification onVerificationSuccess={handleVerificationSuccess} onBackToSignup={handleBackToSignup} />;
+      case 'home-landing':
+        return <NewHomePage />;
       case 'home':
         return <HomePage />;
       case 'campaigns':
@@ -88,7 +91,7 @@ function App() {
       case 'terms':
         return <TermsOfService />;
       default:
-        return <HomePage />;
+        return <NewHomePage />;
     }
   };
 
@@ -99,7 +102,7 @@ function App() {
     } else if (isVerificationPage) {
       setCurrentPage('verify-email');
     } else if (!isAuthCallback) {
-      setCurrentPage('login');
+      setCurrentPage('home-landing');
     }
   }, [isSignupPage, isVerificationPage, isAuthCallback]);
 
@@ -115,8 +118,8 @@ function App() {
     );
   }
 
-  // Se estiver nas páginas de autenticação (login, signup, verificação), renderiza apenas essas páginas
-  if (currentPage === 'login' || currentPage === 'signup' || currentPage === 'verify-email') {
+  // Se estiver nas páginas de autenticação ou landing, renderiza apenas essas páginas
+  if (currentPage === 'login' || currentPage === 'signup' || currentPage === 'verify-email' || currentPage === 'home-landing') {
     return (
       <div className="App">
         {renderContent()}
