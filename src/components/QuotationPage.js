@@ -5,12 +5,9 @@ import {
   Trash2,
   CheckCircle,
   XCircle,
-  Save,
-  FileText,
   Upload,
   ChevronDown,
   ChevronUp,
-  Edit,
   X
 } from 'lucide-react';
 import './QuotationPage.css';
@@ -98,11 +95,6 @@ const QuotationPage = () => {
     setExpandedProduct(expandedProduct === productId ? null : productId);
   };
 
-  const getTotalQuotation = () => {
-    return availableProducts.reduce((total, product) => {
-      return total + (parseFloat(product.price) || 0);
-    }, 0);
-  };
 
   if (isLoading) {
     return (
@@ -209,44 +201,6 @@ const QuotationPage = () => {
         </div>
       )}
 
-      {/* Total Summary */}
-      {availableProducts.length > 0 && (
-        <div className="summary-section">
-          <div className="summary-card">
-            <div className="summary-header">
-              <h2>Resumo da Cotação</h2>
-            </div>
-            
-            <div className="summary-content">
-              <div className="summary-row">
-                <span>Total de Produtos:</span>
-                <span className="summary-value">{availableProducts.length}</span>
-              </div>
-              <div className="summary-row">
-                <span>Produtos em Stock:</span>
-                <span className="summary-value">{availableProducts.filter(p => p.inStock).length}</span>
-              </div>
-              <div className="summary-row total-row">
-                <span>Valor Total:</span>
-                <span className="total-value">
-                  €{getTotalQuotation().toFixed(2)}
-                </span>
-              </div>
-            </div>
-
-            <div className="summary-actions">
-              <button className="save-btn">
-                <Save size={16} />
-                Salvar Cotação
-              </button>
-              <button className="export-btn">
-                <FileText size={16} />
-                Exportar PDF
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Product Creation Modal */}
       {showProductModal && (
