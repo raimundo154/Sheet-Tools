@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { 
   DollarSign, 
-  TrendingUp, 
+  Package,
   RefreshCw, 
   Calculator,
   ArrowRight,
   ArrowLeftRight,
-  Globe,
   Clock,
-  Info
+  Info,
+  Plus,
+  Trash2,
+  CheckCircle,
+  XCircle,
+  Save,
+  FileText
 } from 'lucide-react';
 import './QuotationPage.css';
 
@@ -17,9 +22,17 @@ const QuotationPage = () => {
   const [exchangeRates, setExchangeRates] = useState({});
   const [fromCurrency, setFromCurrency] = useState('USD');
   const [toCurrency, setToCurrency] = useState('EUR');
-  const [amount, setAmount] = useState('100');
-  const [convertedAmount, setConvertedAmount] = useState(0);
   const [lastUpdated, setLastUpdated] = useState('');
+  
+  // Product states
+  const [products, setProducts] = useState([{
+    id: 1,
+    name: '',
+    price: '',
+    shippingTime: '',
+    inStock: true,
+    convertedPrice: 0
+  }]);
 
   const currencies = [
     { code: 'USD', name: 'US Dollar', flag: '🇺🇸' },
@@ -34,24 +47,15 @@ const QuotationPage = () => {
     { code: 'INR', name: 'Indian Rupee', flag: '🇮🇳' }
   ];
 
-  const popularPairs = [
-    { from: 'USD', to: 'EUR', label: 'USD → EUR' },
-    { from: 'EUR', to: 'USD', label: 'EUR → USD' },
-    { from: 'USD', to: 'GBP', label: 'USD → GBP' },
-    { from: 'GBP', to: 'USD', label: 'GBP → USD' },
-    { from: 'USD', to: 'BRL', label: 'USD → BRL' },
-    { from: 'EUR', to: 'BRL', label: 'EUR → BRL' }
-  ];
-
   useEffect(() => {
     loadExchangeRates();
   }, []);
 
   useEffect(() => {
-    if (exchangeRates[fromCurrency] && exchangeRates[toCurrency] && amount) {
-      calculateConversion();
+    if (exchangeRates[fromCurrency] && exchangeRates[toCurrency]) {
+      calculateAllProductPrices();
     }
-  }, [fromCurrency, toCurrency, amount, exchangeRates]);
+  }, [fromCurrency, toCurrency, exchangeRates, products]);
 
   const loadExchangeRates = async () => {
     setIsLoading(true);
@@ -78,15 +82,44 @@ const QuotationPage = () => {
     setIsLoading(false);
   };
 
-  const calculateConversion = () => {
+  const calculateAllProductPrices = () => {
     const fromRate = exchangeRates[fromCurrency];
     const toRate = exchangeRates[toCurrency];
-    const numAmount = parseFloat(amount) || 0;
     
     if (fromRate && toRate) {
-      const converted = (numAmount / fromRate) * toRate;
-      setConvertedAmount(converted);
+      setProducts(prevProducts => 
+        prevProducts.map(product => ({
+          ...product,
+          convertedPrice: product.price ? (parseFloat(product.price) / fromRate) * toRate : 0
+        }))
+      );
     }
+  };
+
+  const addProduct = () => {
+    const newId = Math.max(...products.map(p => p.id), 0) + 1;
+    setProducts([...products, {
+      id: newId,
+      name: '',
+      price: '',
+      shippingTime: '',
+      inStock: true,
+      convertedPrice: 0
+    }]);
+  };
+
+  const removeProduct = (id) => {
+    if (products.length > 1) {
+      setProducts(products.filter(product => product.id !== id));
+    }
+  };
+
+  const updateProduct = (id, field, value) => {
+    setProducts(prevProducts =>
+      prevProducts.map(product =>
+        product.id === id ? { ...product, [field]: value } : product
+      )
+    );
   };
 
   const swapCurrencies = () => {
@@ -94,9 +127,10 @@ const QuotationPage = () => {
     setToCurrency(fromCurrency);
   };
 
-  const selectPopularPair = (pair) => {
-    setFromCurrency(pair.from);
-    setToCurrency(pair.to);
+  const getTotalQuotation = () => {
+    return products.reduce((total, product) => {
+      return total + (product.convertedPrice || 0);
+    }, 0);
   };
 
   if (isLoading) {
@@ -104,7 +138,7 @@ const QuotationPage = () => {
       <div className="quotation-loading">
         <div className="loading-content">
           <RefreshCw size={48} className="loading-icon" />
-          <p>Carregando cotações...</p>
+          <p>Carregando cotações de produtos...</p>
         </div>
       </div>
     );
@@ -117,11 +151,11 @@ const QuotationPage = () => {
         <div className="header-content">
           <div className="header-info">
             <h1 className="quotation-title">
-              <DollarSign size={32} />
-              Cotação de Moedas
+              <Package size={32} />
+              Cotação de Produtos
             </h1>
             <p className="quotation-subtitle">
-              Converta moedas com taxas atualizadas em tempo real
+              Gerencie preços, estoque e envios dos seus produtos com conversão de moedas
             </p>
           </div>
           <div className="last-updated">
@@ -131,131 +165,209 @@ const QuotationPage = () => {
         </div>
       </div>
 
-      {/* Main Converter */}
-      <div className="converter-section">
-        <div className="converter-card">
-          <div className="converter-header">
-            <h2>Conversor de Moedas</h2>
+      {/* Currency Selector */}
+      <div className="currency-section">
+        <div className="currency-card">
+          <div className="currency-header">
+            <h2>Configuração de Moeda</h2>
             <button className="refresh-btn" onClick={loadExchangeRates}>
               <RefreshCw size={16} />
-              Atualizar
+              Atualizar Taxa
             </button>
           </div>
 
-          <div className="converter-form">
-            <div className="amount-input">
-              <label>Valor</label>
-              <input
-                type="number"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                placeholder="Digite o valor"
-                className="amount-field"
-              />
+          <div className="currency-selector">
+            <div className="from-currency">
+              <label>Moeda Base (Custo)</label>
+              <select 
+                value={fromCurrency} 
+                onChange={(e) => setFromCurrency(e.target.value)}
+                className="currency-select"
+              >
+                {currencies.map(currency => (
+                  <option key={currency.code} value={currency.code}>
+                    {currency.flag} {currency.code} - {currency.name}
+                  </option>
+                ))}
+              </select>
             </div>
 
-            <div className="currency-selector">
-              <div className="from-currency">
-                <label>De</label>
-                <select 
-                  value={fromCurrency} 
-                  onChange={(e) => setFromCurrency(e.target.value)}
-                  className="currency-select"
-                >
-                  {currencies.map(currency => (
-                    <option key={currency.code} value={currency.code}>
-                      {currency.flag} {currency.code} - {currency.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
+            <button className="swap-btn" onClick={swapCurrencies} title="Trocar moedas">
+              <ArrowLeftRight size={20} />
+            </button>
 
-              <button className="swap-btn" onClick={swapCurrencies}>
-                <ArrowLeftRight size={20} />
-              </button>
-
-              <div className="to-currency">
-                <label>Para</label>
-                <select 
-                  value={toCurrency} 
-                  onChange={(e) => setToCurrency(e.target.value)}
-                  className="currency-select"
-                >
-                  {currencies.map(currency => (
-                    <option key={currency.code} value={currency.code}>
-                      {currency.flag} {currency.code} - {currency.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div className="conversion-result">
-              <div className="result-display">
-                <span className="from-amount">
-                  {parseFloat(amount || 0).toLocaleString()} {fromCurrency}
-                </span>
-                <ArrowRight size={20} className="arrow-icon" />
-                <span className="to-amount">
-                  {convertedAmount.toLocaleString(undefined, { 
-                    minimumFractionDigits: 2, 
-                    maximumFractionDigits: 2 
-                  })} {toCurrency}
-                </span>
-              </div>
-              
-              {exchangeRates[fromCurrency] && exchangeRates[toCurrency] && (
-                <div className="exchange-rate">
-                  1 {fromCurrency} = {(exchangeRates[toCurrency] / exchangeRates[fromCurrency]).toFixed(4)} {toCurrency}
-                </div>
-              )}
+            <div className="to-currency">
+              <label>Moeda de Venda</label>
+              <select 
+                value={toCurrency} 
+                onChange={(e) => setToCurrency(e.target.value)}
+                className="currency-select"
+              >
+                {currencies.map(currency => (
+                  <option key={currency.code} value={currency.code}>
+                    {currency.flag} {currency.code} - {currency.name}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
+
+          {exchangeRates[fromCurrency] && exchangeRates[toCurrency] && (
+            <div className="exchange-rate-display">
+              1 {fromCurrency} = {(exchangeRates[toCurrency] / exchangeRates[fromCurrency]).toFixed(4)} {toCurrency}
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Popular Pairs */}
-      <div className="popular-pairs-section">
-        <h3>Pares Populares</h3>
-        <div className="pairs-grid">
-          {popularPairs.map((pair, index) => {
-            const rate = exchangeRates[pair.from] && exchangeRates[pair.to] 
-              ? (exchangeRates[pair.to] / exchangeRates[pair.from]).toFixed(4)
-              : 'N/A';
-
-            return (
-              <button
-                key={index}
-                className="pair-card"
-                onClick={() => selectPopularPair(pair)}
-              >
-                <div className="pair-label">{pair.label}</div>
-                <div className="pair-rate">{rate}</div>
-              </button>
-            );
-          })}
+      {/* Products Section */}
+      <div className="products-section">
+        <div className="products-header">
+          <h2>Lista de Produtos</h2>
+          <button className="add-product-btn" onClick={addProduct}>
+            <Plus size={16} />
+            Adicionar Produto
+          </button>
         </div>
-      </div>
 
-      {/* Current Rates Overview */}
-      <div className="rates-overview-section">
-        <h3>Visão Geral das Taxas (Base: USD)</h3>
-        <div className="rates-grid">
-          {currencies.filter(c => c.code !== 'USD').map(currency => (
-            <div key={currency.code} className="rate-card">
-              <div className="rate-header">
-                <span className="currency-flag">{currency.flag}</span>
-                <span className="currency-code">{currency.code}</span>
+        <div className="products-list">
+          {products.map((product) => (
+            <div key={product.id} className="product-card">
+              <div className="product-header">
+                <h3>Produto #{product.id}</h3>
+                {products.length > 1 && (
+                  <button 
+                    className="remove-product-btn"
+                    onClick={() => removeProduct(product.id)}
+                    title="Remover produto"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                )}
               </div>
-              <div className="rate-value">
-                {exchangeRates[currency.code]?.toFixed(4) || 'N/A'}
-              </div>
-              <div className="rate-change">
-                <TrendingUp size={14} />
-                <span className="change-positive">+0.12%</span>
+
+              <div className="product-form">
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Nome do Produto</label>
+                    <input
+                      type="text"
+                      value={product.name}
+                      onChange={(e) => updateProduct(product.id, 'name', e.target.value)}
+                      placeholder="Digite o nome do produto"
+                      className="form-input"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Preço ({fromCurrency})</label>
+                    <input
+                      type="number"
+                      value={product.price}
+                      onChange={(e) => updateProduct(product.id, 'price', e.target.value)}
+                      placeholder="0.00"
+                      className="form-input"
+                      step="0.01"
+                      min="0"
+                    />
+                  </div>
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Tempo de Envio</label>
+                    <input
+                      type="text"
+                      value={product.shippingTime}
+                      onChange={(e) => updateProduct(product.id, 'shippingTime', e.target.value)}
+                      placeholder="Ex: 3-5 dias úteis"
+                      className="form-input"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Disponibilidade</label>
+                    <div className="stock-toggle">
+                      <button
+                        className={`stock-btn ${product.inStock ? 'in-stock' : ''}`}
+                        onClick={() => updateProduct(product.id, 'inStock', true)}
+                      >
+                        <CheckCircle size={16} />
+                        Em Stock
+                      </button>
+                      <button
+                        className={`stock-btn ${!product.inStock ? 'out-stock' : ''}`}
+                        onClick={() => updateProduct(product.id, 'inStock', false)}
+                      >
+                        <XCircle size={16} />
+                        Sem Stock
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Price Conversion Display */}
+                {product.price && (
+                  <div className="price-conversion">
+                    <div className="conversion-display">
+                      <span className="original-price">
+                        {parseFloat(product.price || 0).toLocaleString(undefined, { 
+                          minimumFractionDigits: 2, 
+                          maximumFractionDigits: 2 
+                        })} {fromCurrency}
+                      </span>
+                      <ArrowRight size={16} className="arrow-icon" />
+                      <span className="converted-price">
+                        {product.convertedPrice.toLocaleString(undefined, { 
+                          minimumFractionDigits: 2, 
+                          maximumFractionDigits: 2 
+                        })} {toCurrency}
+                      </span>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* Total Summary */}
+      <div className="summary-section">
+        <div className="summary-card">
+          <div className="summary-header">
+            <Calculator size={24} />
+            <h2>Resumo da Cotação</h2>
+          </div>
+          
+          <div className="summary-content">
+            <div className="summary-row">
+              <span>Total de Produtos:</span>
+              <span className="summary-value">{products.length}</span>
+            </div>
+            <div className="summary-row">
+              <span>Produtos em Stock:</span>
+              <span className="summary-value">{products.filter(p => p.inStock).length}</span>
+            </div>
+            <div className="summary-row total-row">
+              <span>Valor Total:</span>
+              <span className="total-value">
+                {getTotalQuotation().toLocaleString(undefined, { 
+                  minimumFractionDigits: 2, 
+                  maximumFractionDigits: 2 
+                })} {toCurrency}
+              </span>
+            </div>
+          </div>
+
+          <div className="summary-actions">
+            <button className="save-btn">
+              <Save size={16} />
+              Salvar Cotação
+            </button>
+            <button className="export-btn">
+              <FileText size={16} />
+              Exportar PDF
+            </button>
+          </div>
         </div>
       </div>
 
@@ -264,11 +376,11 @@ const QuotationPage = () => {
         <div className="info-card">
           <Info size={20} />
           <div className="info-content">
-            <h4>Sobre as Cotações</h4>
+            <h4>Sobre as Cotações de Produtos</h4>
             <p>
-              As taxas de câmbio são atualizadas regularmente e baseadas em dados de mercado.
-              Para transações comerciais, sempre verifique as taxas atuais com seu banco ou
-              instituição financeira.
+              Os preços são convertidos automaticamente usando taxas de câmbio atualizadas.
+              Gerencie o estoque, tempos de envio e preços dos seus produtos de forma centralizada.
+              Todas as informações podem ser exportadas para relatórios.
             </p>
           </div>
         </div>
