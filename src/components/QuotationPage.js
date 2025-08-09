@@ -21,7 +21,6 @@ const QuotationPage = () => {
   
   // Product states
   const [availableProducts, setAvailableProducts] = useState([]);
-  const [selectedProducts, setSelectedProducts] = useState([]);
   const [expandedProduct, setExpandedProduct] = useState(null);
   
   // New product form state
@@ -88,15 +87,8 @@ const QuotationPage = () => {
     setShowProductModal(false);
   };
 
-  const addToQuotation = (product) => {
-    const isAlreadySelected = selectedProducts.find(p => p.id === product.id);
-    if (!isAlreadySelected) {
-      setSelectedProducts([...selectedProducts, product]);
-    }
-  };
-
   const removeFromQuotation = (productId) => {
-    setSelectedProducts(selectedProducts.filter(p => p.id !== productId));
+    setAvailableProducts(availableProducts.filter(p => p.id !== productId));
     if (expandedProduct === productId) {
       setExpandedProduct(null);
     }
@@ -107,7 +99,7 @@ const QuotationPage = () => {
   };
 
   const getTotalQuotation = () => {
-    return selectedProducts.reduce((total, product) => {
+    return availableProducts.reduce((total, product) => {
       return total + (parseFloat(product.price) || 0);
     }, 0);
   };
@@ -144,38 +136,12 @@ const QuotationPage = () => {
         </div>
       </div>
 
-      {/* Available Products Section */}
-      <div className="available-products-section">
-        <h2>Produtos Disponíveis</h2>
-        <div className="available-products-grid">
-          {availableProducts.map((product) => (
-            <div key={product.id} className="available-product-card">
-              <img 
-                src={product.imagePreview} 
-                alt={product.name}
-                className="product-image"
-              />
-              <div className="product-info">
-                <h3>{product.name}</h3>
-                <p className="product-price">€{parseFloat(product.price).toFixed(2)}</p>
-              </div>
-              <button 
-                className="add-to-quotation-btn"
-                onClick={() => addToQuotation(product)}
-              >
-                <Plus size={16} />
-              </button>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Selected Products Section */}
-      {selectedProducts.length > 0 && (
+      {/* Products Section */}
+      {availableProducts.length > 0 && (
         <div className="selected-products-section">
           <h2>Produtos na Cotação</h2>
           <div className="selected-products-list">
-            {selectedProducts.map((product) => (
+            {availableProducts.map((product) => (
               <div key={product.id} className="selected-product-dropdown">
                 <div 
                   className="dropdown-header"
@@ -244,7 +210,7 @@ const QuotationPage = () => {
       )}
 
       {/* Total Summary */}
-      {selectedProducts.length > 0 && (
+      {availableProducts.length > 0 && (
         <div className="summary-section">
           <div className="summary-card">
             <div className="summary-header">
@@ -254,11 +220,11 @@ const QuotationPage = () => {
             <div className="summary-content">
               <div className="summary-row">
                 <span>Total de Produtos:</span>
-                <span className="summary-value">{selectedProducts.length}</span>
+                <span className="summary-value">{availableProducts.length}</span>
               </div>
               <div className="summary-row">
                 <span>Produtos em Stock:</span>
-                <span className="summary-value">{selectedProducts.filter(p => p.inStock).length}</span>
+                <span className="summary-value">{availableProducts.filter(p => p.inStock).length}</span>
               </div>
               <div className="summary-row total-row">
                 <span>Valor Total:</span>
