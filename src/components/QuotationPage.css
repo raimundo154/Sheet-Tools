@@ -135,6 +135,404 @@
   font-weight: 500;
 }
 
+/* Header Actions */
+.header-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+/* Shopify Connect Button */
+.shopify-connect-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #96f2d7, #5ec4a3);
+  color: #091618;
+  border: none;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(150, 242, 215, 0.3);
+}
+
+.shopify-connect-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(150, 242, 215, 0.4);
+  background: linear-gradient(135deg, #5ec4a3, #96f2d7);
+}
+
+/* Shopify Modal */
+.shopify-modal {
+  background: rgba(9, 22, 24, 0.98);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(150, 242, 215, 0.2);
+  border-radius: 1.5rem;
+  max-width: 900px;
+  width: 90%;
+  max-height: 90vh;
+  overflow: hidden;
+  position: relative;
+  animation: modalSlideIn 0.4s ease-out;
+}
+
+.shopify-modal-content {
+  display: flex;
+  height: 600px;
+}
+
+/* Steps Navigation */
+.steps-navigation {
+  width: 280px;
+  background: rgba(150, 242, 215, 0.05);
+  border-right: 1px solid rgba(150, 242, 215, 0.1);
+  padding: 1.5rem 0;
+  overflow-y: auto;
+}
+
+.step-nav-btn {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  background: none;
+  border: none;
+  color: #b0b7c0;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+  border-left: 3px solid transparent;
+}
+
+.step-nav-btn:hover {
+  background: rgba(150, 242, 215, 0.1);
+  color: #ffffff;
+}
+
+.step-nav-btn.active {
+  background: rgba(150, 242, 215, 0.15);
+  color: #96f2d7;
+  border-left-color: #96f2d7;
+}
+
+.step-nav-btn.completed {
+  color: #96f2d7;
+}
+
+.step-nav-btn.completed .step-icon {
+  color: #96f2d7;
+}
+
+.step-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(150, 242, 215, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.step-nav-btn.active .step-icon {
+  background: rgba(150, 242, 215, 0.2);
+}
+
+.step-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.step-number {
+  font-size: 0.75rem;
+  opacity: 0.7;
+  font-weight: 500;
+}
+
+.step-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+/* Current Step Content */
+.current-step-content {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+.step-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(150, 242, 215, 0.1);
+}
+
+.step-icon-large {
+  width: 60px;
+  height: 60px;
+  border-radius: 1rem;
+  background: rgba(150, 242, 215, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #96f2d7;
+  flex-shrink: 0;
+}
+
+.step-header h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+}
+
+.step-header p {
+  color: #b0b7c0;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Step Body Content */
+.step-body {
+  color: #ffffff;
+}
+
+.step-content h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #96f2d7;
+  margin-bottom: 1rem;
+}
+
+.step-content ol, .step-content ul {
+  margin: 1rem 0;
+  padding-left: 1.5rem;
+}
+
+.step-content li {
+  margin-bottom: 0.75rem;
+  line-height: 1.6;
+}
+
+.step-content strong {
+  color: #96f2d7;
+}
+
+/* Code Block */
+.code-block {
+  position: relative;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(150, 242, 215, 0.2);
+  border-radius: 0.75rem;
+  margin: 1.5rem 0;
+  overflow: hidden;
+}
+
+.copy-btn {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: rgba(150, 242, 215, 0.2);
+  border: 1px solid rgba(150, 242, 215, 0.3);
+  color: #96f2d7;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.copy-btn:hover {
+  background: rgba(150, 242, 215, 0.3);
+  transform: scale(1.05);
+}
+
+.code-block pre {
+  padding: 1.5rem 1rem;
+  margin: 0;
+  color: #ffffff;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  overflow-x: auto;
+  background: none;
+}
+
+.code-explanation {
+  padding: 1rem;
+  background: rgba(150, 242, 215, 0.05);
+  border-top: 1px solid rgba(150, 242, 215, 0.1);
+}
+
+.code-explanation p {
+  margin: 0.25rem 0;
+  font-size: 0.875rem;
+  color: #b0b7c0;
+}
+
+.code-explanation code {
+  background: rgba(150, 242, 215, 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  color: #96f2d7;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+/* Important Notes */
+.important-note, .security-warning {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  margin: 1.5rem 0;
+  font-size: 0.875rem;
+}
+
+.important-note {
+  background: rgba(150, 242, 215, 0.1);
+  border: 1px solid rgba(150, 242, 215, 0.3);
+  color: #96f2d7;
+}
+
+.security-warning {
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #fbbf24;
+}
+
+/* Step Navigation Buttons */
+.step-navigation-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  border-top: 1px solid rgba(150, 242, 215, 0.1);
+  background: rgba(150, 242, 215, 0.02);
+}
+
+.step-navigation-buttons .btn-secondary {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.step-navigation-buttons .btn-secondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.step-navigation-buttons .btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.step-navigation-buttons .btn-primary {
+  background: linear-gradient(135deg, #96f2d7, #5ec4a3);
+  color: #091618;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.step-navigation-buttons .btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(150, 242, 215, 0.3);
+}
+
+.step-navigation-buttons .btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.step-indicator {
+  font-size: 0.875rem;
+  color: #b0b7c0;
+  font-weight: 500;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Responsive Design for Shopify Modal */
+@media (max-width: 768px) {
+  .shopify-modal {
+    width: 95%;
+    max-height: 95vh;
+  }
+  
+  .shopify-modal-content {
+    flex-direction: column;
+    height: auto;
+  }
+  
+  .steps-navigation {
+    width: 100%;
+    display: flex;
+    overflow-x: auto;
+    padding: 1rem 0;
+    border-right: none;
+    border-bottom: 1px solid rgba(150, 242, 215, 0.1);
+  }
+  
+  .step-nav-btn {
+    flex-shrink: 0;
+    min-width: 200px;
+    border-left: none;
+    border-bottom: 3px solid transparent;
+  }
+  
+  .step-nav-btn.active {
+    border-left: none;
+    border-bottom-color: #96f2d7;
+  }
+  
+  .current-step-content {
+    padding: 1.5rem;
+  }
+  
+  .step-header {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .step-navigation-buttons {
+    padding: 1rem;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .step-navigation-buttons .btn-secondary,
+  .step-navigation-buttons .btn-primary {
+    width: 100%;
+  }
+}
+
 /* Header */
 .quotation-header {
   background: rgba(255, 255, 255, 0.05);
