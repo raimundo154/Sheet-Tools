@@ -75,8 +75,8 @@ body {
 
 .menu-divider {
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-  margin: 1rem 1.5rem;
+  background: #2c2c2c;
+  
 }
 
 .menu-item {

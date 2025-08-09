@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Sidebar from './components/Sidebar';
 import HomePage from './components/HomePage';
 import NewHomePage from './components/NewHomePage';
@@ -11,65 +11,92 @@ import SignupPage from './components/SignupPage';
 import EmailVerification from './components/EmailVerification';
 import AuthCallback from './components/AuthCallback';
 import authService from './services/authService';
+import NavigationService, { ROUTES, navigation } from './utils/navigation';
+import './styles/GlobalDesignSystem.css';
 import './App.css';
 
 function App() {
-  const [currentPage, setCurrentPage] = useState('login');
+  const [currentPage, setCurrentPage] = useState('home-landing');
   const [showTestCalls, setShowTestCalls] = useState(false);
 
-  // Verificar rotas baseadas na URL
-  const currentPath = window.location.pathname;
-  const isAuthCallback = currentPath === '/auth/callback';
-  const isSignupPage = currentPath === '/signup';
-  const isVerificationPage = currentPath === '/verify-email';
+  // Inicializar página baseada na URL atual
+  useEffect(() => {
+    const initializePage = () => {
+      const currentPageName = navigation.getCurrentPageName();
+      setCurrentPage(currentPageName);
+    };
 
+    initializePage();
+
+    // Escutar eventos de navegação customizados
+    const handleNavigation = (event) => {
+      const newPageName = navigation.getCurrentPageName();
+      setCurrentPage(newPageName);
+    };
+
+    window.addEventListener('navigation', handleNavigation);
+    window.addEventListener('popstate', initializePage); // Botão voltar do navegador
+
+    return () => {
+      window.removeEventListener('navigation', handleNavigation);
+      window.removeEventListener('popstate', initializePage);
+    };
+  }, []);
+
+  // Navegação entre páginas da aplicação (sidebar)
   const handlePageChange = (pageId) => {
-    setCurrentPage(pageId);
+    const routeMap = {
+      'dashboard': ROUTES.DASHBOARD,
+      'campaigns': ROUTES.CAMPAIGNS,
+      'privacy': ROUTES.PRIVACY,
+      'terms': ROUTES.TERMS,
+    };
+    
+    const route = routeMap[pageId];
+    if (route) {
+      NavigationService.navigate(route);
+    }
   };
 
+  // Handlers de autenticação
   const handleLogin = (user) => {
-    setCurrentPage('home');
     console.log('Usuário logado:', user);
+    navigation.redirectAfterLogin();
   };
 
   const handleSignOut = async () => {
     try {
       await authService.signOut();
-      setCurrentPage('login');
+      navigation.redirectAfterLogout();
     } catch (error) {
       console.error('Erro ao fazer logout:', error);
       // Forçar logout mesmo se houver erro
-      setCurrentPage('login');
+      navigation.redirectAfterLogout();
     }
   };
 
   const handleAuthError = (error) => {
     console.error('Erro na autenticação:', error);
-    setCurrentPage('login');
+    navigation.toLogin();
   };
 
+  // Handlers do fluxo de cadastro
   const handleSignupRequest = (signupData) => {
     console.log('Código enviado para:', signupData.email);
-    // Redirecionar para página de verificação
-    window.history.pushState({}, '', '/verify-email');
-    setCurrentPage('verify-email');
+    navigation.redirectAfterSignup();
   };
 
   const handleVerificationSuccess = (user) => {
     console.log('Conta criada com sucesso:', user);
-    setCurrentPage('home');
-    // Limpar URL
-    window.history.pushState({}, '', '/');
+    navigation.redirectAfterVerification();
   };
 
   const handleBackToLogin = () => {
-    window.history.pushState({}, '', '/');
-    setCurrentPage('login');
+    navigation.toLogin();
   };
 
   const handleBackToSignup = () => {
-    window.history.pushState({}, '', '/signup');
-    setCurrentPage('signup');
+    navigation.toSignup();
   };
 
   const renderContent = () => {
@@ -80,9 +107,11 @@ function App() {
         return <SignupPage onSignupRequest={handleSignupRequest} onBackToLogin={handleBackToLogin} />;
       case 'verify-email':
         return <EmailVerification onVerificationSuccess={handleVerificationSuccess} onBackToSignup={handleBackToSignup} />;
+      case 'auth-callback':
+        return <AuthCallback onAuthSuccess={handleLogin} onAuthError={handleAuthError} />;
       case 'home-landing':
         return <NewHomePage />;
-      case 'home':
+      case 'dashboard':
         return <HomePage />;
       case 'campaigns':
         return <CampaignDashboard />;
@@ -95,31 +124,12 @@ function App() {
     }
   };
 
-  // Inicializar página baseada na URL
-  React.useEffect(() => {
-    if (isSignupPage) {
-      setCurrentPage('signup');
-    } else if (isVerificationPage) {
-      setCurrentPage('verify-email');
-    } else if (!isAuthCallback) {
-      setCurrentPage('home-landing');
-    }
-  }, [isSignupPage, isVerificationPage, isAuthCallback]);
+  // Determinar se deve mostrar sidebar baseado na página atual
+  const showSidebar = !navigation.isAuthRoute() && !navigation.isHomePage() && currentPage !== 'auth-callback';
+  const isStandalonePage = navigation.isAuthRoute() || navigation.isHomePage() || currentPage === 'auth-callback';
 
-  // Se estiver na página de callback de autenticação
-  if (isAuthCallback) {
-    return (
-      <div className="App">
-        <AuthCallback 
-          onAuthSuccess={handleLogin}
-          onAuthError={handleAuthError}
-        />
-      </div>
-    );
-  }
-
-  // Se estiver nas páginas de autenticação ou landing, renderiza apenas essas páginas
-  if (currentPage === 'login' || currentPage === 'signup' || currentPage === 'verify-email' || currentPage === 'home-landing') {
+  // Renderização condicional baseada no tipo de página
+  if (isStandalonePage) {
     return (
       <div className="App">
         {renderContent()}

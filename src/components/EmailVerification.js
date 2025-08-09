@@ -4,8 +4,6 @@
 import React, { useState, useEffect } from 'react';
 import emailService from '../services/emailService';
 import authService from '../services/authService';
-import './LoginPage.css';
-import './EmailVerification.css';
 
 const EmailVerification = ({ onVerificationSuccess, onBackToSignup }) => {
   const [verificationCode, setVerificationCode] = useState('');
@@ -31,10 +29,10 @@ const EmailVerification = ({ onVerificationSuccess, onBackToSignup }) => {
       // Se expirou, limpar dados
       if (remaining <= 0) {
         localStorage.removeItem('pendingSignup');
-        setError('Código expirado. Solicite um novo código.');
+        setError('Code expired. Request a new code.');
       }
     } else {
-      setError('Nenhum código pendente. Solicite um novo código.');
+      setError('No pending code. Request a new code.');
     }
   }, []);
 
@@ -49,7 +47,7 @@ const EmailVerification = ({ onVerificationSuccess, onBackToSignup }) => {
     } else if (timeLeft === 0 && signupData) {
       // Código expirou
       localStorage.removeItem('pendingSignup');
-      setError('Código expirado. Solicite um novo código.');
+      setError('Code expired. Request a new code.');
     }
   }, [timeLeft, signupData]);
 
@@ -62,26 +60,26 @@ const EmailVerification = ({ onVerificationSuccess, onBackToSignup }) => {
     try {
       // Validações
       if (!verificationCode.trim()) {
-        throw new Error('Por favor, insira o código de verificação');
+        throw new Error('Please enter the verification code');
       }
 
       if (verificationCode.trim().length !== 8) {
-        throw new Error('O código deve ter 8 dígitos');
+        throw new Error('The code must have 8 digits');
       }
 
       if (!signupData) {
-        throw new Error('Dados de verificação não encontrados. Solicite um novo código.');
+        throw new Error('Verification data not found. Request a new code.');
       }
 
       // Verificar se o código não expirou
       if (Date.now() > signupData.expiresAt) {
         localStorage.removeItem('pendingSignup');
-        throw new Error('Código expirado. Solicite um novo código.');
+        throw new Error('Code expired. Request a new code.');
       }
 
       // Verificar se o código está correto
       if (verificationCode.trim() !== signupData.verificationCode) {
-        throw new Error('Código incorreto. Verifique e tente novamente.');
+        throw new Error('Incorrect code. Please check and try again.');
       }
 
       // Código correto! Criar conta no Supabase
@@ -94,7 +92,7 @@ const EmailVerification = ({ onVerificationSuccess, onBackToSignup }) => {
         // Chamar callback de sucesso
         onVerificationSuccess && onVerificationSuccess(result.user);
       } else {
-        throw new Error('Erro ao criar conta. Tente novamente.');
+        throw new Error('Error creating account. Please try again.');
       }
 
     } catch (error) {
@@ -113,7 +111,7 @@ const EmailVerification = ({ onVerificationSuccess, onBackToSignup }) => {
 
     try {
       if (!signupData || !signupData.email) {
-        throw new Error('Email não encontrado. Volte e insira seu email novamente.');
+        throw new Error('Email not found. Go back and enter your email again.');
       }
 
       // Gerar novo código
@@ -138,10 +136,10 @@ const EmailVerification = ({ onVerificationSuccess, onBackToSignup }) => {
         setSignupData(newSignupData);
         setTimeLeft(600); // 10 minutos em segundos
 
-        setResendMessage('Novo código enviado com sucesso!');
+        setResendMessage('New code sent successfully!');
         setTimeout(() => setResendMessage(''), 3000);
       } else {
-        throw new Error('Erro ao reenviar código. Tente novamente.');
+        throw new Error('Error resending code. Please try again.');
       }
 
     } catch (error) {
@@ -167,28 +165,43 @@ const EmailVerification = ({ onVerificationSuccess, onBackToSignup }) => {
   };
 
   return (
-    <div className="login-container">
+    <div className="two-panel-container">
       {/* Painel Esquerdo - Logo */}
-      <div className="login-left-panel">
+      <div className="panel-left">
         <div className="logo-container">
-          <img src="/logo/sheet-tools-logo-backgroundremover.png" alt="Sheet Tools" className="login-logo" />
+          <img 
+            src="/logo/sheet-tools-logo-backgroundremover.png" 
+            alt="Sheet Tools" 
+            className="logo" 
+          />
         </div>
       </div>
 
       {/* Painel Direito - Conteúdo */}
-      <div className="login-right-panel">
-        <div className="login-form-container">
-          <div className="verification-header">
-            <h1 className="verification-title">VERIFY EMAIL</h1>
-            <p className="verification-subtitle">Enviámos um código de 8 dígitos para:</p>
-            <p className="verification-email">{signupData ? signupData.email : 'seu email'}</p>
+      <div className="panel-right">
+        <div className="panel-content">
+          {/* Header */}
+          <div className="text-center mb-6">
+            <h1 className="heading-xl">
+              Automate Your 
+              <span className="highlight"> Facebook Campaigns</span>
+            </h1>
+            <p className="text-lg mb-2">We sent an 8-digit code to:</p>
+            <p className="text-md mb-4" style={{ 
+              color: 'var(--accent-primary)', 
+              fontWeight: '600'
+            }}>
+              {signupData ? signupData.email : 'your email'}
+            </p>
             {timeLeft > 0 && (
-              <p className="verification-timer">⏱️ Código expira em: <strong>{formatTimeLeft(timeLeft)}</strong></p>
+              <p className="text-sm" style={{ color: 'var(--accent-warning)' }}>
+                ⏱️ Code expires in: <strong>{formatTimeLeft(timeLeft)}</strong>
+              </p>
             )}
           </div>
 
-          <form onSubmit={handleVerifyCode} className="verification-form">
-            <div className="code-input-container">
+          <form onSubmit={handleVerifyCode} className="mb-5">
+            <div className="form-group">
               <input
                 type="text"
                 value={verificationCode}
@@ -197,50 +210,117 @@ const EmailVerification = ({ onVerificationSuccess, onBackToSignup }) => {
                   setVerificationCode(value);
                 }}
                 placeholder="12345678"
-                className="code-input"
+                className="form-input"
+                style={{ 
+                  textAlign: 'center', 
+                  fontSize: '1.5rem',
+                  letterSpacing: '0.25rem',
+                  fontWeight: '600'
+                }}
                 maxLength="8"
                 required
                 disabled={loading || timeLeft <= 0}
               />
-              <div className="code-format-hint">Insira o código de 8 dígitos</div>
+              <div className="text-xs text-center mt-2" style={{ color: 'var(--text-muted)' }}>
+                Enter the 8-digit code
+              </div>
             </div>
 
-            {error && <div className="error-message">{error}</div>}
-            {resendMessage && <div className="success-message">{resendMessage}</div>}
+            {/* Mensagens */}
+            {error && (
+              <div className="message message-error mb-4">
+                {error}
+              </div>
+            )}
+            
+            {resendMessage && (
+              <div className="message message-success mb-4">
+                {resendMessage}
+              </div>
+            )}
 
-            <button type="submit" className="verify-button" disabled={loading || timeLeft <= 0 || verificationCode.length !== 8}>
-              {loading ? (<><span className="loading-spinner"></span>Verificando...</>) : 'Verificar e Criar Conta'}
+            <button 
+              type="submit" 
+              className="btn btn-primary btn-full btn-large" 
+              disabled={loading || timeLeft <= 0 || verificationCode.length !== 8}
+            >
+              {loading ? (
+                <>
+                  <span style={{ 
+                    display: 'inline-block',
+                    width: '16px',
+                    height: '16px',
+                    border: '2px solid currentColor',
+                    borderTop: '2px solid transparent',
+                    borderRadius: '50%',
+                    animation: 'spin 1s linear infinite',
+                    marginRight: '0.5rem'
+                  }}></span>
+                  Verifying...
+                </>
+              ) : (
+                'Verify and Create Account'
+              )}
             </button>
           </form>
 
-          <div className="verification-actions">
-            <button onClick={handleResendCode} className="resend-button" disabled={resendLoading || timeLeft > 540}>
-              {resendLoading ? (<><span className="loading-spinner"></span>Reenviando...</>) : (timeLeft > 540 ? `Reenviar em ${formatTimeLeft(timeLeft - 540)}` : '📧 Reenviar código')}
+          {/* Ações de Verificação */}
+          <div className="text-center mb-6">
+            <button 
+              onClick={handleResendCode} 
+              className="btn btn-ghost mb-3" 
+              disabled={resendLoading || timeLeft > 540}
+              style={{ marginRight: '0.5rem' }}
+            >
+              {resendLoading ? (
+                <>
+                  <span style={{ 
+                    display: 'inline-block',
+                    width: '16px',
+                    height: '16px',
+                    border: '2px solid currentColor',
+                    borderTop: '2px solid transparent',
+                    borderRadius: '50%',
+                    animation: 'spin 1s linear infinite',
+                    marginRight: '0.5rem'
+                  }}></span>
+                  Resending...
+                </>
+              ) : (
+                timeLeft > 540 ? 
+                  `Resend in ${formatTimeLeft(timeLeft - 540)}` : 
+                  '📧 Resend code'
+              )}
             </button>
 
-            <button onClick={onBackToSignup} className="back-button">← Voltar ao cadastro</button>
+            <br />
 
-            {process.env.NODE_ENV === 'development' && signupData && (
-              <button onClick={handleAutoFillCode} className="dev-autofill-button" type="button">🔧 Auto-preencher (DEV)</button>
-            )}
+            <button 
+              onClick={onBackToSignup} 
+              className="link"
+            >
+              ← Back to signup
+            </button>
+
+
           </div>
 
-          <div className="verification-info">
-            <p className="info-text">📱 Verifique sua caixa de entrada e pasta de spam</p>
-            <p className="info-text">🔒 Seu email será verificado e a conta será criada automaticamente</p>
+          {/* Informações */}
+          <div className="glass-card" style={{ padding: '1rem' }}>
+            <p className="text-sm mb-2">📱 Check your inbox and spam folder</p>
+            <p className="text-sm">🔒 Your email will be verified and the account will be created automatically</p>
           </div>
 
-          {process.env.NODE_ENV === 'development' && signupData && (
-            <div className="dev-info">
-              <h4>🔧 Informações de Desenvolvimento</h4>
-              <p><strong>Email:</strong> {signupData.email}</p>
-              <p><strong>Código:</strong> {signupData.verificationCode}</p>
-              <p><strong>Expira em:</strong> {new Date(signupData.expiresAt).toLocaleTimeString()}</p>
-              <p><strong>Tempo restante:</strong> {formatTimeLeft(timeLeft)}</p>
-            </div>
-          )}
+
         </div>
       </div>
+
+      <style jsx>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   );
 };

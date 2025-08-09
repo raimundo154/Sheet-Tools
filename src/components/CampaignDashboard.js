@@ -135,10 +135,10 @@ const CampaignDashboard = () => {
     : 0;
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <div className="max-w-7xl mx-auto">
+    <div className="container-full" style={{ padding: 'var(--spacing-lg)' }}>
+      <div className="container">
         {/* Header */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+        <div className="glass-card mb-6" style={{ padding: 'var(--spacing-xl)' }}>
           <div className="flex justify-between items-center mb-6">
             <div>
               <h1 className="text-3xl font-bold text-gray-800 flex items-center">

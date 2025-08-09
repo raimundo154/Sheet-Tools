@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import authService from '../services/authService';
+import { navigation } from '../utils/navigation';
 
 const AuthCallback = ({ onAuthSuccess, onAuthError }) => {
   const [loading, setLoading] = useState(true);
@@ -16,8 +17,8 @@ const AuthCallback = ({ onAuthSuccess, onAuthError }) => {
           setMessage('Login realizado com sucesso! Redirecionando...');
           setTimeout(() => {
             onAuthSuccess && onAuthSuccess(session.user);
-            // Redirecionar para a página principal
-            window.location.href = '/';
+            // Redirecionar para o dashboard
+            navigation.redirectAfterLogin();
           }, 1500);
         } else {
           throw new Error('Falha na autenticação');

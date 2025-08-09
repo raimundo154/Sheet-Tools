@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { navigation } from '../utils/navigation';
 import { 
   TrendingUp, 
   Target, 
@@ -112,7 +113,7 @@ const NewHomePage = () => {
   };
 
   const handleCTAClick = () => {
-    window.location.href = '/signup';
+    navigation.toSignup();
   };
 
   const scrollToSection = (sectionId) => {
