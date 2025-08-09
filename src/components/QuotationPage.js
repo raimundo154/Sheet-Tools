@@ -8,17 +8,24 @@ import {
   Upload,
   ChevronDown,
   ChevronUp,
-  X
+  X,
+  AlertCircle
 } from 'lucide-react';
+import productService from '../services/productService';
 import './QuotationPage.css';
 
 const QuotationPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showProductModal, setShowProductModal] = useState(false);
+  const [isCreatingProduct, setIsCreatingProduct] = useState(false);
   
   // Product states
   const [availableProducts, setAvailableProducts] = useState([]);
   const [expandedProduct, setExpandedProduct] = useState(null);
+  
+  // Error and success states
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   
   // New product form state
   const [newProduct, setNewProduct] = useState({
@@ -36,13 +43,32 @@ const QuotationPage = () => {
 
   const loadInitialData = async () => {
     setIsLoading(true);
+    setError('');
     
-    // Simular carregamento de dados
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Carregar produtos existentes (vazio inicialmente)
-    setAvailableProducts([]);
-    setIsLoading(false);
+    try {
+      const result = await productService.getProducts();
+      
+      if (result.success) {
+        // Transformar dados do Supabase para o formato esperado pelo componente
+        const transformedProducts = result.data.map(product => ({
+          id: product.id,
+          name: product.name,
+          price: product.price.toString(),
+          shippingTime: product.shipping_time || '',
+          inStock: product.in_stock,
+          imagePreview: product.image_url || 'https://via.placeholder.com/150x150/b0b7c0/ffffff?text=Produto'
+        }));
+        
+        setAvailableProducts(transformedProducts);
+      } else {
+        setError(result.message);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar produtos:', error);
+      setError('Erro ao carregar produtos da base de dados');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleImageUpload = (e) => {
@@ -60,34 +86,89 @@ const QuotationPage = () => {
     }
   };
 
-  const createProduct = () => {
+  const createProduct = async () => {
     if (!newProduct.name || !newProduct.price) {
-      alert('Please fill in at least the product name and price.');
+      setError('Por favor, preencha pelo menos o nome e preço do produto.');
       return;
     }
 
-    const product = {
-      id: Date.now(),
-      ...newProduct,
-      imagePreview: newProduct.imagePreview || 'https://via.placeholder.com/150x150/b0b7c0/ffffff?text=Produto'
-    };
+    setIsCreatingProduct(true);
+    setError('');
+    setSuccess('');
 
-    setAvailableProducts([...availableProducts, product]);
-    setNewProduct({
-      name: '',
-      price: '',
-      shippingTime: '',
-      inStock: true,
-      image: null,
-      imagePreview: null
-    });
-    setShowProductModal(false);
+    try {
+      const result = await productService.createProduct({
+        name: newProduct.name,
+        price: newProduct.price,
+        shippingTime: newProduct.shippingTime,
+        inStock: newProduct.inStock,
+        image: newProduct.image
+      });
+
+      if (result.success) {
+        setSuccess('Produto criado com sucesso!');
+        
+        // Adicionar o novo produto à lista local
+        const newProductForDisplay = {
+          id: result.data.id,
+          name: result.data.name,
+          price: result.data.price.toString(),
+          shippingTime: result.data.shipping_time || '',
+          inStock: result.data.in_stock,
+          imagePreview: result.data.image_url || 'https://via.placeholder.com/150x150/b0b7c0/ffffff?text=Produto'
+        };
+        
+        setAvailableProducts([newProductForDisplay, ...availableProducts]);
+        
+        // Resetar formulário
+        setNewProduct({
+          name: '',
+          price: '',
+          shippingTime: '',
+          inStock: true,
+          image: null,
+          imagePreview: null
+        });
+        
+        // Fechar modal após um breve delay
+        setTimeout(() => {
+          setShowProductModal(false);
+          setSuccess('');
+        }, 1500);
+      } else {
+        setError(result.message);
+      }
+    } catch (error) {
+      console.error('Erro ao criar produto:', error);
+      setError('Erro ao criar produto na base de dados');
+    } finally {
+      setIsCreatingProduct(false);
+    }
   };
 
-  const removeFromQuotation = (productId) => {
-    setAvailableProducts(availableProducts.filter(p => p.id !== productId));
-    if (expandedProduct === productId) {
-      setExpandedProduct(null);
+  const removeFromQuotation = async (productId) => {
+    if (!window.confirm('Tem certeza que deseja deletar este produto?')) {
+      return;
+    }
+
+    try {
+      const result = await productService.deleteProduct(productId);
+      
+      if (result.success) {
+        setAvailableProducts(availableProducts.filter(p => p.id !== productId));
+        if (expandedProduct === productId) {
+          setExpandedProduct(null);
+        }
+        setSuccess('Produto removido com sucesso!');
+        setTimeout(() => setSuccess(''), 3000);
+      } else {
+        setError(result.message);
+        setTimeout(() => setError(''), 5000);
+      }
+    } catch (error) {
+      console.error('Erro ao remover produto:', error);
+      setError('Erro ao remover produto da base de dados');
+      setTimeout(() => setError(''), 5000);
     }
   };
 
@@ -127,6 +208,27 @@ const QuotationPage = () => {
           </button>
         </div>
       </div>
+
+      {/* Error and Success Messages */}
+      {error && (
+        <div className="message-container error-message">
+          <AlertCircle size={16} />
+          <span>{error}</span>
+          <button onClick={() => setError('')} className="close-message-btn">
+            <X size={14} />
+          </button>
+        </div>
+      )}
+
+      {success && (
+        <div className="message-container success-message">
+          <CheckCircle size={16} />
+          <span>{success}</span>
+          <button onClick={() => setSuccess('')} className="close-message-btn">
+            <X size={14} />
+          </button>
+        </div>
+      )}
 
       {/* Products Section */}
       {availableProducts.length > 0 && (
@@ -217,6 +319,21 @@ const QuotationPage = () => {
             </div>
 
             <div className="modal-content">
+              {/* Modal Error/Success Messages */}
+              {error && (
+                <div className="modal-message error-message">
+                  <AlertCircle size={16} />
+                  <span>{error}</span>
+                </div>
+              )}
+
+              {success && (
+                <div className="modal-message success-message">
+                  <CheckCircle size={16} />
+                  <span>{success}</span>
+                </div>
+              )}
+
               <div className="form-group">
                 <label>Product Image</label>
                 <div className="image-upload-area">
@@ -226,6 +343,7 @@ const QuotationPage = () => {
                     onChange={handleImageUpload}
                     className="image-input"
                     id="product-image"
+                    disabled={isCreatingProduct}
                   />
                   <label htmlFor="product-image" className="image-upload-label">
                     {newProduct.imagePreview ? (
@@ -249,6 +367,7 @@ const QuotationPage = () => {
                     onChange={(e) => setNewProduct({...newProduct, name: e.target.value})}
                     placeholder="Enter product name"
                     className="form-input"
+                    disabled={isCreatingProduct}
                   />
                 </div>
 
@@ -262,6 +381,7 @@ const QuotationPage = () => {
                     className="form-input"
                     step="0.01"
                     min="0"
+                    disabled={isCreatingProduct}
                   />
                 </div>
               </div>
@@ -275,6 +395,7 @@ const QuotationPage = () => {
                     onChange={(e) => setNewProduct({...newProduct, shippingTime: e.target.value})}
                     placeholder="e.g. 3-5 business days"
                     className="form-input"
+                    disabled={isCreatingProduct}
                   />
                 </div>
 
@@ -284,6 +405,7 @@ const QuotationPage = () => {
                     <button
                       className={`stock-btn ${newProduct.inStock ? 'in-stock' : ''}`}
                       onClick={() => setNewProduct({...newProduct, inStock: true})}
+                      disabled={isCreatingProduct}
                     >
                       <CheckCircle size={16} />
                       In Stock
@@ -291,6 +413,7 @@ const QuotationPage = () => {
                     <button
                       className={`stock-btn ${!newProduct.inStock ? 'out-stock' : ''}`}
                       onClick={() => setNewProduct({...newProduct, inStock: false})}
+                      disabled={isCreatingProduct}
                     >
                       <XCircle size={16} />
                       Out of Stock
@@ -304,15 +427,26 @@ const QuotationPage = () => {
               <button 
                 className="cancel-btn"
                 onClick={() => setShowProductModal(false)}
+                disabled={isCreatingProduct}
               >
                 Cancel
               </button>
               <button 
                 className="create-btn"
                 onClick={createProduct}
+                disabled={isCreatingProduct}
               >
-                <Plus size={16} />
-                Create Product
+                {isCreatingProduct ? (
+                  <>
+                    <div className="spinner"></div>
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <Plus size={16} />
+                    Create Product
+                  </>
+                )}
               </button>
             </div>
           </div>
