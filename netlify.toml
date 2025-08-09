@@ -5,6 +5,13 @@
   # Diretório onde estão os arquivos compilados
   publish = "build"
 
+[functions]
+  # Diretório das funções Netlify
+  directory = "netlify/functions/"
+  
+  # Configurações das funções
+  node_bundler = "nft"
+
 [build.environment]
   # Node.js version
   NODE_VERSION = "18"

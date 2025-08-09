@@ -1,0 +1,9 @@
+{
+  "name": "sheet-tools-netlify-functions",
+  "version": "1.0.0",
+  "description": "Netlify Functions for Sheet Tools",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.4",
+    "node-fetch": "^2.7.0"
+  }
+}

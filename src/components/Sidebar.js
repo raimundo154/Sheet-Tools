@@ -18,7 +18,7 @@ const Sidebar = ({ currentPage, onPageChange, onSignOut }) => {
     {
       group: 'Principal',
       items: [
-        { id: 'home', label: 'Home', icon: Home },
+        { id: 'dashboard', label: 'Dashboard', icon: Home },
         { id: 'daily-roas', label: 'Daily Roas', icon: Calendar },
         { id: 'profit-sheet', label: 'Profit Sheet', icon: DollarSign },
         { id: 'quotation', label: 'Quotation', icon: ShoppingCart }

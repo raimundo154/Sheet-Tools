@@ -3,6 +3,7 @@ import Sidebar from './components/Sidebar';
 import HomePage from './components/HomePage';
 import NewHomePage from './components/NewHomePage';
 import CampaignDashboard from './components/CampaignDashboard';
+import QuotationPage from './components/QuotationPage';
 import FacebookTestCalls from './components/FacebookTestCalls';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import TermsOfService from './components/TermsOfService';
@@ -48,6 +49,7 @@ function App() {
     const routeMap = {
       'dashboard': ROUTES.DASHBOARD,
       'campaigns': ROUTES.CAMPAIGNS,
+      'quotation': ROUTES.QUOTATION,
       'privacy': ROUTES.PRIVACY,
       'terms': ROUTES.TERMS,
     };
@@ -115,6 +117,8 @@ function App() {
         return <HomePage />;
       case 'campaigns':
         return <CampaignDashboard />;
+      case 'quotation':
+        return <QuotationPage />;
       case 'privacy':
         return <PrivacyPolicy />;
       case 'terms':
