@@ -17,7 +17,12 @@ body {
 .App {
   min-height: 100vh;
   display: flex;
-  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+  background: linear-gradient(
+    to bottom,
+    rgba(9, 22, 24, 1) 0%,
+    rgba(15, 58, 50, 0.8) 50%,
+    rgba(9, 22, 24, 1) 100%
+  );
   position: relative;
 }
 
@@ -28,9 +33,9 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.1), transparent 50%),
-              radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1), transparent 50%),
-              radial-gradient(circle at 40% 80%, rgba(120, 219, 255, 0.1), transparent 50%);
+  background: radial-gradient(circle at 20% 50%, rgba(150, 242, 215, 0.1), transparent 50%),
+              radial-gradient(circle at 80% 20%, rgba(28, 111, 91, 0.1), transparent 50%),
+              radial-gradient(circle at 40% 80%, rgba(94, 204, 176, 0.1), transparent 50%);
   pointer-events: none;
 }
 

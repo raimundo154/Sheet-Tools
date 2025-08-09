@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import authService from '../services/authService';
 import { navigation } from '../utils/navigation';
+import LoadingScreen from './LoadingScreen';
 
 const AuthCallback = ({ onAuthSuccess, onAuthError }) => {
   const [loading, setLoading] = useState(true);
@@ -19,7 +20,7 @@ const AuthCallback = ({ onAuthSuccess, onAuthError }) => {
             onAuthSuccess && onAuthSuccess(session.user);
             // Redirecionar para o dashboard
             navigation.redirectAfterLogin();
-          }, 1500);
+          }, 2000);
         } else {
           throw new Error('Falha na autenticação');
         }
@@ -36,42 +37,7 @@ const AuthCallback = ({ onAuthSuccess, onAuthError }) => {
   }, [onAuthSuccess, onAuthError]);
 
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      minHeight: '100vh',
-      backgroundColor: '#1e3a3a',
-      color: '#ffffff',
-      fontFamily: 'Inter, sans-serif'
-    }}>
-      {loading && (
-        <div style={{
-          width: '40px',
-          height: '40px',
-          border: '4px solid #4a9bb8',
-          borderTop: '4px solid transparent',
-          borderRadius: '50%',
-          animation: 'spin 1s linear infinite',
-          marginBottom: '1rem'
-        }} />
-      )}
-      <p style={{
-        fontSize: '1.1rem',
-        textAlign: 'center',
-        margin: 0
-      }}>
-        {message}
-      </p>
-      
-      <style>{`
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-      `}</style>
-    </div>
+    <LoadingScreen message={message} />
   );
 };
 
