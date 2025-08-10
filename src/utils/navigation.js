@@ -14,6 +14,7 @@ export const ROUTES = {
   // Páginas da aplicação (com autenticação)
   DASHBOARD: '/dashboard',      // Dashboard principal (HomePage)
   CAMPAIGNS: '/campaigns',      // Gestão de campanhas (CampaignDashboard)
+  QUOTATION: '/quotation',      // Cotação de moedas (QuotationPage)
   
   // Páginas legais
   PRIVACY: '/privacy',          // Política de privacidade
@@ -28,6 +29,7 @@ export const PAGE_NAMES = {
   [ROUTES.AUTH_CALLBACK]: 'auth-callback',
   [ROUTES.DASHBOARD]: 'dashboard',
   [ROUTES.CAMPAIGNS]: 'campaigns',
+  [ROUTES.QUOTATION]: 'quotation',
   [ROUTES.PRIVACY]: 'privacy',
   [ROUTES.TERMS]: 'terms',
 };
@@ -88,7 +90,7 @@ class NavigationService {
    */
   static requiresAuth(route = null) {
     const checkRoute = route || this.getCurrentRoute();
-    const authRequiredRoutes = [ROUTES.DASHBOARD, ROUTES.CAMPAIGNS];
+    const authRequiredRoutes = [ROUTES.DASHBOARD, ROUTES.CAMPAIGNS, ROUTES.QUOTATION];
     return authRequiredRoutes.includes(checkRoute);
   }
 
@@ -119,6 +121,7 @@ export const navigation = {
   toVerifyEmail: () => NavigationService.navigate(ROUTES.VERIFY_EMAIL),
   toDashboard: () => NavigationService.navigate(ROUTES.DASHBOARD),
   toCampaigns: () => NavigationService.navigate(ROUTES.CAMPAIGNS),
+  toQuotation: () => NavigationService.navigate(ROUTES.QUOTATION),
   
   // Navegação para páginas legais
   toPrivacy: () => NavigationService.navigate(ROUTES.PRIVACY),
