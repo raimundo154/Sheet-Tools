@@ -9,7 +9,8 @@ import {
   ChevronDown,
   ChevronUp,
   X,
-  AlertCircle
+  AlertCircle,
+  Edit
 } from 'lucide-react';
 import productService from '../services/productService';
 import './QuotationPage.css';
@@ -18,6 +19,8 @@ const QuotationPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showProductModal, setShowProductModal] = useState(false);
   const [isCreatingProduct, setIsCreatingProduct] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [isUpdatingProduct, setIsUpdatingProduct] = useState(false);
   
   // Product states
   const [availableProducts, setAvailableProducts] = useState([]);
@@ -121,14 +124,7 @@ const QuotationPage = () => {
         setAvailableProducts([newProductForDisplay, ...availableProducts]);
         
         // Resetar formulário
-        setNewProduct({
-          name: '',
-          price: '',
-          shippingTime: '',
-          inStock: true,
-          image: null,
-          imagePreview: null
-        });
+        resetProductForm();
         
         // Fechar modal após um breve delay
         setTimeout(() => {
@@ -144,6 +140,93 @@ const QuotationPage = () => {
     } finally {
       setIsCreatingProduct(false);
     }
+  };
+
+  const updateProduct = async () => {
+    if (!newProduct.name || !newProduct.price) {
+      setError('Por favor, preencha pelo menos o nome e preço do produto.');
+      return;
+    }
+
+    setIsUpdatingProduct(true);
+    setError('');
+    setSuccess('');
+
+    try {
+      const result = await productService.updateProduct(editingProduct.id, {
+        name: newProduct.name,
+        price: newProduct.price,
+        shippingTime: newProduct.shippingTime,
+        inStock: newProduct.inStock,
+        image: newProduct.image
+      });
+
+      if (result.success) {
+        setSuccess('Produto atualizado com sucesso!');
+        
+        // Atualizar produto na lista local
+        const updatedProductForDisplay = {
+          id: result.data.id,
+          name: result.data.name,
+          price: result.data.price.toString(),
+          shippingTime: result.data.shipping_time || '',
+          inStock: result.data.in_stock,
+          imagePreview: result.data.image_url || editingProduct.imagePreview
+        };
+        
+        setAvailableProducts(availableProducts.map(p => 
+          p.id === editingProduct.id ? updatedProductForDisplay : p
+        ));
+        
+        // Resetar formulário e fechar modal
+        resetProductForm();
+        setEditingProduct(null);
+        
+        setTimeout(() => {
+          setShowProductModal(false);
+          setSuccess('');
+        }, 1500);
+      } else {
+        setError(result.message);
+      }
+    } catch (error) {
+      console.error('Erro ao atualizar produto:', error);
+      setError('Erro ao atualizar produto na base de dados');
+    } finally {
+      setIsUpdatingProduct(false);
+    }
+  };
+
+  const resetProductForm = () => {
+    setNewProduct({
+      name: '',
+      price: '',
+      shippingTime: '',
+      inStock: true,
+      image: null,
+      imagePreview: null
+    });
+  };
+
+  const openEditModal = (product) => {
+    setEditingProduct(product);
+    setNewProduct({
+      name: product.name,
+      price: product.price,
+      shippingTime: product.shippingTime,
+      inStock: product.inStock,
+      image: null,
+      imagePreview: product.imagePreview
+    });
+    setShowProductModal(true);
+  };
+
+  const closeModal = () => {
+    setShowProductModal(false);
+    setEditingProduct(null);
+    resetProductForm();
+    setError('');
+    setSuccess('');
   };
 
   const removeFromQuotation = async (productId) => {
@@ -247,15 +330,31 @@ const QuotationPage = () => {
                       alt={product.name}
                       className="dropdown-image"
                     />
-                    <span className="dropdown-name">{product.name}</span>
+                    <div className="dropdown-name-container">
+                      <span className="dropdown-name">{product.name}</span>
+                      <span className={`availability-badge ${product.inStock ? 'available' : 'unavailable'}`}>
+                        {product.inStock ? 'Available' : 'Unavailable'}
+                      </span>
+                    </div>
                   </div>
                   <div className="dropdown-right">
+                    <button 
+                      className="edit-product-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openEditModal(product);
+                      }}
+                      title="Editar produto"
+                    >
+                      <Edit size={16} />
+                    </button>
                     <button 
                       className="remove-from-quotation-btn"
                       onClick={(e) => {
                         e.stopPropagation();
                         removeFromQuotation(product.id);
                       }}
+                      title="Remover produto"
                     >
                       <Trash2 size={16} />
                     </button>
@@ -309,10 +408,10 @@ const QuotationPage = () => {
         <div className="modal-overlay">
           <div className="product-modal">
             <div className="modal-header">
-              <h2>Create New Product</h2>
+              <h2>{editingProduct ? 'Edit Product' : 'Create New Product'}</h2>
               <button 
                 className="modal-close-btn"
-                onClick={() => setShowProductModal(false)}
+                onClick={closeModal}
               >
                 <X size={20} />
               </button>
@@ -343,7 +442,7 @@ const QuotationPage = () => {
                     onChange={handleImageUpload}
                     className="image-input"
                     id="product-image"
-                    disabled={isCreatingProduct}
+                    disabled={isCreatingProduct || isUpdatingProduct}
                   />
                   <label htmlFor="product-image" className="image-upload-label">
                     {newProduct.imagePreview ? (
@@ -367,7 +466,7 @@ const QuotationPage = () => {
                     onChange={(e) => setNewProduct({...newProduct, name: e.target.value})}
                     placeholder="Enter product name"
                     className="form-input"
-                    disabled={isCreatingProduct}
+                    disabled={isCreatingProduct || isUpdatingProduct}
                   />
                 </div>
 
@@ -381,7 +480,7 @@ const QuotationPage = () => {
                     className="form-input"
                     step="0.01"
                     min="0"
-                    disabled={isCreatingProduct}
+                    disabled={isCreatingProduct || isUpdatingProduct}
                   />
                 </div>
               </div>
@@ -395,7 +494,7 @@ const QuotationPage = () => {
                     onChange={(e) => setNewProduct({...newProduct, shippingTime: e.target.value})}
                     placeholder="e.g. 3-5 business days"
                     className="form-input"
-                    disabled={isCreatingProduct}
+                    disabled={isCreatingProduct || isUpdatingProduct}
                   />
                 </div>
 
@@ -405,7 +504,7 @@ const QuotationPage = () => {
                     <button
                       className={`stock-btn ${newProduct.inStock ? 'in-stock' : ''}`}
                       onClick={() => setNewProduct({...newProduct, inStock: true})}
-                      disabled={isCreatingProduct}
+                      disabled={isCreatingProduct || isUpdatingProduct}
                     >
                       <CheckCircle size={16} />
                       In Stock
@@ -413,7 +512,7 @@ const QuotationPage = () => {
                     <button
                       className={`stock-btn ${!newProduct.inStock ? 'out-stock' : ''}`}
                       onClick={() => setNewProduct({...newProduct, inStock: false})}
-                      disabled={isCreatingProduct}
+                      disabled={isCreatingProduct || isUpdatingProduct}
                     >
                       <XCircle size={16} />
                       Out of Stock
@@ -426,25 +525,34 @@ const QuotationPage = () => {
             <div className="modal-actions">
               <button 
                 className="cancel-btn"
-                onClick={() => setShowProductModal(false)}
-                disabled={isCreatingProduct}
+                onClick={closeModal}
+                disabled={isCreatingProduct || isUpdatingProduct}
               >
                 Cancel
               </button>
               <button 
                 className="create-btn"
-                onClick={createProduct}
-                disabled={isCreatingProduct}
+                onClick={editingProduct ? updateProduct : createProduct}
+                disabled={isCreatingProduct || isUpdatingProduct}
               >
-                {isCreatingProduct ? (
+                {(isCreatingProduct || isUpdatingProduct) ? (
                   <>
                     <div className="spinner"></div>
-                    Saving...
+                    {editingProduct ? 'Updating...' : 'Saving...'}
                   </>
                 ) : (
                   <>
-                    <Plus size={16} />
-                    Create Product
+                    {editingProduct ? (
+                      <>
+                        <Edit size={16} />
+                        Update Product
+                      </>
+                    ) : (
+                      <>
+                        <Plus size={16} />
+                        Create Product
+                      </>
+                    )}
                   </>
                 )}
               </button>

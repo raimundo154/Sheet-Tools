@@ -17,7 +17,12 @@ body {
 .App {
   min-height: 100vh;
   display: flex;
-  background: var(--gradient-hero);
+  background: linear-gradient(
+    to bottom,
+    rgba(9, 22, 24, 1) 0%,
+    rgba(15, 58, 50, 0.8) 50%,
+    rgba(9, 22, 24, 1) 100%
+  );
   position: relative;
 }
 
@@ -37,7 +42,7 @@ body {
 /* Sidebar Styles */
 .sidebar {
   width: 280px;
-  background: var(--bg-primary);
+  background: rgba(9, 22, 24, 0.95);
   border-right: 1px solid var(--glass-border);
   display: flex;
   flex-direction: column;
@@ -48,6 +53,7 @@ body {
   z-index: 1000;
   backdrop-filter: blur(20px);
   box-shadow: var(--shadow-lg);
+  overflow: hidden;
 }
 
 .sidebar-logo {
@@ -70,7 +76,7 @@ body {
 .sidebar-nav {
   flex: 1;
   padding: 1.5rem 0;
-  overflow-y: auto;
+  overflow: hidden;
 }
 
 .menu-group {
@@ -175,6 +181,7 @@ body {
   padding: 2rem;
   max-width: 1400px;
   margin: 0 auto;
+  background: transparent;
 }
 
 /* Test Button Styles */

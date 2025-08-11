@@ -2,12 +2,7 @@
 
 .dashboard-home {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background: linear-gradient(
-    to bottom,
-    rgba(9, 22, 24, 1) 0%,
-    rgba(15, 58, 50, 0.8) 50%,
-    rgba(9, 22, 24, 1) 100%
-  );
+  background: transparent;
   color: #ffffff;
   min-height: 100vh;
   padding: 2rem;
@@ -519,6 +514,17 @@
   margin-bottom: 0.5rem;
 }
 
+.section-header {
+  margin-bottom: 2rem;
+}
+
+.section-description {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin-top: 0.5rem;
+  line-height: 1.5;
+}
+
 .section-description {
   color: #b0b7c0;
   font-size: 1rem;
@@ -737,6 +743,48 @@
 .chart-placeholder p {
   margin: 0;
   font-size: 0.875rem;
+}
+
+/* Features Status */
+.features-status {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  background: rgba(150, 242, 215, 0.03);
+  border-radius: 12px;
+  border: 1px solid rgba(150, 242, 215, 0.1);
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.9rem;
+  color: #ffffff;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.feature-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  transform: translateX(4px);
+}
+
+.feature-ready {
+  color: #22c55e;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 4px rgba(34, 197, 94, 0.3));
+}
+
+.feature-pending {
+  color: #f59e0b;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 4px rgba(245, 158, 11, 0.3));
 }
 
 /* Responsive Design */

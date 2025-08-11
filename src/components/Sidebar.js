@@ -29,7 +29,7 @@ const Sidebar = ({ currentPage, onPageChange, onSignOut }) => {
       items: [
         { id: 'product-research', label: 'Product Research', icon: Search },
         { id: 'campaigns', label: 'Campaigns', icon: Megaphone },
-        { id: 'connect-fb', label: 'Connect FB', icon: Settings }
+        { id: 'sales', label: 'Vendas', icon: TrendingUp }
       ]
     },
     {

@@ -9,20 +9,33 @@ import {
   Award,
   Calendar,
   ShoppingCart,
-  Megaphone
+  Megaphone,
+  CheckCircle,
+  XCircle
 } from 'lucide-react';
+import OnboardingTutorial from './OnboardingTutorial';
 
 const DashboardHomePage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [stats, setStats] = useState([]);
   const [quickActions, setQuickActions] = useState([]);
   const [recentActivity, setRecentActivity] = useState([]);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
     // Simular carregamento de dados
     const loadDashboardData = async () => {
       // Simular delay de carregamento
       await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Verificar se deve mostrar o onboarding (simulando primeira visita)
+      const hasCompletedOnboarding = localStorage.getItem('onboarding_completed');
+      if (!hasCompletedOnboarding) {
+        setShowOnboarding(true);
+      }
+      
+      // Para teste - sempre mostrar o onboarding
+      setShowOnboarding(true);
 
       setStats([
         {
@@ -57,28 +70,28 @@ const DashboardHomePage = () => {
 
       setQuickActions([
         {
-          title: 'Daily ROAS',
-          description: 'Acompanhe o retorno diário',
-          icon: Calendar,
-          route: 'daily-roas'
-        },
-        {
-          title: 'Profit Sheet',
-          description: 'Calcule a rentabilidade',
-          icon: DollarSign,
-          route: 'profit-sheet'
-        },
-        {
           title: 'Campanhas',
-          description: 'Gerir campanhas ativas',
+          description: 'Gerir campanhas ativas do Facebook Ads',
           icon: Megaphone,
           route: 'campaigns'
         },
         {
-          title: 'Cotação',
-          description: 'Converter moedas',
+          title: 'Produtos',
+          description: 'Gerir catálogo de produtos',
           icon: ShoppingCart,
           route: 'quotation'
+        },
+        {
+          title: 'Daily ROAS',
+          description: 'Acompanhar retorno diário',
+          icon: Calendar,
+          route: 'daily-roas'
+        },
+        {
+          title: 'Relatórios',
+          description: 'Análises e métricas detalhadas',
+          icon: BarChart3,
+          route: 'reports'
         }
       ]);
 
@@ -108,6 +121,16 @@ const DashboardHomePage = () => {
 
     loadDashboardData();
   }, []);
+
+  const handleOnboardingComplete = () => {
+    localStorage.setItem('onboarding_completed', 'true');
+    setShowOnboarding(false);
+  };
+
+  const handleOnboardingSkip = () => {
+    localStorage.setItem('onboarding_completed', 'true');
+    setShowOnboarding(false);
+  };
 
   if (isLoading) {
     return (
@@ -164,6 +187,13 @@ const DashboardHomePage = () => {
 
   return (
     <div className="dashboard-home">
+      {/* Onboarding Tutorial */}
+      {showOnboarding && (
+        <OnboardingTutorial 
+          onComplete={handleOnboardingComplete}
+          onSkip={handleOnboardingSkip}
+        />
+      )}
       {/* Header */}
       <div className="dashboard-header">
         <div className="header-content">

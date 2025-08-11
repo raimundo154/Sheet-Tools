@@ -1,0 +1,198 @@
+/* Onboarding Tutorial Styles - Horizontal Banner */
+
+.onboarding-banner {
+  background: linear-gradient(
+    135deg,
+    rgba(15, 58, 50, 0.95) 0%,
+    rgba(9, 22, 24, 0.9) 100%
+  );
+  border: 1px solid rgba(150, 242, 215, 0.3);
+  border-radius: 16px;
+  padding: 1.5rem 2rem;
+  margin-bottom: 2rem;
+  color: #ffffff;
+  box-shadow: 
+    0 10px 25px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(150, 242, 215, 0.1);
+}
+
+.banner-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+/* Left side - Title and progress */
+.banner-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 200px;
+}
+
+.banner-title h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #96f2d7;
+  margin: 0;
+}
+
+.progress-text {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 6px;
+  background: rgba(150, 242, 215, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #34d399, #96f2d7);
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+
+/* Center - Steps */
+.banner-steps {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex: 1;
+}
+
+.banner-step {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: rgba(150, 242, 215, 0.05);
+  border: 1px solid rgba(150, 242, 215, 0.1);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.banner-step:hover {
+  background: rgba(150, 242, 215, 0.1);
+  border-color: rgba(150, 242, 215, 0.2);
+}
+
+.banner-step.completed {
+  background: rgba(34, 197, 94, 0.1);
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+.step-icon-small {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.step-info-small {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.step-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #ffffff;
+  white-space: nowrap;
+}
+
+.connect-btn {
+  background: transparent;
+  border: 1px solid;
+  padding: 0.25rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.connect-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+.step-separator {
+  color: rgba(255, 255, 255, 0.3);
+  flex-shrink: 0;
+}
+
+/* Right side - Actions */
+.banner-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.skip-tutorial-btn-small {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+  padding: 0.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.skip-tutorial-btn-small:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.5);
+  color: #ef4444;
+  transform: scale(1.05);
+}
+
+
+/* Responsive */
+@media (max-width: 768px) {
+  .onboarding-banner {
+    padding: 1rem;
+  }
+  
+  .banner-content {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .banner-left {
+    min-width: unset;
+    width: 100%;
+  }
+  
+  .banner-steps {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .banner-step {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .step-name {
+    white-space: normal;
+  }
+  
+  .step-separator {
+    display: none;
+  }
+}

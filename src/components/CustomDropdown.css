@@ -1,0 +1,209 @@
+/* Custom Dropdown Styles - Seguindo GlobalDesignSystem.css */
+
+.custom-dropdown {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.dropdown-trigger {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: 0.75rem 1rem;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-height: 48px;
+  width: 100%;
+}
+
+.dropdown-trigger:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-glow);
+  background: var(--glass-bg-hover);
+  border-color: rgba(150, 242, 215, 0.3);
+}
+
+.dropdown-trigger.open {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 2px rgba(150, 242, 215, 0.1);
+  background: var(--glass-bg-hover);
+}
+
+.dropdown-value {
+  flex: 1;
+  text-align: left;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropdown-icon {
+  color: var(--text-secondary);
+  transition: transform var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.dropdown-icon.rotated {
+  transform: rotate(180deg);
+  color: var(--accent-primary);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  margin-top: 0.25rem;
+  z-index: 1000;
+  max-height: 200px;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  animation: dropdownAppear 0.2s ease-out;
+}
+
+@keyframes dropdownAppear {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.dropdown-option {
+  padding: 0.75rem 1rem;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.dropdown-option:last-child {
+  border-bottom: none;
+}
+
+.dropdown-option:hover {
+  background: rgba(150, 242, 215, 0.1);
+  color: var(--accent-primary);
+  transform: translateX(4px);
+}
+
+.dropdown-option.selected {
+  background: rgba(150, 242, 215, 0.15);
+  color: var(--accent-primary);
+  position: relative;
+}
+
+.dropdown-option.selected::after {
+  content: '✓';
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--accent-primary);
+  font-weight: 600;
+}
+
+/* Estado Disabled */
+.custom-dropdown.disabled .dropdown-trigger {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: rgba(255, 255, 255, 0.02);
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+.custom-dropdown.disabled .dropdown-trigger:hover {
+  transform: none;
+  box-shadow: none;
+  background: rgba(255, 255, 255, 0.02);
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+.custom-dropdown.disabled .dropdown-value {
+  color: var(--text-muted);
+}
+
+.custom-dropdown.disabled .dropdown-icon {
+  color: var(--text-muted);
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .dropdown-trigger {
+    padding: 0.6rem 0.8rem;
+    min-height: 44px;
+  }
+  
+  .dropdown-option {
+    padding: 0.6rem 0.8rem;
+  }
+  
+  .dropdown-menu {
+    max-height: 180px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dropdown-trigger {
+    padding: 0.5rem 0.75rem;
+    min-height: 40px;
+  }
+  
+  .dropdown-value {
+    font-size: 0.8rem;
+  }
+  
+  .dropdown-option {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+  }
+  
+  .dropdown-menu {
+    max-height: 160px;
+  }
+}
+
+/* Tema customizado para diferentes contextos */
+.custom-dropdown.filter-style .dropdown-trigger {
+  min-width: 200px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.custom-dropdown.filter-style .dropdown-trigger:hover {
+  border-color: rgba(150, 242, 215, 0.3);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.custom-dropdown.compact .dropdown-trigger {
+  padding: 0.5rem 0.75rem;
+  min-height: 36px;
+}
+
+.custom-dropdown.compact .dropdown-value {
+  font-size: 0.8rem;
+}
+
+.custom-dropdown.compact .dropdown-option {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8rem;
+}

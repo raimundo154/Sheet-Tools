@@ -4,6 +4,9 @@
   
   # Diretório onde estão os arquivos compilados
   publish = "build"
+  
+  # Diretório das funções serverless
+  functions = "netlify/functions"
 
 [build.environment]
   # Node.js version
@@ -22,6 +25,13 @@
   to = "/index.html"
   status = 200
 
+# Permitir funções Netlify (não redirecionar)
+[[redirects]]
+  from = "/.netlify/functions/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+# Redirect catch-all para SPA (deve vir por último)
 [[redirects]]
   from = "/*"
   to = "/index.html"
