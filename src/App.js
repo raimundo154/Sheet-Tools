@@ -4,6 +4,7 @@ import HomePage from './components/HomePage';
 import NewHomePage from './components/NewHomePage';
 import CampaignDashboard from './components/CampaignDashboard';
 import QuotationPage from './components/QuotationPage';
+import DailyRoasPage from './components/DailyRoasPage';
 import FacebookTestCalls from './components/FacebookTestCalls';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import TermsOfService from './components/TermsOfService';
@@ -50,6 +51,7 @@ function App() {
       'dashboard': ROUTES.DASHBOARD,
       'campaigns': ROUTES.CAMPAIGNS,
       'quotation': ROUTES.QUOTATION,
+      'daily-roas': ROUTES.DAILY_ROAS,
       'privacy': ROUTES.PRIVACY,
       'terms': ROUTES.TERMS,
     };
@@ -119,6 +121,8 @@ function App() {
         return <CampaignDashboard />;
       case 'quotation':
         return <QuotationPage />;
+      case 'daily-roas':
+        return <DailyRoasPage />;
       case 'privacy':
         return <PrivacyPolicy />;
       case 'terms':

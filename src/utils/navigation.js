@@ -15,6 +15,7 @@ export const ROUTES = {
   DASHBOARD: '/dashboard',      // Dashboard principal (HomePage)
   CAMPAIGNS: '/campaigns',      // Gestão de campanhas (CampaignDashboard)
   QUOTATION: '/quotation',      // Cotação de moedas (QuotationPage)
+  DAILY_ROAS: '/daily-roas',    // Análise diária de ROAS (DailyRoasPage)
   
   // Páginas legais
   PRIVACY: '/privacy',          // Política de privacidade
@@ -30,6 +31,7 @@ export const PAGE_NAMES = {
   [ROUTES.DASHBOARD]: 'dashboard',
   [ROUTES.CAMPAIGNS]: 'campaigns',
   [ROUTES.QUOTATION]: 'quotation',
+  [ROUTES.DAILY_ROAS]: 'daily-roas',
   [ROUTES.PRIVACY]: 'privacy',
   [ROUTES.TERMS]: 'terms',
 };
@@ -90,7 +92,7 @@ class NavigationService {
    */
   static requiresAuth(route = null) {
     const checkRoute = route || this.getCurrentRoute();
-    const authRequiredRoutes = [ROUTES.DASHBOARD, ROUTES.CAMPAIGNS, ROUTES.QUOTATION];
+    const authRequiredRoutes = [ROUTES.DASHBOARD, ROUTES.CAMPAIGNS, ROUTES.QUOTATION, ROUTES.DAILY_ROAS];
     return authRequiredRoutes.includes(checkRoute);
   }
 
@@ -122,6 +124,7 @@ export const navigation = {
   toDashboard: () => NavigationService.navigate(ROUTES.DASHBOARD),
   toCampaigns: () => NavigationService.navigate(ROUTES.CAMPAIGNS),
   toQuotation: () => NavigationService.navigate(ROUTES.QUOTATION),
+  toDailyRoas: () => NavigationService.navigate(ROUTES.DAILY_ROAS),
   
   // Navegação para páginas legais
   toPrivacy: () => NavigationService.navigate(ROUTES.PRIVACY),

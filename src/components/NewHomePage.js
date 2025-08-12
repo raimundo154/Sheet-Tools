@@ -184,6 +184,14 @@ const NewHomePage = () => {
               <a href="#features" onClick={() => scrollToSection('features')}>Funcionalidades</a>
               <a href="#pricing" onClick={() => scrollToSection('pricing')}>Planos</a>
               <a href="#faq" onClick={() => scrollToSection('faq')}>FAQ</a>
+              <motion.button 
+                className="mobile-cta-button"
+                onClick={handleCTAClick}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Começar Agora
+              </motion.button>
             </nav>
 
             <div className="header-actions">
