@@ -3,9 +3,9 @@ import Sidebar from './components/Sidebar';
 import HomePage from './components/HomePage';
 import NewHomePage from './components/NewHomePage';
 import CampaignDashboard from './components/CampaignDashboard';
-import SalesPage from './components/SalesPage';
 import QuotationPage from './components/QuotationPage';
-
+import DailyRoasPageNew from './components/DailyRoasPageNew';
+import FacebookTestCalls from './components/FacebookTestCalls';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import TermsOfService from './components/TermsOfService';
 import LoginPage from './components/LoginPage';
@@ -19,6 +19,7 @@ import './App.css';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home-landing');
+  const [showTestCalls, setShowTestCalls] = useState(false);
 
   // Inicializar página baseada na URL atual
   useEffect(() => {
@@ -49,8 +50,8 @@ function App() {
     const routeMap = {
       'dashboard': ROUTES.DASHBOARD,
       'campaigns': ROUTES.CAMPAIGNS,
-      'sales': ROUTES.SALES,
       'quotation': ROUTES.QUOTATION,
+      'daily-roas': ROUTES.DAILY_ROAS,
       'privacy': ROUTES.PRIVACY,
       'terms': ROUTES.TERMS,
     };
@@ -118,10 +119,10 @@ function App() {
         return <HomePage />;
       case 'campaigns':
         return <CampaignDashboard />;
-      case 'sales':
-        return <SalesPage />;
       case 'quotation':
         return <QuotationPage />;
+      case 'daily-roas':
+        return <DailyRoasPageNew />;
       case 'privacy':
         return <PrivacyPolicy />;
       case 'terms':
@@ -150,6 +151,25 @@ function App() {
       
       {/* Main Content */}
       <main className="main-content">
+        {/* Botão para mostrar/esconder testes (só no dashboard) */}
+        {currentPage === 'campaigns' && (
+          <div className="test-button-container">
+            <button 
+              onClick={() => setShowTestCalls(!showTestCalls)}
+              className="test-button"
+            >
+              {showTestCalls ? '❌ Fechar Testes' : '🧪 Testes Facebook'}
+            </button>
+          </div>
+        )}
+
+        {/* Componente de testes (condicional) */}
+        {showTestCalls && currentPage === 'campaigns' && (
+          <div className="test-panel">
+            <FacebookTestCalls />
+          </div>
+        )}
+
         {/* Conteúdo principal */}
         <div className="content-wrapper">
           {renderContent()}

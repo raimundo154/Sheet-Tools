@@ -45,6 +45,15 @@ html {
   align-items: center;
   justify-content: space-between;
   height: 80px;
+  position: relative;
+}
+
+.logo {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1002;
 }
 
 .logo-image {
@@ -57,6 +66,11 @@ html {
   display: flex;
   gap: 2rem;
   align-items: center;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
 }
 
 .nav a {
@@ -75,6 +89,11 @@ html {
   display: flex;
   align-items: center;
   gap: 1rem;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1002;
 }
 
 .cta-button {
@@ -101,9 +120,14 @@ html {
   cursor: pointer;
 }
 
+/* Hide mobile CTA button on desktop */
+.mobile-cta-button {
+  display: none;
+}
+
 /* Hero Section */
 .hero {
-  padding: 120px 0 80px 0;
+  padding: 160px 0 80px 0;
   background: linear-gradient(
     to bottom,
     rgba(9, 22, 24, 1) 0%,
@@ -728,6 +752,36 @@ html {
     padding: 0 1rem;
   }
   
+  /* Mobile header layout */
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+  }
+  
+  .logo {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1001;
+    flex: 0 0 auto;
+  }
+  
+  .header-actions {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1001;
+  }
+  
+  .logo-image {
+    height: 60px;
+  }
+  
+  /* Hide desktop navigation and CTA */
   .nav {
     position: fixed;
     top: 80px;
@@ -742,6 +796,12 @@ html {
     opacity: 0;
     pointer-events: none;
     z-index: 999;
+    align-items: center;
+    gap: 1.5rem;
+    /* Reset desktop positioning for mobile */
+    position: fixed;
+    left: 0;
+    transform: translateY(-100%);
   }
   
   .nav-open {
@@ -750,12 +810,44 @@ html {
     pointer-events: all;
   }
   
+  /* Hide desktop CTA button on mobile */
+  .header-actions .cta-button {
+    display: none;
+  }
+  
+  /* Position menu toggle button */
+  .header-actions {
+    flex: 0 0 auto;
+  }
+  
   .menu-toggle {
     display: block;
+    position: relative;
+    z-index: 1001;
+  }
+  
+  /* Mobile CTA button in menu */
+  .mobile-cta-button {
+    display: block;
+    background: linear-gradient(135deg, #1c6f5b 0%, #96f2d7 100%);
+    color: #091618;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+    width: auto;
+  }
+  
+  .mobile-cta-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(150, 242, 215, 0.3);
   }
   
   .hero {
-    padding: 100px 0 40px 0;
+    padding: 140px 0 40px 0;
     min-height: auto;
   }
   
@@ -771,6 +863,24 @@ html {
   .hero-subtitle {
     font-size: 1.1rem;
     margin-bottom: 1.5rem;
+  }
+  
+  /* Center CTA buttons on mobile */
+  .hero-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .cta-button-large {
+    max-width: 100%;
+    width: fit-content;
+  }
+  
+  .cta-note {
+    text-align: center;
+    max-width: 100%;
   }
   
   .carousel-container {
@@ -827,10 +937,30 @@ html {
 @media (max-width: 480px) {
   .header-content {
     height: 70px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+  }
+  
+  .logo {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1001;
+  }
+  
+  .header-actions {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1001;
   }
   
   .logo-image {
-    height: 60px;
+    height: 50px;
   }
   
   .cta-button {
@@ -839,7 +969,7 @@ html {
   }
   
   .hero {
-    padding: 80px 0 30px 0;
+    padding: 120px 0 30px 0;
   }
   
   .hero-title {
