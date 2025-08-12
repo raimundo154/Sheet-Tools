@@ -2,10 +2,15 @@ import { createClient } from '@supabase/supabase-js';
 import crypto from 'crypto';
 
 // Inicializar cliente Supabase com service role para inserções
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY // Use service role key para operações de webhook
-);
+const supabaseUrl = process.env.SUPABASE_URL || 'https://dnamxsapwgltxmtokecd.supabase.co';
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!supabaseKey) {
+  console.error('❌ SUPABASE_SERVICE_ROLE_KEY não configurada no Netlify!');
+  console.log('ℹ️ Configure em: Netlify Dashboard > Site settings > Environment variables');
+}
+
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Função para verificar autenticidade do webhook Shopify (opcional mas recomendado)
 function verifyShopifyWebhook(data, hmacSignature) {
@@ -23,6 +28,24 @@ function verifyShopifyWebhook(data, hmacSignature) {
 }
 
 export const handler = async (event) => {
+  // Verificar se variáveis de ambiente estão configuradas
+  if (!supabaseKey) {
+    console.error('🚨 Webhook falhou: SUPABASE_SERVICE_ROLE_KEY não configurada');
+    return {
+      statusCode: 500,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        error: 'Configuração inválida',
+        message: 'SUPABASE_SERVICE_ROLE_KEY não configurada no Netlify',
+        debug_info: {
+          supabase_url: supabaseUrl,
+          has_service_key: !!supabaseKey,
+          environment: process.env.NODE_ENV || 'unknown'
+        }
+      })
+    };
+  }
+
   // Só aceitar POST requests
   if (event.httpMethod !== 'POST') {
     return {

@@ -18,6 +18,11 @@
   REACT_APP_NAME = "Sheet Tools"
   REACT_APP_DOMAIN = "sheet-tools.com"
   REACT_APP_ENV = "production"
+  
+  # Variáveis para webhook Shopify (serverless functions)
+  SUPABASE_URL = "https://dnamxsapwgltxmtokecd.supabase.co"
+  # SUPABASE_SERVICE_ROLE_KEY deve ser configurada no Netlify Dashboard (não aqui por segurança)
+  # SHOPIFY_WEBHOOK_SECRET deve ser configurada no Netlify Dashboard (opcional)
 
 # Redirects para React Router funcionar (SPA)
 [[redirects]]
@@ -25,11 +30,8 @@
   to = "/index.html"
   status = 200
 
-# Permitir funções Netlify (não redirecionar)
-[[redirects]]
-  from = "/.netlify/functions/*"
-  to = "/.netlify/functions/:splat"
-  status = 200
+# Funções Netlify são tratadas automaticamente pelo Netlify
+# Não precisamos de redirect para /.netlify/functions/*
 
 # Redirect catch-all para SPA (deve vir por último)
 [[redirects]]
