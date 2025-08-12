@@ -58,3 +58,4 @@ comment on column vendas.quantidade is 'Quantidade vendida';
 comment on column vendas.total is 'Total calculado automaticamente (preco * quantidade)';
 comment on column vendas.financial_status is 'Status financeiro: pending, paid, partially_paid, refunded, etc.';
 comment on column vendas.fulfillment_status is 'Status de fulfillment: fulfilled, partial, unfulfilled, etc.';
+
