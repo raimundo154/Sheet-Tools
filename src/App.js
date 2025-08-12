@@ -3,6 +3,7 @@ import Sidebar from './components/Sidebar';
 import HomePage from './components/HomePage';
 import NewHomePage from './components/NewHomePage';
 import CampaignDashboard from './components/CampaignDashboard';
+import SalesPage from './components/SalesPage';
 import QuotationPage from './components/QuotationPage';
 import DailyRoasPageNew from './components/DailyRoasPageNew';
 import FacebookTestCalls from './components/FacebookTestCalls';
@@ -50,6 +51,7 @@ function App() {
     const routeMap = {
       'dashboard': ROUTES.DASHBOARD,
       'campaigns': ROUTES.CAMPAIGNS,
+      'sales': ROUTES.SALES,
       'quotation': ROUTES.QUOTATION,
       'daily-roas': ROUTES.DAILY_ROAS,
       'privacy': ROUTES.PRIVACY,
@@ -119,6 +121,8 @@ function App() {
         return <HomePage />;
       case 'campaigns':
         return <CampaignDashboard />;
+      case 'sales':
+        return <SalesPage />;
       case 'quotation':
         return <QuotationPage />;
       case 'daily-roas':
