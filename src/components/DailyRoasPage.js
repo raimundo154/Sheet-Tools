@@ -4,6 +4,16 @@ import * as XLSX from 'xlsx';
 import toast, { Toaster } from 'react-hot-toast';
 import dailyRoasService from '../services/dailyRoasService';
 import { 
+  decisionEngine, 
+  calculateMarketCPC, 
+  getCampaignHistory, 
+  getDecisionBadgeStyle, 
+  formatDecisionDisplay,
+  simulateScaling,
+  validateDecision,
+  DECISION_CONFIG
+} from '../utils/campaignDecisionEngine';
+import { 
   Calendar, 
   Plus, 
   Download, 
@@ -18,7 +28,13 @@ import {
   FileSpreadsheet,
   Eye,
   Check,
-  X
+  X,
+  Settings,
+  TrendingDown,
+  Zap,
+  PlayCircle,
+  PauseCircle,
+  Info
 } from 'lucide-react';
 import './DailyRoasPage.css';
 
@@ -36,6 +52,12 @@ const DailyRoasPage = () => {
     totalMarginEur: '0.00',
     weightedRoas: '0.0000'
   });
+  const [showDecisionModal, setShowDecisionModal] = useState(false);
+  const [selectedDecision, setSelectedDecision] = useState(null);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [campaignDecisions, setCampaignDecisions] = useState({});
+  const [allProductsHistory, setAllProductsHistory] = useState([]);
+  const [marketCPC, setMarketCPC] = useState(0);
 
   // Calculation functions
   const calculateRow = (row) => {
@@ -83,6 +105,123 @@ const DailyRoasPage = () => {
         totalMarginEur: '0.00',
         weightedRoas: '0.0000'
       });
+    }
+  };
+
+  // Calculate campaign decisions for all products
+  const calculateCampaignDecisions = async () => {
+    try {
+      // Get historical data for decision making
+      const startDate = new Date(selectedDate);
+      startDate.setDate(startDate.getDate() - DECISION_CONFIG.MAX_HISTORY_DAYS);
+      
+      // Load historical data from multiple dates
+      const historicalData = [];
+      for (let i = 0; i <= DECISION_CONFIG.MAX_HISTORY_DAYS; i++) {
+        const checkDate = new Date(startDate);
+        checkDate.setDate(checkDate.getDate() + i);
+        const dateStr = checkDate.toISOString().split('T')[0];
+        
+        try {
+          const dayData = await dailyRoasService.getProductsByDate(dateStr);
+          historicalData.push(...dayData.map(item => ({ ...item, date: dateStr })));
+        } catch (error) {
+          // Skip dates with no data
+          continue;
+        }
+      }
+
+      setAllProductsHistory(historicalData);
+
+      // Calculate market CPC
+      const avgMarketCPC = calculateMarketCPC(historicalData);
+      setMarketCPC(avgMarketCPC);
+
+      // Calculate decisions for each current product
+      const decisions = {};
+      
+      products.forEach(product => {
+        // Get campaign history for this product
+        const productHistory = getCampaignHistory(
+          historicalData, 
+          product.productName, 
+          DECISION_CONFIG.MAX_HISTORY_DAYS
+        );
+
+        // Add current day data if not already in history
+        const currentDayInHistory = productHistory.find(h => h.date === selectedDate);
+        if (!currentDayInHistory) {
+          productHistory.push({ ...product, date: selectedDate });
+        }
+
+        // Calculate decision
+        if (productHistory.length > 0) {
+          const decision = decisionEngine(productHistory, avgMarketCPC);
+          decisions[product.id] = decision;
+        }
+      });
+
+      setCampaignDecisions(decisions);
+    } catch (error) {
+      console.error('Erro ao calcular decisões:', error);
+      toast.error('Erro ao calcular decisões automáticas');
+    }
+  };
+
+  // Open decision modal
+  const openDecisionModal = (product) => {
+    const decision = campaignDecisions[product.id];
+    if (decision) {
+      setSelectedProduct(product);
+      setSelectedDecision(decision);
+      setShowDecisionModal(true);
+    }
+  };
+
+  // Apply decision action
+  const applyDecision = async (action, targetBudget = null) => {
+    try {
+      if (!selectedProduct || !selectedDecision) return;
+
+      // Validate decision
+      const validation = validateDecision(selectedDecision, selectedProduct);
+      if (!validation.valid) {
+        toast.error(`Não é possível aplicar: ${validation.error}`);
+        return;
+      }
+
+      // Update product based on action
+      let updatedProduct = { ...selectedProduct };
+      
+      if (action === 'SCALE' || action === 'DESCALING') {
+        updatedProduct.budget = targetBudget;
+      }
+
+      if (action === 'KILL') {
+        updatedProduct.status = 'KILLED';
+        updatedProduct.budget = 0;
+      }
+
+      // Save to database
+      await dailyRoasService.saveProduct(updatedProduct);
+
+      // Update local state
+      setProducts(products.map(p => 
+        p.id === selectedProduct.id ? updatedProduct : p
+      ));
+
+      // Close modal
+      setShowDecisionModal(false);
+      setSelectedProduct(null);
+      setSelectedDecision(null);
+
+      // Recalculate decisions
+      await calculateCampaignDecisions();
+
+      toast.success(`Ação ${action} aplicada com sucesso!`);
+    } catch (error) {
+      console.error('Erro ao aplicar decisão:', error);
+      toast.error('Erro ao aplicar decisão');
     }
   };
 
@@ -445,6 +584,13 @@ const DailyRoasPage = () => {
     loadDataForDate(selectedDate);
   }, [selectedDate]);
 
+  // Calculate decisions when products change
+  useEffect(() => {
+    if (products.length > 0) {
+      calculateCampaignDecisions();
+    }
+  }, [products, selectedDate]);
+
   return (
     <div className="daily-roas-page">
       <div className="container">
@@ -564,12 +710,37 @@ const DailyRoasPage = () => {
           </div>
         </motion.div>
 
+        {/* Market Info Panel */}
+        {marketCPC > 0 && (
+          <motion.div 
+            className="market-info-panel"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+          >
+            <div className="market-info-content">
+              <div className="market-type">
+                <Settings size={16} />
+                <span>Mercado: <strong>{marketCPC < 0.7 ? 'CPC BAIXO' : 'CPC ALTO'}</strong></span>
+                <span className="market-cpc">CPC Médio: €{marketCPC.toFixed(3)}</span>
+              </div>
+              <div className="decision-legend">
+                <span className="legend-item kill">❌ KILL</span>
+                <span className="legend-item scale">⬆️ SCALE</span>
+                <span className="legend-item descaling">⬇️ DESCALING</span>
+                <span className="legend-item run">✅ RUN</span>
+                <span className="legend-item hold">⏸️ HOLD</span>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         {/* Data Table */}
         <motion.div 
           className="table-container"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
         >
           <div className="table-wrapper">
             <table className="data-table">
@@ -589,6 +760,7 @@ const DailyRoasPage = () => {
                   <th>Margin (€)</th>
                   <th>Margin (%)</th>
                   <th>BER</th>
+                  <th>Decisão</th>
                   <th>Ações</th>
                 </tr>
               </thead>
@@ -676,6 +848,35 @@ const DailyRoasPage = () => {
                       {product.marginPct ? (product.marginPct * 100).toFixed(2) + '%' : 'N/A'}
                     </td>
                     <td className="calculated-field">{product.ber || 'N/A'}</td>
+                    <td className="decision-cell">
+                      {campaignDecisions[product.id] ? (
+                        <div className="decision-badge-container">
+                          <span 
+                            className="decision-badge"
+                            style={{
+                              color: getDecisionBadgeStyle(campaignDecisions[product.id].action).color,
+                              backgroundColor: getDecisionBadgeStyle(campaignDecisions[product.id].action).bgColor
+                            }}
+                            onClick={() => openDecisionModal(product)}
+                            title={campaignDecisions[product.id].reason}
+                          >
+                            {getDecisionBadgeStyle(campaignDecisions[product.id].action).icon} {campaignDecisions[product.id].action}
+                            {campaignDecisions[product.id].targetBudget && (
+                              <span className="target-budget">→ €{campaignDecisions[product.id].targetBudget}</span>
+                            )}
+                          </span>
+                          <button
+                            onClick={() => openDecisionModal(product)}
+                            className="btn-decision-details"
+                            title="Ver detalhes"
+                          >
+                            <Info size={14} />
+                          </button>
+                        </div>
+                      ) : (
+                        <span className="decision-loading">Calculando...</span>
+                      )}
+                    </td>
                     <td>
                       <button
                         onClick={() => deleteProduct(product.id)}
@@ -729,6 +930,154 @@ const DailyRoasPage = () => {
               </div>
             </div>
           </motion.div>
+        )}
+
+        {/* Decision Modal */}
+        {showDecisionModal && selectedDecision && selectedProduct && (
+          <div className="modal-overlay">
+            <motion.div 
+              className="modal-content decision-modal"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="modal-header">
+                <h3>
+                  <Settings size={20} />
+                  Decisão Automática: {selectedProduct.productName}
+                </h3>
+                <div className="decision-summary">
+                  <span 
+                    className="decision-badge large"
+                    style={{
+                      color: getDecisionBadgeStyle(selectedDecision.action).color,
+                      backgroundColor: getDecisionBadgeStyle(selectedDecision.action).bgColor
+                    }}
+                  >
+                    {getDecisionBadgeStyle(selectedDecision.action).icon} {selectedDecision.action}
+                    {selectedDecision.targetBudget && (
+                      <span className="target-budget">→ €{selectedDecision.targetBudget}</span>
+                    )}
+                  </span>
+                </div>
+              </div>
+
+              <div className="modal-body">
+                <div className="decision-details">
+                  {/* Reason */}
+                  <div className="detail-section">
+                    <h4>📋 Análise</h4>
+                    <p className="decision-reason">{selectedDecision.reason}</p>
+                    <p className="market-info">
+                      <strong>Mercado:</strong> {selectedDecision.marketType} 
+                      (CPC médio: €{marketCPC.toFixed(3)})
+                    </p>
+                  </div>
+
+                  {/* Current Metrics */}
+                  <div className="detail-section">
+                    <h4>📊 Métricas Atuais</h4>
+                    <div className="metrics-grid">
+                      <div className="metric-item">
+                        <span>Total Spend:</span>
+                        <span>€{selectedProduct.totalSpend}</span>
+                      </div>
+                      <div className="metric-item">
+                        <span>CPC:</span>
+                        <span>€{selectedProduct.cpc || 'N/A'}</span>
+                      </div>
+                      <div className="metric-item">
+                        <span>ATC:</span>
+                        <span>{selectedProduct.atc || 0}</span>
+                      </div>
+                      <div className="metric-item">
+                        <span>Vendas:</span>
+                        <span>{selectedProduct.purchases || 0}</span>
+                      </div>
+                      <div className="metric-item">
+                        <span>ROAS:</span>
+                        <span>{selectedProduct.roas || 'N/A'}</span>
+                      </div>
+                      <div className="metric-item">
+                        <span>Margem:</span>
+                        <span className={selectedProduct.marginEur > 0 ? 'positive' : 'negative'}>
+                          €{selectedProduct.marginEur}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Simulation for SCALE/DESCALING */}
+                  {(selectedDecision.action === 'SCALE' || selectedDecision.action === 'DESCALING') && selectedDecision.targetBudget && (
+                    <div className="detail-section">
+                      <h4>🎯 Simulação</h4>
+                      {(() => {
+                        const currentMetrics = calculateRow(selectedProduct);
+                        const simulation = simulateScaling(selectedProduct, selectedDecision.targetBudget, currentMetrics);
+                        return (
+                          <div className="simulation-comparison">
+                            <div className="sim-column">
+                              <h5>Atual</h5>
+                              <div className="sim-item">Orçamento: €{simulation.current.budget}</div>
+                              <div className="sim-item">Spend: €{simulation.current.spend}</div>
+                              <div className="sim-item">Margem: €{simulation.current.marginEur}</div>
+                            </div>
+                            <div className="sim-column">
+                              <h5>Projetado</h5>
+                              <div className="sim-item">Orçamento: €{simulation.projected.budget}</div>
+                              <div className="sim-item">Spend: €{simulation.projected.spend}</div>
+                              <div className="sim-item">Margem: €{simulation.projected.marginEur}</div>
+                            </div>
+                            <div className="sim-column">
+                              <h5>Impacto</h5>
+                              <div className="sim-item">Orçamento: {simulation.impact.budgetChange > 0 ? '+' : ''}{simulation.impact.budgetChange.toFixed(1)}%</div>
+                              <div className="sim-item">Margem: {simulation.impact.marginChange > 0 ? '+' : ''}€{simulation.impact.marginChange.toFixed(2)}</div>
+                            </div>
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  )}
+
+                  {/* Historical Performance */}
+                  {selectedDecision.avgMarginPct !== undefined && (
+                    <div className="detail-section">
+                      <h4>📈 Performance (48h)</h4>
+                      <div className="performance-info">
+                        <span>Margem Média: </span>
+                        <span className={selectedDecision.avgMarginPct > 0 ? 'positive' : 'negative'}>
+                          {selectedDecision.avgMarginPct}%
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="modal-footer">
+                <button 
+                  onClick={() => setShowDecisionModal(false)}
+                  className="btn btn-secondary"
+                >
+                  <X size={16} />
+                  Fechar
+                </button>
+                
+                {selectedDecision.action !== 'HOLD' && (
+                  <button 
+                    onClick={() => applyDecision(selectedDecision.action, selectedDecision.targetBudget)}
+                    className={`btn ${selectedDecision.action === 'KILL' ? 'btn-danger' : 'btn-success'}`}
+                  >
+                    {selectedDecision.action === 'KILL' && <PauseCircle size={16} />}
+                    {selectedDecision.action === 'SCALE' && <TrendingUp size={16} />}
+                    {selectedDecision.action === 'DESCALING' && <TrendingDown size={16} />}
+                    {selectedDecision.action === 'RUN' && <PlayCircle size={16} />}
+                    Aplicar {selectedDecision.action}
+                  </button>
+                )}
+              </div>
+            </motion.div>
+          </div>
         )}
 
         {/* Excel Import Preview Modal */}

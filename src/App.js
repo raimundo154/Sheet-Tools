@@ -4,7 +4,7 @@ import HomePage from './components/HomePage';
 import NewHomePage from './components/NewHomePage';
 import CampaignDashboard from './components/CampaignDashboard';
 import QuotationPage from './components/QuotationPage';
-import DailyRoasPage from './components/DailyRoasPage';
+import DailyRoasPageNew from './components/DailyRoasPageNew';
 import FacebookTestCalls from './components/FacebookTestCalls';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import TermsOfService from './components/TermsOfService';
@@ -122,7 +122,7 @@ function App() {
       case 'quotation':
         return <QuotationPage />;
       case 'daily-roas':
-        return <DailyRoasPage />;
+        return <DailyRoasPageNew />;
       case 'privacy':
         return <PrivacyPolicy />;
       case 'terms':
