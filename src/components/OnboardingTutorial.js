@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   CheckCircle, 
   Facebook, 
@@ -9,10 +9,14 @@ import {
   ExternalLink
 } from 'lucide-react';
 import './OnboardingTutorial.css';
+import { userConfigService } from '../services/userConfigService';
 
 const OnboardingTutorial = ({ onComplete, onSkip }) => {
   const [completedSteps, setCompletedSteps] = useState([]);
   const [showShopifyModal, setShowShopifyModal] = useState(false);
+  const [shopifyDomain, setShopifyDomain] = useState('');
+  const [isSavingDomain, setIsSavingDomain] = useState(false);
+  const [domainSaveMessage, setDomainSaveMessage] = useState('');
 
   const steps = [
     {
@@ -81,6 +85,57 @@ const OnboardingTutorial = ({ onComplete, onSkip }) => {
 
   const progressPercentage = ((completedSteps.length) / steps.length) * 100;
 
+  // Carregar domínio Shopify ao abrir modal
+  useEffect(() => {
+    if (showShopifyModal) {
+      loadShopifyDomain();
+    }
+  }, [showShopifyModal]);
+
+  const loadShopifyDomain = async () => {
+    try {
+      const result = await userConfigService.getShopifyDomain();
+      if (result.success && result.data) {
+        setShopifyDomain(result.data);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar domínio Shopify:', error);
+    }
+  };
+
+  const handleSaveDomain = async () => {
+    console.log('🔄 Iniciando handleSaveDomain com domínio:', shopifyDomain);
+    
+    if (!shopifyDomain.trim()) {
+      console.log('❌ Domínio vazio');
+      setDomainSaveMessage('Por favor, insira um domínio válido');
+      return;
+    }
+
+    setIsSavingDomain(true);
+    setDomainSaveMessage('Salvando...');
+
+    try {
+      console.log('🚀 Chamando userConfigService.saveShopifyDomain...');
+      const result = await userConfigService.saveShopifyDomain(shopifyDomain);
+      console.log('📥 Resultado recebido:', result);
+      
+      if (result.success) {
+        console.log('✅ Sucesso no salvamento');
+        setDomainSaveMessage('✅ Domínio salvo com sucesso!');
+        setTimeout(() => setDomainSaveMessage(''), 3000);
+      } else {
+        console.error('❌ Falha no salvamento:', result.error);
+        setDomainSaveMessage(`❌ Erro: ${result.error}`);
+      }
+    } catch (error) {
+      console.error('❌ Erro ao salvar domínio:', error);
+      setDomainSaveMessage(`❌ Erro interno: ${error.message}`);
+    } finally {
+      setIsSavingDomain(false);
+    }
+  };
+
   const ShopifySetupModal = () => (
     <div className="shopify-modal-overlay">
       <div className="shopify-modal">
@@ -137,9 +192,23 @@ const OnboardingTutorial = ({ onComplete, onSkip }) => {
                   type="text" 
                   placeholder="exemplo.myshopify.com"
                   className="domain-field"
+                  value={shopifyDomain}
+                  onChange={(e) => setShopifyDomain(e.target.value)}
+                  disabled={isSavingDomain}
                 />
-                <button className="save-domain-btn">Salvar</button>
+                <button 
+                  className="save-domain-btn"
+                  onClick={handleSaveDomain}
+                  disabled={isSavingDomain}
+                >
+                  {isSavingDomain ? 'Salvando...' : 'Salvar'}
+                </button>
               </div>
+              {domainSaveMessage && (
+                <div className={`domain-save-message ${domainSaveMessage.includes('✅') ? 'success' : 'error'}`}>
+                  {domainSaveMessage}
+                </div>
+              )}
             </div>
           </div>
 
