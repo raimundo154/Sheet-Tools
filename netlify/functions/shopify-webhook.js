@@ -78,16 +78,29 @@ export const handler = async (event) => {
         productImageUrl = `https://via.placeholder.com/150x150/e2e8f0/64748b?text=${encodeURIComponent(item.title.substring(0, 10))}`;
       }
 
-      // Buscar user_id baseado no shop_domain
+      // Buscar user_id - sempre usar o primeiro usuário disponível
       const shopDomain = order.shop_domain || event.headers['x-shopify-shop-domain'];
+      let userId = null;
       
-      // Buscar o usuário associado a esta loja
-      const { data: userShop } = await supabase
-        .rpc('get_user_by_shop_domain', { domain: shopDomain });
+      console.log(`🏪 Processando venda da loja: ${shopDomain}`);
       
-      if (!userShop) {
-        console.warn(`⚠️ Nenhum usuário encontrado para a loja: ${shopDomain}`);
-        // Continuar sem user_id - pode ser configurado depois
+      try {
+        // Buscar o primeiro usuário disponível na base de dados
+        const { data: firstUser, error } = await supabase
+          .rpc('get_first_user');
+        
+        if (firstUser && !error) {
+          userId = firstUser;
+          console.log(`✅ User ID encontrado: ${userId}`);
+        } else {
+          console.error(`❌ Erro ao buscar user_id:`, error);
+        }
+      } catch (error) {
+        console.error(`💥 Erro inesperado ao buscar user_id:`, error);
+      }
+      
+      if (!userId) {
+        console.error(`🚨 ATENÇÃO: Venda será criada sem user_id!`);
       }
 
       const vendaData = {
@@ -104,7 +117,7 @@ export const handler = async (event) => {
         currency: order.currency || 'EUR',
         shop_domain: shopDomain,
         product_image_url: productImageUrl,
-        user_id: userShop || null
+        user_id: userId
       };
 
       vendasParaInserir.push(vendaData);
