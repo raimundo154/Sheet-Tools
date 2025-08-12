@@ -60,6 +60,8 @@ export const handler = async (event) => {
 
   try {
     console.log('🛒 Webhook Shopify recebido');
+    console.log('📋 Headers:', Object.keys(event.headers));
+    console.log('📦 Body length:', event.body?.length || 0);
     
     // Verificar autenticidade do webhook (opcional)
     const hmacSignature = event.headers['x-shopify-hmac-sha256'];
@@ -108,15 +110,22 @@ export const handler = async (event) => {
       console.log(`🏪 Processando venda da loja: ${shopDomain}`);
       
       try {
-        // Buscar o primeiro usuário disponível na base de dados
-        const { data: firstUser, error } = await supabase
-          .rpc('get_first_user');
+        // Buscar usuário pela loja específica
+        const { data: userByShop, error } = await supabase
+          .rpc('get_user_by_shop_domain', { domain: shopDomain });
         
-        if (firstUser && !error) {
-          userId = firstUser;
-          console.log(`✅ User ID encontrado: ${userId}`);
-        } else {
-          console.error(`❌ Erro ao buscar user_id:`, error);
+        if (userByShop && !error) {
+          userId = userByShop;
+          console.log(`✅ User ID encontrado para loja ${shopDomain}: ${userId}`);
+        } else if (error) {
+          console.error(`❌ Erro ao buscar user_id para loja ${shopDomain}:`, error);
+          // Fallback para o primeiro usuário se não encontrar associação
+          const { data: firstUser, error: fallbackError } = await supabase
+            .rpc('get_first_user');
+          if (firstUser && !fallbackError) {
+            userId = firstUser;
+            console.log(`⚠️ Usando fallback - User ID: ${userId}`);
+          }
         }
       } catch (error) {
         console.error(`💥 Erro inesperado ao buscar user_id:`, error);
