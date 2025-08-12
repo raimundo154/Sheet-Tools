@@ -270,3 +270,5 @@ BEGIN
     RAISE NOTICE '📋 Execute agora: SELECT * FROM vendas LIMIT 1; para testar';
 END $$;
 
+
+

@@ -50,3 +50,5 @@ SELECT COUNT(*) as "Total de Registros" FROM vendas;
 -- 6. Ver dados de exemplo (se existirem)
 SELECT * FROM vendas LIMIT 3;
 
+
+
