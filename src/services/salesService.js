@@ -4,13 +4,14 @@ class SalesService {
   
   /**
    * Buscar todas as vendas ordenadas por data mais recente
+   * Com RLS ativado, só retorna vendas do usuário logado
    * @param {number} limit - Limite de resultados (padrão: 50)
    * @param {number} offset - Offset para paginação (padrão: 0)
    * @returns {Promise<{data: Array, error: any}>}
    */
   async getVendas(limit = 50, offset = 0) {
     try {
-      console.log(`📊 Buscando vendas (limit: ${limit}, offset: ${offset})`);
+      console.log(`📊 Buscando vendas do usuário logado (limit: ${limit}, offset: ${offset})`);
       
       const { data, error, count } = await supabase
         .from('vendas')
@@ -27,7 +28,7 @@ class SalesService {
         return { data: [], error, count: 0 };
       }
 
-      console.log(`✅ ${data?.length || 0} vendas encontradas`);
+      console.log(`✅ ${data?.length || 0} vendas encontradas para o usuário`);
       return { data: data || [], error: null, count: count || 0 };
 
     } catch (error) {
@@ -249,8 +250,88 @@ class SalesService {
       minute: '2-digit'
     }).format(new Date(data));
   }
+
+  /**
+   * Buscar lojas do usuário
+   * @returns {Promise<{data: Array, error: any}>}
+   */
+  async getUserShops() {
+    try {
+      const { data, error } = await supabase
+        .from('user_shops')
+        .select('*')
+        .eq('is_active', true)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('❌ Erro ao buscar lojas do usuário:', error);
+        return { data: [], error };
+      }
+
+      return { data: data || [], error: null };
+    } catch (error) {
+      console.error('💥 Erro inesperado ao buscar lojas:', error);
+      return { data: [], error };
+    }
+  }
+
+  /**
+   * Adicionar nova loja do usuário
+   * @param {string} shopDomain - Domínio da loja
+   * @param {string} shopName - Nome da loja
+   * @returns {Promise<{data: any, error: any}>}
+   */
+  async addUserShop(shopDomain, shopName) {
+    try {
+      const { data, error } = await supabase
+        .from('user_shops')
+        .insert({
+          shop_domain: shopDomain,
+          shop_name: shopName,
+          is_active: true
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error('❌ Erro ao adicionar loja:', error);
+        return { data: null, error };
+      }
+
+      return { data, error: null };
+    } catch (error) {
+      console.error('💥 Erro inesperado ao adicionar loja:', error);
+      return { data: null, error };
+    }
+  }
+
+  /**
+   * Remover loja do usuário
+   * @param {number} shopId - ID da loja
+   * @returns {Promise<{success: boolean, error: any}>}
+   */
+  async removeUserShop(shopId) {
+    try {
+      const { error } = await supabase
+        .from('user_shops')
+        .update({ is_active: false })
+        .eq('id', shopId);
+
+      if (error) {
+        console.error('❌ Erro ao remover loja:', error);
+        return { success: false, error };
+      }
+
+      return { success: true, error: null };
+    } catch (error) {
+      console.error('💥 Erro inesperado ao remover loja:', error);
+      return { success: false, error };
+    }
+  }
 }
 
 // Exportar instância singleton
 const salesService = new SalesService();
 export default salesService;
+
+

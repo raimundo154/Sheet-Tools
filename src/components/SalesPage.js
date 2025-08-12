@@ -282,8 +282,20 @@ const SalesPage = () => {
               <div key={venda.id} className="table-row">
                 <div className="table-cell">
                   <div className="product-info">
-                    <strong>{venda.produto}</strong>
-                    <small>#{venda.order_number}</small>
+                    <div className="product-image-container">
+                      <img 
+                        src={venda.product_image_url || `https://via.placeholder.com/60x60/e2e8f0/64748b?text=${encodeURIComponent(venda.produto.substring(0, 2))}`}
+                        alt={venda.produto}
+                        className="product-image"
+                        onError={(e) => {
+                          e.target.src = `https://via.placeholder.com/60x60/e2e8f0/64748b?text=${encodeURIComponent(venda.produto.substring(0, 2))}`;
+                        }}
+                      />
+                    </div>
+                    <div className="product-details">
+                      <strong>{venda.produto}</strong>
+                      <small>#{venda.order_number}</small>
+                    </div>
                   </div>
                 </div>
                 

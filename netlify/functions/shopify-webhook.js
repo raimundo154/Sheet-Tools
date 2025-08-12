@@ -56,6 +56,40 @@ export const handler = async (event) => {
     const vendasParaInserir = [];
     
     for (const item of order.line_items) {
+      // Capturar URL da imagem do produto (primeira imagem se houver múltiplas)
+      let productImageUrl = null;
+      if (item.properties) {
+        // Se a imagem estiver nas propriedades do item
+        const imageProperty = item.properties.find(prop => 
+          prop.name === 'image' || prop.name === 'product_image'
+        );
+        if (imageProperty) {
+          productImageUrl = imageProperty.value;
+        }
+      }
+      
+      // Se não encontrou nas propriedades, tentar pegar do variant ou produto
+      if (!productImageUrl && item.variant_image) {
+        productImageUrl = item.variant_image.src;
+      }
+      
+      // Fallback para imagem genérica se não houver imagem
+      if (!productImageUrl) {
+        productImageUrl = `https://via.placeholder.com/150x150/e2e8f0/64748b?text=${encodeURIComponent(item.title.substring(0, 10))}`;
+      }
+
+      // Buscar user_id baseado no shop_domain
+      const shopDomain = order.shop_domain || event.headers['x-shopify-shop-domain'];
+      
+      // Buscar o usuário associado a esta loja
+      const { data: userShop } = await supabase
+        .rpc('get_user_by_shop_domain', { domain: shopDomain });
+      
+      if (!userShop) {
+        console.warn(`⚠️ Nenhum usuário encontrado para a loja: ${shopDomain}`);
+        // Continuar sem user_id - pode ser configurado depois
+      }
+
       const vendaData = {
         order_id: order.id,
         produto: item.title,
@@ -68,7 +102,9 @@ export const handler = async (event) => {
         financial_status: order.financial_status || 'pending',
         fulfillment_status: order.fulfillment_status || 'unfulfilled',
         currency: order.currency || 'EUR',
-        shop_domain: order.shop_domain || event.headers['x-shopify-shop-domain']
+        shop_domain: shopDomain,
+        product_image_url: productImageUrl,
+        user_id: userShop || null
       };
 
       vendasParaInserir.push(vendaData);
@@ -152,7 +188,10 @@ export const testHandler = async () => {
       {
         title: "Produto Teste",
         price: "29.99",
-        quantity: 2
+        quantity: 2,
+        variant_image: {
+          src: "https://via.placeholder.com/300x300/3b82f6/ffffff?text=Produto+Teste"
+        }
       }
     ]
   };
@@ -163,3 +202,5 @@ export const testHandler = async () => {
     body: JSON.stringify(mockOrder)
   });
 };
+
+
