@@ -10,7 +10,10 @@ import {
   ChevronUp,
   X,
   AlertCircle,
-  ShoppingCart
+  ShoppingCart,
+  Edit2,
+  Save,
+  RotateCcw
 } from 'lucide-react';
 import productService from '../services/productService';
 import salesService from '../services/salesService';
@@ -28,6 +31,11 @@ const QuotationPage = () => {
   // Sales data states
   const [salesData, setSalesData] = useState([]);
   const [loadingSales, setLoadingSales] = useState(false);
+  
+  // Editing states
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [editingField, setEditingField] = useState(null);
+  const [editingValue, setEditingValue] = useState('');
   
   // Error and success states
   const [error, setError] = useState('');
@@ -250,6 +258,67 @@ const QuotationPage = () => {
     setExpandedProduct(expandedProduct === productId ? null : productId);
   };
 
+  // Funções de edição
+  const startEditing = (productId, field, currentValue) => {
+    setEditingProduct(productId);
+    setEditingField(field);
+    setEditingValue(currentValue || '');
+  };
+
+  const cancelEditing = () => {
+    setEditingProduct(null);
+    setEditingField(null);
+    setEditingValue('');
+  };
+
+  const saveEdit = async (productId) => {
+    try {
+      // Encontrar o produto
+      const product = availableProducts.find(p => p.id === productId);
+      if (!product) return;
+
+      // Preparar dados atualizados
+      const updatedData = { ...product };
+      
+      if (editingField === 'price') {
+        updatedData.price = editingValue;
+      } else if (editingField === 'shippingTime') {
+        updatedData.shippingTime = editingValue;
+      } else if (editingField === 'inStock') {
+        updatedData.inStock = editingValue === 'true';
+      }
+
+      // Se o produto não é das vendas (tem ID real), atualizar na base de dados
+      if (!product.isFromSales && typeof product.id === 'number') {
+        const result = await productService.updateProduct(product.id, {
+          name: updatedData.name,
+          price: parseFloat(updatedData.price),
+          shippingTime: updatedData.shippingTime,
+          inStock: updatedData.inStock
+        });
+
+        if (!result.success) {
+          setError(result.message);
+          return;
+        }
+      }
+
+      // Atualizar o estado local
+      setAvailableProducts(products => 
+        products.map(p => p.id === productId ? updatedData : p)
+      );
+
+      setSuccess('Produto atualizado com sucesso!');
+      setTimeout(() => setSuccess(''), 3000);
+      
+      cancelEditing();
+    } catch (error) {
+      console.error('Erro ao atualizar produto:', error);
+      setError('Erro ao atualizar produto');
+      setTimeout(() => setError(''), 5000);
+    }
+  };
+
 
   if (isLoading) {
     return (
@@ -365,27 +434,141 @@ const QuotationPage = () => {
                       )}
                       <div className="detail-row">
                         <span className="detail-label">Preço do Fornecedor:</span>
-                        <span className="detail-value">€{parseFloat(product.price).toFixed(2)}</span>
+                        <div className="detail-value-container">
+                          {editingProduct === product.id && editingField === 'price' ? (
+                            <div className="editing-container">
+                              <input
+                                type="number"
+                                value={editingValue}
+                                onChange={(e) => setEditingValue(e.target.value)}
+                                className="edit-input"
+                                placeholder="0.00"
+                                step="0.01"
+                                min="0"
+                                autoFocus
+                              />
+                              <div className="edit-actions">
+                                <button 
+                                  className="save-btn"
+                                  onClick={() => saveEdit(product.id)}
+                                >
+                                  <Save size={14} />
+                                </button>
+                                <button 
+                                  className="cancel-btn"
+                                  onClick={cancelEditing}
+                                >
+                                  <RotateCcw size={14} />
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="value-with-edit">
+                              <span className="detail-value">€{parseFloat(product.price).toFixed(2)}</span>
+                              <button 
+                                className="edit-btn"
+                                onClick={() => startEditing(product.id, 'price', product.price)}
+                              >
+                                <Edit2 size={14} />
+                              </button>
+                            </div>
+                          )}
+                        </div>
                       </div>
                       <div className="detail-row">
                         <span className="detail-label">Tempo de Envio:</span>
-                        <span className="detail-value">{product.shippingTime || 'Não especificado'}</span>
+                        <div className="detail-value-container">
+                          {editingProduct === product.id && editingField === 'shippingTime' ? (
+                            <div className="editing-container">
+                              <input
+                                type="text"
+                                value={editingValue}
+                                onChange={(e) => setEditingValue(e.target.value)}
+                                className="edit-input"
+                                placeholder="ex: 3-5 dias úteis"
+                                autoFocus
+                              />
+                              <div className="edit-actions">
+                                <button 
+                                  className="save-btn"
+                                  onClick={() => saveEdit(product.id)}
+                                >
+                                  <Save size={14} />
+                                </button>
+                                <button 
+                                  className="cancel-btn"
+                                  onClick={cancelEditing}
+                                >
+                                  <RotateCcw size={14} />
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="value-with-edit">
+                              <span className="detail-value">{product.shippingTime || 'Não especificado'}</span>
+                              <button 
+                                className="edit-btn"
+                                onClick={() => startEditing(product.id, 'shippingTime', product.shippingTime)}
+                              >
+                                <Edit2 size={14} />
+                              </button>
+                            </div>
+                          )}
+                        </div>
                       </div>
                       <div className="detail-row">
                         <span className="detail-label">Estado do Stock:</span>
-                        <span className={`detail-value ${product.inStock ? 'in-stock' : 'out-of-stock'}`}>
-                          {product.inStock ? (
-                            <>
-                              <CheckCircle size={16} />
-                              Em Stock
-                            </>
+                        <div className="detail-value-container">
+                          {editingProduct === product.id && editingField === 'inStock' ? (
+                            <div className="editing-container">
+                              <select
+                                value={editingValue}
+                                onChange={(e) => setEditingValue(e.target.value)}
+                                className="edit-select"
+                                autoFocus
+                              >
+                                <option value="true">Em Stock</option>
+                                <option value="false">Fora de Stock</option>
+                              </select>
+                              <div className="edit-actions">
+                                <button 
+                                  className="save-btn"
+                                  onClick={() => saveEdit(product.id)}
+                                >
+                                  <Save size={14} />
+                                </button>
+                                <button 
+                                  className="cancel-btn"
+                                  onClick={cancelEditing}
+                                >
+                                  <RotateCcw size={14} />
+                                </button>
+                              </div>
+                            </div>
                           ) : (
-                            <>
-                              <XCircle size={16} />
-                              Fora de Stock
-                            </>
+                            <div className="value-with-edit">
+                              <span className={`detail-value ${product.inStock ? 'in-stock' : 'out-of-stock'}`}>
+                                {product.inStock ? (
+                                  <>
+                                    <CheckCircle size={16} />
+                                    Em Stock
+                                  </>
+                                ) : (
+                                  <>
+                                    <XCircle size={16} />
+                                    Fora de Stock
+                                  </>
+                                )}
+                              </span>
+                              <button 
+                                className="edit-btn"
+                                onClick={() => startEditing(product.id, 'inStock', product.inStock.toString())}
+                              >
+                                <Edit2 size={14} />
+                              </button>
+                            </div>
                           )}
-                        </span>
+                        </div>
                       </div>
                       {product.isFromSales && (
                         <div className="detail-row">

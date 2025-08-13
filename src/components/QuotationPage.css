@@ -86,6 +86,116 @@
   font-size: 0.875rem;
 }
 
+/* Inline Editing Styles */
+.detail-value-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.value-with-edit {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.edit-btn {
+  background: rgba(150, 242, 215, 0.1);
+  border: 1px solid rgba(150, 242, 215, 0.2);
+  border-radius: 6px;
+  padding: 0.25rem;
+  color: #96f2d7;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+.detail-row:hover .edit-btn {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.edit-btn:hover {
+  background: rgba(150, 242, 215, 0.2);
+  border-color: rgba(150, 242, 215, 0.4);
+  transform: scale(1.05);
+}
+
+.editing-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.edit-input,
+.edit-select {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(150, 242, 215, 0.3);
+  border-radius: 6px;
+  padding: 0.5rem;
+  color: #ffffff;
+  font-size: 0.875rem;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.edit-input:focus,
+.edit-select:focus {
+  border-color: #96f2d7;
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 0 2px rgba(150, 242, 215, 0.2);
+}
+
+.edit-select option {
+  background: #1a202c;
+  color: #ffffff;
+}
+
+.edit-actions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.save-btn,
+.cancel-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  padding: 0.25rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.save-btn {
+  color: #10b981;
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+.save-btn:hover {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.5);
+}
+
+.cancel-btn {
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.cancel-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.5);
+}
+
 /* Message Containers */
 .message-container {
   display: flex;
