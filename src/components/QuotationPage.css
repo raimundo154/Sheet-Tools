@@ -558,6 +558,7 @@
   font-size: 0.875rem;
   color: #b0b7c0;
   font-weight: 500;
+  flex-shrink: 0;
 }
 
 .detail-value {
@@ -567,6 +568,8 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  text-align: right;
+  justify-content: flex-end;
 }
 
 .detail-value.in-stock {
