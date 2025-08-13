@@ -53,25 +53,50 @@ const QuotationPage = () => {
     
     try {
       // Carregar produtos e vendas em paralelo
-      const [productsResult, salesResult] = await Promise.all([
+      const [productsResult, salesProducts] = await Promise.all([
         productService.getProducts(),
         loadSalesData()
       ]);
       
+      // Transformar produtos da base de dados
+      let allProducts = [];
+      
       if (productsResult.success) {
-        // Transformar dados do Supabase para o formato esperado pelo componente
         const transformedProducts = productsResult.data.map(product => ({
           id: product.id,
           name: product.name,
           price: product.price.toString(),
           shippingTime: product.shipping_time || '',
           inStock: product.in_stock,
-          imagePreview: product.image_url || 'https://via.placeholder.com/150x150/b0b7c0/ffffff?text=Produto'
+          imagePreview: product.image_url || 'https://via.placeholder.com/150x150/b0b7c0/ffffff?text=Produto',
+          isFromSales: false
         }));
-        
-        setAvailableProducts(transformedProducts);
-      } else {
-        setError(productsResult.message);
+        allProducts = [...transformedProducts];
+      }
+      
+      // Adicionar produtos das vendas que não existem já na lista
+      if (salesProducts.length > 0) {
+        salesProducts.forEach(salesProduct => {
+          // Verificar se já existe um produto com o mesmo nome
+          const existingProduct = allProducts.find(p => 
+            p.name.toLowerCase() === salesProduct.name.toLowerCase()
+          );
+          
+          if (!existingProduct) {
+            // Adicionar novo produto das vendas
+            allProducts.push(salesProduct);
+          } else {
+            // Se já existe, adicionar informação de vendas ao existente
+            existingProduct.quantidadeVendida = salesProduct.quantidadeVendida;
+            existingProduct.totalVendas = salesProduct.totalVendas;
+          }
+        });
+      }
+      
+      setAvailableProducts(allProducts);
+      
+      if (!productsResult.success && salesProducts.length === 0) {
+        setError('Erro ao carregar produtos da base de dados');
       }
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
@@ -92,21 +117,29 @@ const QuotationPage = () => {
           const productKey = venda.produto;
           if (!acc[productKey]) {
             acc[productKey] = {
-              produto: venda.produto,
-              quantidade: 0,
-              product_image_url: venda.product_image_url,
-              total_vendas: 0
+              id: `sale_${productKey.replace(/\s+/g, '_').toLowerCase()}`, // ID único baseado no nome
+              name: venda.produto,
+              price: '0.00', // Preço do fornecedor - pode ser editado
+              shippingTime: '', // Pode ser editado
+              inStock: true, // Assumir em stock por padrão
+              imagePreview: venda.product_image_url || `https://via.placeholder.com/150x150/e2e8f0/64748b?text=${encodeURIComponent(venda.produto.substring(0, 2))}`,
+              quantidadeVendida: 0, // Nova propriedade para mostrar quantidade vendida
+              isFromSales: true, // Flag para identificar que veio das vendas
+              totalVendas: 0
             };
           }
-          acc[productKey].quantidade += venda.quantidade;
-          acc[productKey].total_vendas += 1;
+          acc[productKey].quantidadeVendida += venda.quantidade;
+          acc[productKey].totalVendas += 1;
           return acc;
         }, {});
         
         setSalesData(Object.values(salesByProduct));
+        return Object.values(salesByProduct);
       }
+      return [];
     } catch (error) {
       console.error('Erro ao carregar vendas:', error);
+      return [];
     } finally {
       setLoadingSales(false);
     }
@@ -271,35 +304,7 @@ const QuotationPage = () => {
         </div>
       )}
 
-      {/* Sales Data Section */}
-      {salesData.length > 0 && (
-        <div className="sales-data-section">
-          <h2>
-            <ShoppingCart size={24} />
-            Dados de Vendas (Foto e Quantidade)
-          </h2>
-          <div className="sales-grid">
-            {salesData.map((sale, index) => (
-              <div key={index} className="sale-item">
-                <div className="sale-image-container">
-                  <img 
-                    src={sale.product_image_url || `https://via.placeholder.com/80x80/e2e8f0/64748b?text=${encodeURIComponent(sale.produto.substring(0, 2))}`}
-                    alt={sale.produto}
-                    className="sale-product-image"
-                    onError={(e) => {
-                      e.target.src = `https://via.placeholder.com/80x80/e2e8f0/64748b?text=${encodeURIComponent(sale.produto.substring(0, 2))}`;
-                    }}
-                  />
-                </div>
-                <div className="sale-info">
-                  <span className="sale-quantity">{sale.quantidade}x</span>
-                  <span className="sale-product-name">{sale.produto}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+
 
       {/* Products Section */}
       {availableProducts.length > 0 && (
@@ -318,7 +323,15 @@ const QuotationPage = () => {
                       alt={product.name}
                       className="dropdown-image"
                     />
-                    <span className="dropdown-name">{product.name}</span>
+                    <div className="product-name-container">
+                      <span className="dropdown-name">{product.name}</span>
+                      {product.quantidadeVendida && (
+                        <span className="sales-badge">
+                          <ShoppingCart size={12} />
+                          {product.quantidadeVendida}x vendido
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <div className="dropdown-right">
                     <button 
@@ -341,6 +354,15 @@ const QuotationPage = () => {
                 {expandedProduct === product.id && (
                   <div className="dropdown-content">
                     <div className="product-details">
+                      {product.quantidadeVendida && (
+                        <div className="detail-row sales-highlight">
+                          <span className="detail-label">Quantidade Vendida:</span>
+                          <span className="detail-value sales-quantity">
+                            <ShoppingCart size={16} />
+                            {product.quantidadeVendida}x ({product.totalVendas} vendas)
+                          </span>
+                        </div>
+                      )}
                       <div className="detail-row">
                         <span className="detail-label">Preço do Fornecedor:</span>
                         <span className="detail-value">€{parseFloat(product.price).toFixed(2)}</span>
@@ -365,6 +387,14 @@ const QuotationPage = () => {
                           )}
                         </span>
                       </div>
+                      {product.isFromSales && (
+                        <div className="detail-row">
+                          <span className="detail-label">Origem:</span>
+                          <span className="detail-value sales-origin">
+                            Dados de Vendas Shopify
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
