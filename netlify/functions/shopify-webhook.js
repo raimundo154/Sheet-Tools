@@ -149,7 +149,8 @@ export const handler = async (event) => {
         currency: order.currency || 'EUR',
         shop_domain: shopDomain,
         product_image_url: productImageUrl,
-        user_id: userId
+        user_id: userId,
+        line_item_id: item.id?.toString() || `${order.id}_${item.variant_id || item.product_id}`
       };
 
       vendasParaInserir.push(vendaData);

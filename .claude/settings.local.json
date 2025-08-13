@@ -12,7 +12,8 @@
       "Bash(mkdir:*)",
       "Bash(npm install:*)",
       "mcp__ide__getDiagnostics",
-      "Bash(sed:*)"
+      "Bash(sed:*)",
+      "Bash(del:*)"
     ],
     "deny": []
   }
