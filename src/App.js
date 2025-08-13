@@ -6,6 +6,11 @@ import CampaignDashboard from './components/CampaignDashboard';
 
 import QuotationPage from './components/QuotationPage';
 import DailyRoasPageNew from './components/DailyRoasPageNew';
+import ProfitSheet from './components/ProfitSheet';
+import ProductResearch from './components/ProductResearch';
+import SubscriptionPage from './components/SubscriptionPage';
+import ProductResearchPage from './components/ProductResearchPage';
+import ProtectedRoute from './components/ProtectedRoute';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import TermsOfService from './components/TermsOfService';
 import LoginPage from './components/LoginPage';
@@ -52,6 +57,8 @@ function App() {
       'sales': ROUTES.SALES,
       'quotation': ROUTES.QUOTATION,
       'daily-roas': ROUTES.DAILY_ROAS,
+      'profit-sheet': ROUTES.PROFIT_SHEET,
+      'product-research': ROUTES.PRODUCT_RESEARCH,
       'privacy': ROUTES.PRIVACY,
       'terms': ROUTES.TERMS,
     };
@@ -115,16 +122,56 @@ function App() {
         return <AuthCallback onAuthSuccess={handleLogin} onAuthError={handleAuthError} />;
       case 'home-landing':
         return <NewHomePage />;
+      case 'subscription':
+        return <SubscriptionPage />;
       case 'dashboard':
         return <HomePage />;
       case 'campaigns':
-        return <CampaignDashboard />;
+        return (
+          <ProtectedRoute pageName="campaigns" requiredFeature="Campaigns">
+            <CampaignDashboard />
+          </ProtectedRoute>
+        );
       case 'sales':
-        return <QuotationPage />;
+        return (
+          <ProtectedRoute pageName="quotation" requiredFeature="Quotation">
+            <QuotationPage />
+          </ProtectedRoute>
+        );
       case 'quotation':
-        return <QuotationPage />;
+        return (
+          <ProtectedRoute pageName="quotation" requiredFeature="Quotation">
+            <QuotationPage />
+          </ProtectedRoute>
+        );
       case 'daily-roas':
-        return <DailyRoasPageNew />;
+        return (
+          <ProtectedRoute pageName="daily-roas" requiredFeature="Daily ROAS Profit Sheet">
+            <DailyRoasPageNew />
+          </ProtectedRoute>
+        );
+      case 'profit-sheet':
+        return (
+          <ProtectedRoute pageName="profit-sheet" requiredFeature="Daily ROAS Profit Sheet">
+            <ProfitSheet />
+          </ProtectedRoute>
+        );
+      case 'product-research':
+        return (
+          <ProtectedRoute pageName="product-research" requiredFeature="Product Research">
+            <ProductResearch />
+          </ProtectedRoute>
+        );
+      case 'rank-up':
+        return <div style={{padding: '2rem', textAlign: 'center', color: '#ffffff'}}>
+          <h1>🚀 Rank Up</h1>
+          <p>Página em desenvolvimento...</p>
+        </div>;
+      case 'settings':
+        return <div style={{padding: '2rem', textAlign: 'center', color: '#ffffff'}}>
+          <h1>⚙️ Settings</h1>
+          <p>Página em desenvolvimento...</p>
+        </div>;
       case 'privacy':
         return <PrivacyPolicy />;
       case 'terms':
@@ -135,7 +182,7 @@ function App() {
   };
 
   // Determinar se deve mostrar sidebar baseado na página atual
-  const isStandalonePage = navigation.isAuthRoute() || navigation.isHomePage() || currentPage === 'auth-callback';
+  const isStandalonePage = navigation.isAuthRoute() || navigation.isHomePage() || currentPage === 'auth-callback' || currentPage === 'subscription';
 
   // Renderização condicional baseada no tipo de página
   if (isStandalonePage) {

@@ -1,0 +1,351 @@
+/* Protected Route Styles - Baseado na NewHomePage */
+.protected-route {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: linear-gradient(
+    to bottom,
+    rgba(9, 22, 24, 1) 0%,
+    rgba(15, 58, 50, 0.8) 50%,
+    rgba(9, 22, 24, 1) 100%
+  );
+}
+
+.protected-route-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  gap: 1rem;
+  color: #b0b7c0;
+}
+
+.protected-route-loading .loading-spinner {
+  color: #96f2d7;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.access-denied-content {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 3rem;
+  text-align: center;
+  max-width: 700px;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.access-denied-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(135deg, #ef4444 0%, #f97316 100%);
+}
+
+.access-denied-icon {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(249, 115, 22, 0.1) 100%);
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 2rem;
+  border: 2px solid rgba(239, 68, 68, 0.3);
+}
+
+.access-denied-icon svg {
+  color: #ef4444;
+}
+
+.access-denied-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #ffffff;
+}
+
+.access-denied-description {
+  font-size: 1.25rem;
+  color: #b0b7c0;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+.current-plan-info {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  text-align: left;
+}
+
+.plan-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(150, 242, 215, 0.2);
+  color: #96f2d7;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.plan-features {
+  text-align: left;
+}
+
+.plan-features h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: #ffffff;
+}
+
+.plan-features ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.plan-features li {
+  color: #b0b7c0;
+  padding: 0.25rem 0;
+  font-size: 0.9rem;
+}
+
+.plan-features li::before {
+  content: '✓';
+  color: #96f2d7;
+  font-weight: bold;
+  margin-right: 0.5rem;
+}
+
+.upgrade-section {
+  margin-bottom: 2rem;
+}
+
+.upgrade-section h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #ffffff;
+}
+
+.required-plan {
+  background: rgba(150, 242, 215, 0.1);
+  border: 1px solid rgba(150, 242, 215, 0.3);
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: left;
+}
+
+.required-plan-item strong {
+  color: #96f2d7;
+  font-size: 1.1rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.required-plan-item p {
+  color: #b0b7c0;
+  margin-bottom: 0.75rem;
+  line-height: 1.5;
+}
+
+.feature-highlight {
+  background: rgba(150, 242, 215, 0.2);
+  color: #96f2d7;
+  padding: 0.5rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.feature-highlight span {
+  font-weight: 600;
+}
+
+.access-denied-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.btn {
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-trial {
+  background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+  color: #091618;
+  border: none;
+  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.3);
+}
+
+.btn-trial:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4);
+}
+
+.btn-upgrade {
+  background: linear-gradient(135deg, #1c6f5b 0%, #96f2d7 100%);
+  color: #091618;
+  border: none;
+  box-shadow: 0 4px 16px rgba(150, 242, 215, 0.3);
+}
+
+.btn-upgrade:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(150, 242, 215, 0.4);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: #b0b7c0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-ghost:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+}
+
+.security-note {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 8px;
+  padding: 0.75rem;
+  color: #fbbf24;
+  font-size: 0.85rem;
+  text-align: left;
+}
+
+.security-note svg {
+  flex-shrink: 0;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .protected-route {
+    padding: 1rem;
+    min-height: auto;
+  }
+
+  .access-denied-content {
+    padding: 2rem;
+    margin: 2rem 0;
+  }
+
+  .access-denied-title {
+    font-size: 2rem;
+  }
+
+  .access-denied-description {
+    font-size: 1.1rem;
+  }
+
+  .access-denied-icon {
+    width: 96px;
+    height: 96px;
+    margin-bottom: 1.5rem;
+  }
+
+  .access-denied-icon svg {
+    width: 48px;
+    height: 48px;
+  }
+
+  .btn {
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+  }
+
+  .current-plan-info {
+    padding: 1rem;
+  }
+
+  .required-plan {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .access-denied-content {
+    padding: 1.5rem;
+  }
+
+  .access-denied-title {
+    font-size: 1.8rem;
+  }
+
+  .access-denied-description {
+    font-size: 1rem;
+  }
+
+  .access-denied-icon {
+    width: 80px;
+    height: 80px;
+  }
+
+  .access-denied-icon svg {
+    width: 40px;
+    height: 40px;
+  }
+
+  .btn {
+    padding: 0.75rem 1.2rem;
+    font-size: 0.95rem;
+  }
+
+  .upgrade-section h3 {
+    font-size: 1.1rem;
+  }
+
+  .security-note {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.75rem;
+  }
+}

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+
 import CampaignModal from './CampaignModal';
 import CampaignTable from './CampaignTable';
 import MetaConnector from './MetaConnector';

@@ -7,6 +7,7 @@ export const ROUTES = {
   LOGIN: '/login',              // Página de login (LoginPage)
   SIGNUP: '/signup',            // Página de cadastro (SignupPage)
   VERIFY_EMAIL: '/verify-email', // Verificação de email (EmailVerification)
+  SUBSCRIPTION: '/subscription', // Página de planos e subscription
   
   // Callbacks de autenticação
   AUTH_CALLBACK: '/auth/callback', // Callback do Google/Supabase
@@ -17,6 +18,10 @@ export const ROUTES = {
   SALES: '/sales',              // Redirecionado para QuotationPage
   QUOTATION: '/quotation',      // Cotação de moedas (QuotationPage)
   DAILY_ROAS: '/daily-roas',    // Análise diária de ROAS (DailyRoasPage)
+  PROFIT_SHEET: '/profit-sheet', // Folha de lucros (ProfitSheet)
+  PRODUCT_RESEARCH: '/product-research', // Pesquisa de produtos (ProductResearch)
+  RANK_UP: '/rank-up',          // Rank Up (placeholder)
+  SETTINGS: '/settings',        // Settings (placeholder)
   
   // Páginas legais
   PRIVACY: '/privacy',          // Política de privacidade
@@ -28,12 +33,17 @@ export const PAGE_NAMES = {
   [ROUTES.LOGIN]: 'login',
   [ROUTES.SIGNUP]: 'signup',
   [ROUTES.VERIFY_EMAIL]: 'verify-email',
+  [ROUTES.SUBSCRIPTION]: 'subscription',
   [ROUTES.AUTH_CALLBACK]: 'auth-callback',
   [ROUTES.DASHBOARD]: 'dashboard',
   [ROUTES.CAMPAIGNS]: 'campaigns',
   [ROUTES.SALES]: 'sales',
   [ROUTES.QUOTATION]: 'quotation',
   [ROUTES.DAILY_ROAS]: 'daily-roas',
+  [ROUTES.PROFIT_SHEET]: 'profit-sheet',
+  [ROUTES.PRODUCT_RESEARCH]: 'product-research',
+  [ROUTES.RANK_UP]: 'rank-up',
+  [ROUTES.SETTINGS]: 'settings',
   [ROUTES.PRIVACY]: 'privacy',
   [ROUTES.TERMS]: 'terms',
 };
@@ -94,7 +104,17 @@ class NavigationService {
    */
   static requiresAuth(route = null) {
     const checkRoute = route || this.getCurrentRoute();
-    const authRequiredRoutes = [ROUTES.DASHBOARD, ROUTES.CAMPAIGNS, ROUTES.SALES, ROUTES.QUOTATION, ROUTES.DAILY_ROAS];
+    const authRequiredRoutes = [
+      ROUTES.DASHBOARD, 
+      ROUTES.CAMPAIGNS, 
+      ROUTES.SALES, 
+      ROUTES.QUOTATION, 
+      ROUTES.DAILY_ROAS,
+      ROUTES.PROFIT_SHEET,
+      ROUTES.PRODUCT_RESEARCH,
+      ROUTES.RANK_UP,
+      ROUTES.SETTINGS
+    ];
     return authRequiredRoutes.includes(checkRoute);
   }
 
@@ -123,11 +143,16 @@ export const navigation = {
   toLogin: () => NavigationService.navigate(ROUTES.LOGIN),
   toSignup: () => NavigationService.navigate(ROUTES.SIGNUP),
   toVerifyEmail: () => NavigationService.navigate(ROUTES.VERIFY_EMAIL),
+  toSubscription: () => NavigationService.navigate(ROUTES.SUBSCRIPTION),
   toDashboard: () => NavigationService.navigate(ROUTES.DASHBOARD),
   toCampaigns: () => NavigationService.navigate(ROUTES.CAMPAIGNS),
   toSales: () => NavigationService.navigate(ROUTES.SALES),
   toQuotation: () => NavigationService.navigate(ROUTES.QUOTATION),
   toDailyRoas: () => NavigationService.navigate(ROUTES.DAILY_ROAS),
+  toProfitSheet: () => NavigationService.navigate(ROUTES.PROFIT_SHEET),
+  toProductResearch: () => NavigationService.navigate(ROUTES.PRODUCT_RESEARCH),
+  toRankUp: () => NavigationService.navigate(ROUTES.RANK_UP),
+  toSettings: () => NavigationService.navigate(ROUTES.SETTINGS),
   
   // Navegação para páginas legais
   toPrivacy: () => NavigationService.navigate(ROUTES.PRIVACY),

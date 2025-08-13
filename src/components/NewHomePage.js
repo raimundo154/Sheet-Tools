@@ -113,7 +113,7 @@ const NewHomePage = () => {
   };
 
   const handleCTAClick = () => {
-    navigation.toSignup();
+    navigation.toSubscription();
   };
 
   const scrollToSection = (sectionId) => {

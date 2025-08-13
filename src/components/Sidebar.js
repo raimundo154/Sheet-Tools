@@ -1,52 +1,152 @@
 import React from 'react';
+import { useUserPlan } from '../hooks/useUserPlan';
 import { 
   Home, 
-  Calendar, 
   DollarSign, 
-  ShoppingCart, 
-  Search, 
-  Megaphone, 
   Settings, 
-  CreditCard, 
-  TrendingUp, 
   LogOut, 
-  HelpCircle
+  Crown,
+  Target,
+  TrendingUp,
+  Loader,
+  BarChart3,
+  Search,
+  FileText
 } from 'lucide-react';
 
 const Sidebar = ({ currentPage, onPageChange, onSignOut }) => {
-  const menuItems = [
-    {
-      group: 'Principal',
+  const { hasActivePlan, hasPageAccess, getPlanInfo, loading } = useUserPlan();
+  const planInfo = getPlanInfo();
+
+  // Se está carregando, mostrar sidebar básica
+  if (loading) {
+    return (
+      <div className="sidebar">
+        <div className="sidebar-content">
+          <div className="loading-sidebar">
+            <Loader className="loading-icon" size={24} />
+            <p>Carregando menu...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Definir itens do menu dinamicamente baseado no plano
+  const getMenuItems = () => {
+    const menuItems = [
+      {
+        group: 'Principal',
+        items: [
+          { 
+            id: 'dashboard', 
+            label: 'Dashboard', 
+            icon: Home,
+            alwaysVisible: true
+          }
+        ]
+      }
+    ];
+
+    const featureItems = [];
+
+    // Adicionar funcionalidades baseadas no plano
+    if (hasPageAccess('daily-roas')) {
+      featureItems.push({
+        id: 'daily-roas', 
+        label: 'Daily ROAS', 
+        icon: TrendingUp,
+        feature: 'Daily ROAS Profit Sheet'
+      });
+    }
+
+    if (hasPageAccess('profit-sheet')) {
+      featureItems.push({
+        id: 'profit-sheet', 
+        label: 'Profit Sheet', 
+        icon: FileText,
+        feature: 'Daily ROAS Profit Sheet'
+      });
+    }
+
+    if (hasPageAccess('quotation')) {
+      featureItems.push({
+        id: 'quotation', 
+        label: 'Quotation', 
+        icon: DollarSign,
+        feature: 'Quotation'
+      });
+    }
+
+    if (hasPageAccess('campaigns')) {
+      featureItems.push({
+        id: 'campaigns', 
+        label: 'Campaigns', 
+        icon: Target,
+        feature: 'Campaigns'
+      });
+    }
+
+    if (hasPageAccess('product-research')) {
+      featureItems.push({
+        id: 'product-research', 
+        label: 'Product Research', 
+        icon: Search,
+        feature: 'Product Research'
+      });
+    }
+
+    // Adicionar seção de funcionalidades se houver alguma
+    if (featureItems.length > 0) {
+      menuItems.push({
+        group: 'Funcionalidades',
+        items: featureItems
+      });
+    }
+
+    // Adicionar seção de configurações
+    menuItems.push({
+      group: 'Configurações',
       items: [
-        { id: 'dashboard', label: 'Dashboard', icon: Home },
-        { id: 'daily-roas', label: 'Daily Roas', icon: Calendar },
-        { id: 'profit-sheet', label: 'Profit Sheet', icon: DollarSign },
-        { id: 'quotation', label: 'Quotation', icon: ShoppingCart }
+        { 
+          id: 'subscription', 
+          label: 'Subscription', 
+          icon: Crown,
+          alwaysVisible: true,
+          badge: !hasActivePlan ? 'Upgrade' : planInfo.name
+        },
+        { 
+          id: 'rank-up', 
+          label: 'Rank Up', 
+          icon: BarChart3,
+          alwaysVisible: true
+        },
+        { 
+          id: 'settings', 
+          label: 'Settings', 
+          icon: Settings,
+          alwaysVisible: true
+        }
       ]
-    },
-    {
-      group: 'Ferramentas',
-      items: [
-        { id: 'product-research', label: 'Product Research', icon: Search },
-        { id: 'campaigns', label: 'Campaigns', icon: Megaphone },
-        { id: 'sales', label: 'Vendas', icon: ShoppingCart }
-      ]
-    },
-    {
-      group: 'Gestão',
-      items: [
-        { id: 'subscription', label: 'Subscription', icon: CreditCard },
-        { id: 'rank-up', label: 'Rank Up', icon: TrendingUp }
-      ]
-    },
-    {
+    });
+
+    // Adicionar sign out
+    menuItems.push({
       group: 'Sistema',
       items: [
-        { id: 'settings', label: 'Settings', icon: Settings },
-        { id: 'sign-out', label: 'Sign Out', icon: LogOut }
+        { 
+          id: 'sign-out', 
+          label: 'Sign Out', 
+          icon: LogOut,
+          alwaysVisible: true
+        }
       ]
-    }
-  ];
+    });
+
+    return menuItems;
+  };
+
+  const menuItems = getMenuItems();
 
   const handleItemClick = (itemId) => {
     if (itemId === 'sign-out') {
@@ -58,55 +158,79 @@ const Sidebar = ({ currentPage, onPageChange, onSignOut }) => {
 
   return (
     <div className="sidebar">
-      {/* Logo */}
-      <div className="sidebar-logo">
-        <h1>SHEET TOOLS</h1>
-      </div>
+      <div className="sidebar-content">
+        {/* Logo/Header */}
+        <div className="sidebar-header">
+          <img 
+            src="/logo/sheet-tools-logo-backgroundremover.png" 
+            alt="Sheet Tools" 
+            className="sidebar-logo"
+          />
+        </div>
 
-      {/* Menu Items */}
-      <nav className="sidebar-nav">
-        {menuItems.map((group, groupIndex) => (
-          <div key={groupIndex} className="menu-group">
-            {groupIndex > 0 && <div className="menu-divider"></div>}
-            {group.items.map((item) => {
-              const IconComponent = item.icon;
-              const isActive = currentPage === item.id;
-              
-              return (
-                <button
-                  key={item.id}
-                  className={`menu-item ${isActive ? 'active' : ''}`}
-                  onClick={() => handleItemClick(item.id)}
-                >
-                  <IconComponent size={20} />
-                  <span>{item.label}</span>
-                </button>
-              );
-            })}
+        {/* Plan Info */}
+        <div className="plan-info">
+          <div className="plan-badge">
+            <Crown size={16} />
+            <span>{planInfo.name}</span>
           </div>
-        ))}
-      </nav>
+          {planInfo.status === 'trialing' && planInfo.trialEnd && (
+            <div className="trial-info">
+              Trial até {new Date(planInfo.trialEnd).toLocaleDateString('pt-PT')}
+            </div>
+          )}
+        </div>
 
-      {/* Bottom Section */}
-      <div className="sidebar-bottom">
-        <div className="menu-divider"></div>
-        <button className="menu-item">
-          <HelpCircle size={20} />
-          <span>Get Help</span>
-        </button>
-        <div className="bottom-links">
-          <button 
-            className="bottom-link"
-            onClick={() => onPageChange('privacy')}
-          >
-            Privacy Policy
-          </button>
-          <button 
-            className="bottom-link"
-            onClick={() => onPageChange('terms')}
-          >
-            Terms of Service
-          </button>
+        {/* Menu */}
+        <nav className="sidebar-nav">
+          {menuItems.map((group, groupIndex) => (
+            <div key={groupIndex} className="nav-group">
+              <div className="nav-group-title">{group.group}</div>
+              <ul className="nav-items">
+                {group.items.map((item) => (
+                  <li key={item.id} className="nav-item">
+                    <button
+                      className={`nav-link ${currentPage === item.id ? 'active' : ''}`}
+                      onClick={() => handleItemClick(item.id)}
+                    >
+                      <item.icon size={20} />
+                      <span className="nav-label">{item.label}</span>
+                      {item.badge && (
+                        <span className="nav-badge">{item.badge}</span>
+                      )}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </nav>
+
+        {/* Footer info */}
+        <div className="sidebar-footer">
+          <div className="upgrade-prompt">
+            {!hasActivePlan ? (
+              <div className="upgrade-card" onClick={() => onPageChange('subscription')}>
+                <Crown size={20} />
+                <div>
+                  <p className="upgrade-title">Upgrade Agora</p>
+                  <p className="upgrade-subtitle">Desbloqueia todas as funcionalidades</p>
+                </div>
+              </div>
+            ) : (
+              <div className="plan-features">
+                <p className="features-title">Funcionalidades ativas:</p>
+                <ul className="features-list">
+                  {planInfo.features.slice(0, 2).map((feature, index) => (
+                    <li key={index}>{feature}</li>
+                  ))}
+                  {planInfo.features.length > 2 && (
+                    <li>+{planInfo.features.length - 2} mais...</li>
+                  )}
+                </ul>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

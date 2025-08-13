@@ -24,3 +24,4 @@ yarn-error.log*
 
 # Local Netlify folder
 .netlify
+netlify/functions/node_modules/
