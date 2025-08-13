@@ -9,9 +9,11 @@ import {
   ChevronDown,
   ChevronUp,
   X,
-  AlertCircle
+  AlertCircle,
+  ShoppingCart
 } from 'lucide-react';
 import productService from '../services/productService';
+import salesService from '../services/salesService';
 import './QuotationPage.css';
 
 const QuotationPage = () => {
@@ -22,6 +24,10 @@ const QuotationPage = () => {
   // Product states
   const [availableProducts, setAvailableProducts] = useState([]);
   const [expandedProduct, setExpandedProduct] = useState(null);
+  
+  // Sales data states
+  const [salesData, setSalesData] = useState([]);
+  const [loadingSales, setLoadingSales] = useState(false);
   
   // Error and success states
   const [error, setError] = useState('');
@@ -46,11 +52,15 @@ const QuotationPage = () => {
     setError('');
     
     try {
-      const result = await productService.getProducts();
+      // Carregar produtos e vendas em paralelo
+      const [productsResult, salesResult] = await Promise.all([
+        productService.getProducts(),
+        loadSalesData()
+      ]);
       
-      if (result.success) {
+      if (productsResult.success) {
         // Transformar dados do Supabase para o formato esperado pelo componente
-        const transformedProducts = result.data.map(product => ({
+        const transformedProducts = productsResult.data.map(product => ({
           id: product.id,
           name: product.name,
           price: product.price.toString(),
@@ -61,13 +71,44 @@ const QuotationPage = () => {
         
         setAvailableProducts(transformedProducts);
       } else {
-        setError(result.message);
+        setError(productsResult.message);
       }
     } catch (error) {
-      console.error('Erro ao carregar produtos:', error);
-      setError('Erro ao carregar produtos da base de dados');
+      console.error('Erro ao carregar dados:', error);
+      setError('Erro ao carregar dados da base de dados');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const loadSalesData = async () => {
+    setLoadingSales(true);
+    try {
+      const result = await salesService.getVendas(50); // Últimas 50 vendas
+      
+      if (result.data && !result.error) {
+        // Agrupar vendas por produto, somando quantidades
+        const salesByProduct = result.data.reduce((acc, venda) => {
+          const productKey = venda.produto;
+          if (!acc[productKey]) {
+            acc[productKey] = {
+              produto: venda.produto,
+              quantidade: 0,
+              product_image_url: venda.product_image_url,
+              total_vendas: 0
+            };
+          }
+          acc[productKey].quantidade += venda.quantidade;
+          acc[productKey].total_vendas += 1;
+          return acc;
+        }, {});
+        
+        setSalesData(Object.values(salesByProduct));
+      }
+    } catch (error) {
+      console.error('Erro ao carregar vendas:', error);
+    } finally {
+      setLoadingSales(false);
     }
   };
 
@@ -227,6 +268,36 @@ const QuotationPage = () => {
           <button onClick={() => setSuccess('')} className="close-message-btn">
             <X size={14} />
           </button>
+        </div>
+      )}
+
+      {/* Sales Data Section */}
+      {salesData.length > 0 && (
+        <div className="sales-data-section">
+          <h2>
+            <ShoppingCart size={24} />
+            Dados de Vendas (Foto e Quantidade)
+          </h2>
+          <div className="sales-grid">
+            {salesData.map((sale, index) => (
+              <div key={index} className="sale-item">
+                <div className="sale-image-container">
+                  <img 
+                    src={sale.product_image_url || `https://via.placeholder.com/80x80/e2e8f0/64748b?text=${encodeURIComponent(sale.produto.substring(0, 2))}`}
+                    alt={sale.produto}
+                    className="sale-product-image"
+                    onError={(e) => {
+                      e.target.src = `https://via.placeholder.com/80x80/e2e8f0/64748b?text=${encodeURIComponent(sale.produto.substring(0, 2))}`;
+                    }}
+                  />
+                </div>
+                <div className="sale-info">
+                  <span className="sale-quantity">{sale.quantidade}x</span>
+                  <span className="sale-product-name">{sale.produto}</span>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 

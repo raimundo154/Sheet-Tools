@@ -3,7 +3,7 @@ import Sidebar from './components/Sidebar';
 import HomePage from './components/HomePage';
 import NewHomePage from './components/NewHomePage';
 import CampaignDashboard from './components/CampaignDashboard';
-import SalesPage from './components/SalesPage';
+
 import QuotationPage from './components/QuotationPage';
 import DailyRoasPageNew from './components/DailyRoasPageNew';
 import PrivacyPolicy from './components/PrivacyPolicy';
@@ -120,7 +120,7 @@ function App() {
       case 'campaigns':
         return <CampaignDashboard />;
       case 'sales':
-        return <SalesPage />;
+        return <QuotationPage />;
       case 'quotation':
         return <QuotationPage />;
       case 'daily-roas':

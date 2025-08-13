@@ -14,7 +14,7 @@ export const ROUTES = {
   // Páginas da aplicação (com autenticação)
   DASHBOARD: '/dashboard',      // Dashboard principal (HomePage)
   CAMPAIGNS: '/campaigns',      // Gestão de campanhas (CampaignDashboard)
-  SALES: '/sales',              // Vendas em tempo real (SalesPage)
+  SALES: '/sales',              // Redirecionado para QuotationPage
   QUOTATION: '/quotation',      // Cotação de moedas (QuotationPage)
   DAILY_ROAS: '/daily-roas',    // Análise diária de ROAS (DailyRoasPage)
   
