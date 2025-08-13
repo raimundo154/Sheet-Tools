@@ -9,7 +9,7 @@ import DailyRoasPageNew from './components/DailyRoasPageNew';
 import ProfitSheet from './components/ProfitSheet';
 import ProductResearch from './components/ProductResearch';
 import SubscriptionPage from './components/SubscriptionPage';
-import ProductResearchPage from './components/ProductResearchPage';
+
 import ProtectedRoute from './components/ProtectedRoute';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import TermsOfService from './components/TermsOfService';
