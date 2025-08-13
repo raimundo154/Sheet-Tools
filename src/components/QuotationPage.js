@@ -101,6 +101,7 @@ const QuotationPage = () => {
         });
       }
       
+      console.log('Produtos finais combinados:', allProducts);
       setAvailableProducts(allProducts);
       
       if (!productsResult.success && salesProducts.length === 0) {
@@ -141,8 +142,10 @@ const QuotationPage = () => {
           return acc;
         }, {});
         
-        setSalesData(Object.values(salesByProduct));
-        return Object.values(salesByProduct);
+        const salesProductsArray = Object.values(salesByProduct);
+        console.log('Produtos das vendas carregados:', salesProductsArray);
+        setSalesData(salesProductsArray);
+        return salesProductsArray;
       }
       return [];
     } catch (error) {
@@ -391,6 +394,10 @@ const QuotationPage = () => {
                       src={product.imagePreview} 
                       alt={product.name}
                       className="dropdown-image"
+                      onError={(e) => {
+                        console.log('Erro ao carregar imagem:', product.imagePreview);
+                        e.target.src = `https://via.placeholder.com/50x50/e2e8f0/64748b?text=${encodeURIComponent(product.name.substring(0, 2))}`;
+                      }}
                     />
                     <div className="product-name-container">
                       <span className="dropdown-name">{product.name}</span>
