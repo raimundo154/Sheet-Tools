@@ -237,15 +237,15 @@ const QuotationPage = () => {
           <div className="header-info">
             <h1 className="quotation-title">
               <Package size={32} />
-              Product Quotation
+              Cotação de Produtos
             </h1>
             <p className="quotation-subtitle">
-              Manage your products quotations!
+              Gere as suas cotações de produtos e veja os dados de vendas!
             </p>
           </div>
           <button className="add-new-product-btn" onClick={() => setShowProductModal(true)}>
             <Plus size={16} />
-            Add New Product
+            Adicionar Produto
           </button>
         </div>
       </div>
@@ -304,7 +304,7 @@ const QuotationPage = () => {
       {/* Products Section */}
       {availableProducts.length > 0 && (
         <div className="selected-products-section">
-          <h2>Products in Quotation</h2>
+          <h2>Produtos na Cotação</h2>
           <div className="selected-products-list">
             {availableProducts.map((product) => (
               <div key={product.id} className="selected-product-dropdown">
@@ -342,25 +342,25 @@ const QuotationPage = () => {
                   <div className="dropdown-content">
                     <div className="product-details">
                       <div className="detail-row">
-                        <span className="detail-label">Price:</span>
+                        <span className="detail-label">Preço do Fornecedor:</span>
                         <span className="detail-value">€{parseFloat(product.price).toFixed(2)}</span>
                       </div>
                       <div className="detail-row">
-                        <span className="detail-label">Shipping Time:</span>
-                        <span className="detail-value">{product.shippingTime}</span>
+                        <span className="detail-label">Tempo de Envio:</span>
+                        <span className="detail-value">{product.shippingTime || 'Não especificado'}</span>
                       </div>
                       <div className="detail-row">
-                        <span className="detail-label">Stock:</span>
+                        <span className="detail-label">Estado do Stock:</span>
                         <span className={`detail-value ${product.inStock ? 'in-stock' : 'out-of-stock'}`}>
                           {product.inStock ? (
                             <>
                               <CheckCircle size={16} />
-                              Available
+                              Em Stock
                             </>
                           ) : (
                             <>
                               <XCircle size={16} />
-                              Unavailable
+                              Fora de Stock
                             </>
                           )}
                         </span>
@@ -380,7 +380,7 @@ const QuotationPage = () => {
         <div className="modal-overlay">
           <div className="product-modal">
             <div className="modal-header">
-              <h2>Create New Product</h2>
+              <h2>Criar Novo Produto</h2>
               <button 
                 className="modal-close-btn"
                 onClick={() => setShowProductModal(false)}
@@ -406,7 +406,7 @@ const QuotationPage = () => {
               )}
 
               <div className="form-group">
-                <label>Product Image</label>
+                <label>Imagem do Produto</label>
                 <div className="image-upload-area">
                   <input
                     type="file"
@@ -422,7 +422,7 @@ const QuotationPage = () => {
                     ) : (
                       <div className="upload-placeholder">
                         <Upload size={32} />
-                        <span>Click to upload image</span>
+                        <span>Clique para fazer upload da imagem</span>
                       </div>
                     )}
                   </label>
@@ -431,19 +431,19 @@ const QuotationPage = () => {
 
               <div className="form-row">
                 <div className="form-group">
-                  <label>Product Name</label>
+                  <label>Nome do Produto</label>
                   <input
                     type="text"
                     value={newProduct.name}
                     onChange={(e) => setNewProduct({...newProduct, name: e.target.value})}
-                    placeholder="Enter product name"
+                    placeholder="Digite o nome do produto"
                     className="form-input"
                     disabled={isCreatingProduct}
                   />
                 </div>
 
                 <div className="form-group">
-                  <label>Price (€)</label>
+                  <label>Preço do Fornecedor (€)</label>
                   <input
                     type="number"
                     value={newProduct.price}
@@ -459,19 +459,19 @@ const QuotationPage = () => {
 
               <div className="form-row">
                 <div className="form-group">
-                  <label>Shipping Time</label>
+                  <label>Tempo de Envio</label>
                   <input
                     type="text"
                     value={newProduct.shippingTime}
                     onChange={(e) => setNewProduct({...newProduct, shippingTime: e.target.value})}
-                    placeholder="e.g. 3-5 business days"
+                    placeholder="ex: 3-5 dias úteis"
                     className="form-input"
                     disabled={isCreatingProduct}
                   />
                 </div>
 
                 <div className="form-group">
-                  <label>Availability</label>
+                  <label>Disponibilidade</label>
                   <div className="stock-toggle">
                     <button
                       className={`stock-btn ${newProduct.inStock ? 'in-stock' : ''}`}
@@ -479,7 +479,7 @@ const QuotationPage = () => {
                       disabled={isCreatingProduct}
                     >
                       <CheckCircle size={16} />
-                      In Stock
+                      Em Stock
                     </button>
                     <button
                       className={`stock-btn ${!newProduct.inStock ? 'out-stock' : ''}`}
@@ -487,7 +487,7 @@ const QuotationPage = () => {
                       disabled={isCreatingProduct}
                     >
                       <XCircle size={16} />
-                      Out of Stock
+                      Fora de Stock
                     </button>
                   </div>
                 </div>
@@ -500,7 +500,7 @@ const QuotationPage = () => {
                 onClick={() => setShowProductModal(false)}
                 disabled={isCreatingProduct}
               >
-                Cancel
+                Cancelar
               </button>
               <button 
                 className="create-btn"
@@ -510,12 +510,12 @@ const QuotationPage = () => {
                 {isCreatingProduct ? (
                   <>
                     <div className="spinner"></div>
-                    Saving...
+                    Guardando...
                   </>
                 ) : (
                   <>
                     <Plus size={16} />
-                    Create Product
+                    Criar Produto
                   </>
                 )}
               </button>
