@@ -17,6 +17,7 @@ export const ROUTES = {
   SALES: '/sales',              // Redirecionado para QuotationPage
   QUOTATION: '/quotation',      // Cotação de moedas (QuotationPage)
   DAILY_ROAS: '/daily-roas',    // Análise diária de ROAS (DailyRoasPage)
+  SETTINGS: '/settings',        // Configurações da conta (SettingsPage)
   
   // Páginas legais
   PRIVACY: '/privacy',          // Política de privacidade
@@ -34,6 +35,7 @@ export const PAGE_NAMES = {
   [ROUTES.SALES]: 'sales',
   [ROUTES.QUOTATION]: 'quotation',
   [ROUTES.DAILY_ROAS]: 'daily-roas',
+  [ROUTES.SETTINGS]: 'settings',
   [ROUTES.PRIVACY]: 'privacy',
   [ROUTES.TERMS]: 'terms',
 };
@@ -94,7 +96,7 @@ class NavigationService {
    */
   static requiresAuth(route = null) {
     const checkRoute = route || this.getCurrentRoute();
-    const authRequiredRoutes = [ROUTES.DASHBOARD, ROUTES.CAMPAIGNS, ROUTES.SALES, ROUTES.QUOTATION, ROUTES.DAILY_ROAS];
+    const authRequiredRoutes = [ROUTES.DASHBOARD, ROUTES.CAMPAIGNS, ROUTES.SALES, ROUTES.QUOTATION, ROUTES.DAILY_ROAS, ROUTES.SETTINGS];
     return authRequiredRoutes.includes(checkRoute);
   }
 
@@ -128,6 +130,7 @@ export const navigation = {
   toSales: () => NavigationService.navigate(ROUTES.SALES),
   toQuotation: () => NavigationService.navigate(ROUTES.QUOTATION),
   toDailyRoas: () => NavigationService.navigate(ROUTES.DAILY_ROAS),
+  toSettings: () => NavigationService.navigate(ROUTES.SETTINGS),
   
   // Navegação para páginas legais
   toPrivacy: () => NavigationService.navigate(ROUTES.PRIVACY),

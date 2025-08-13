@@ -3,7 +3,7 @@ import Sidebar from './components/Sidebar';
 import HomePage from './components/HomePage';
 import NewHomePage from './components/NewHomePage';
 import CampaignDashboard from './components/CampaignDashboard';
-
+import SettingsPage from './components/SettingsPage';
 import QuotationPage from './components/QuotationPage';
 import DailyRoasPageNew from './components/DailyRoasPageNew';
 import PrivacyPolicy from './components/PrivacyPolicy';
@@ -52,6 +52,7 @@ function App() {
       'sales': ROUTES.SALES,
       'quotation': ROUTES.QUOTATION,
       'daily-roas': ROUTES.DAILY_ROAS,
+      'settings': ROUTES.SETTINGS,
       'privacy': ROUTES.PRIVACY,
       'terms': ROUTES.TERMS,
     };
@@ -125,6 +126,8 @@ function App() {
         return <QuotationPage />;
       case 'daily-roas':
         return <DailyRoasPageNew />;
+      case 'settings':
+        return <SettingsPage />;
       case 'privacy':
         return <PrivacyPolicy />;
       case 'terms':
