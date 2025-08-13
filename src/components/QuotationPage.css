@@ -96,7 +96,7 @@
 .value-with-edit {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: space-between;
   width: 100%;
 }
 
@@ -113,6 +113,8 @@
   justify-content: center;
   opacity: 0;
   transform: scale(0.9);
+  flex-shrink: 0;
+  margin-left: 0.5rem;
 }
 
 .detail-row:hover .edit-btn {
@@ -131,6 +133,13 @@
   align-items: center;
   gap: 0.5rem;
   width: 100%;
+}
+
+.edit-actions {
+  display: flex;
+  gap: 0.25rem;
+  flex-shrink: 0;
+  margin-left: auto;
 }
 
 .edit-input,
@@ -158,10 +167,7 @@
   color: #ffffff;
 }
 
-.edit-actions {
-  display: flex;
-  gap: 0.25rem;
-}
+
 
 .save-btn,
 .cancel-btn {
