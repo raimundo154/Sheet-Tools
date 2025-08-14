@@ -70,8 +70,13 @@ function App() {
 
   // Navegação entre páginas da aplicação (sidebar)
   const handlePageChange = (pageId) => {
+    console.log('🔄 App.js - handlePageChange called with:', pageId);
+    
     const routeMap = {
       'dashboard': ROUTES.DASHBOARD,
+      'subscription': ROUTES.SUBSCRIPTION,
+      'rank-up': ROUTES.RANK_UP,
+      'settings': ROUTES.SETTINGS,
       'campaigns': ROUTES.CAMPAIGNS,
       'sales': ROUTES.SALES,
       'quotation': ROUTES.QUOTATION,
@@ -83,8 +88,13 @@ function App() {
     };
     
     const route = routeMap[pageId];
+    console.log('🎯 App.js - Mapped route:', route);
+    
     if (route) {
+      console.log('✅ App.js - Navigating to:', route);
       NavigationService.navigate(route);
+    } else {
+      console.error('❌ App.js - No route found for pageId:', pageId);
     }
   };
 
