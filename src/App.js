@@ -25,14 +25,27 @@ import './App.css';
 function App() {
   const [currentPage, setCurrentPage] = useState('home-landing');
 
-  // Inicializar página baseada na URL atual
+  // Inicializar página baseada na URL atual e autenticação
   useEffect(() => {
-    const initializePage = () => {
+    const initializeApp = async () => {
+      // Inicializar authService para verificar sessão existente
+      try {
+        const session = await authService.initialize();
+        if (session && session.user) {
+          console.log('Sessão existente encontrada:', session.user.email);
+          authService.user = session.user;
+          authService.session = session;
+        }
+      } catch (error) {
+        console.error('Erro ao inicializar auth:', error);
+      }
+
+      // Definir página inicial
       const currentPageName = navigation.getCurrentPageName();
       setCurrentPage(currentPageName);
     };
 
-    initializePage();
+    initializeApp();
 
     // Escutar eventos de navegação customizados
     const handleNavigation = (event) => {
@@ -41,11 +54,17 @@ function App() {
     };
 
     window.addEventListener('navigation', handleNavigation);
-    window.addEventListener('popstate', initializePage); // Botão voltar do navegador
+    window.addEventListener('popstate', () => {
+      const currentPageName = navigation.getCurrentPageName();
+      setCurrentPage(currentPageName);
+    });
 
     return () => {
       window.removeEventListener('navigation', handleNavigation);
-      window.removeEventListener('popstate', initializePage);
+      window.removeEventListener('popstate', () => {
+        const currentPageName = navigation.getCurrentPageName();
+        setCurrentPage(currentPageName);
+      });
     };
   }, []);
 
@@ -72,6 +91,8 @@ function App() {
   // Handlers de autenticação
   const handleLogin = (user) => {
     console.log('Usuário logado:', user);
+    // Garantir que o authService tem o user atualizado
+    authService.user = user;
     navigation.redirectAfterLogin();
   };
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import subscriptionService from '../services/subscriptionService';
 import authService from '../services/authService';
 
@@ -8,31 +8,49 @@ export const useUserPlan = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    loadUserPlan();
-  }, []);
-
-  const loadUserPlan = async () => {
+  const loadUserPlan = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
       
       const user = authService.getCurrentUser();
+      console.log('🔍 useUserPlan - User from authService:', user);
+      
       if (!user) {
+        console.log('❌ useUserPlan - Nenhum user encontrado, definindo userPlan como null');
         setUserPlan(null);
         return;
       }
 
+      console.log('✅ useUserPlan - User encontrado, buscando subscription...');
       const subscription = await subscriptionService.getUserActiveSubscription();
+      console.log('📦 useUserPlan - Subscription encontrada:', subscription);
       setUserPlan(subscription);
     } catch (err) {
-      console.error('Erro ao carregar plano do usuário:', err);
+      console.error('❌ useUserPlan - Erro ao carregar plano do usuário:', err);
       setError(err.message);
       setUserPlan(null);
     } finally {
       setLoading(false);
+      console.log('🏁 useUserPlan - Loading finalizado');
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadUserPlan();
+    
+    // Escutar mudanças na autenticação
+    const { data: { subscription } } = authService.onAuthStateChange((event, session) => {
+      console.log('🔄 useUserPlan - Auth state mudou:', event, session?.user?.email);
+      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
+        setTimeout(() => loadUserPlan(), 100); // Pequeno delay para garantir que authService.user está atualizado
+      }
+    });
+
+    return () => {
+      subscription?.unsubscribe();
+    };
+  }, [loadUserPlan]);
 
   const refreshUserPlan = () => {
     loadUserPlan();
