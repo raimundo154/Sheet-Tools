@@ -15,15 +15,20 @@ class SubscriptionService {
       // Chave pública do Stripe (será configurada via env)
       const stripePublicKey = process.env.REACT_APP_STRIPE_PUBLIC_KEY;
       
+      console.log('🔑 Stripe Public Key:', stripePublicKey ? 'Configurada' : 'NÃO CONFIGURADA');
+      console.log('🔑 Env vars disponíveis:', Object.keys(process.env).filter(key => key.includes('STRIPE')));
+      
       if (!stripePublicKey) {
-        console.warn('Chave pública do Stripe não configurada');
+        console.warn('❌ Chave pública do Stripe não configurada');
         return;
       }
 
+      console.log('🚀 Inicializando Stripe...');
       this.stripePromise = loadStripe(stripePublicKey);
       this.stripe = await this.stripePromise;
+      console.log('✅ Stripe inicializado com sucesso');
     } catch (error) {
-      console.error('Erro ao inicializar Stripe:', error);
+      console.error('❌ Erro ao inicializar Stripe:', error);
     }
   }
 
