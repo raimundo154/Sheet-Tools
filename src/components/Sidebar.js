@@ -17,6 +17,9 @@ import {
 const Sidebar = ({ currentPage, onPageChange, onSignOut }) => {
   const { hasActivePlan, hasPageAccess, getPlanInfo, loading } = useUserPlan();
   const planInfo = getPlanInfo();
+  
+  console.log('🔍 Sidebar - Rendering with props:', { currentPage, hasActivePlan, loading });
+  console.log('🔍 Sidebar - Plan info:', planInfo);
 
   // Obter itens básicos que sempre devem aparecer
   const getBasicMenuItems = () => [

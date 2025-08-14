@@ -204,6 +204,8 @@ function App() {
 
   // Determinar se deve mostrar sidebar baseado na página atual
   console.log('🔍 App.js - currentPage:', currentPage);
+  console.log('🔍 App.js - window.location.pathname:', window.location.pathname);
+  console.log('🔍 App.js - navigation.getCurrentRoute():', navigation.getCurrentRoute());
   console.log('🔍 App.js - navigation.isAuthRoute():', navigation.isAuthRoute());
   console.log('🔍 App.js - navigation.isHomePage():', navigation.isHomePage());
   const isStandalonePage = navigation.isAuthRoute() || navigation.isHomePage() || currentPage === 'auth-callback' || currentPage === 'subscription';
@@ -221,7 +223,9 @@ function App() {
   return (
     <div className="App">
       {/* Sidebar */}
-      <Sidebar currentPage={currentPage} onPageChange={handlePageChange} onSignOut={handleSignOut} />
+      <div style={{ backgroundColor: 'red', border: '3px solid yellow', zIndex: 9999 }}>
+        <Sidebar currentPage={currentPage} onPageChange={handlePageChange} onSignOut={handleSignOut} />
+      </div>
       
       {/* Main Content */}
       <main className="main-content">
