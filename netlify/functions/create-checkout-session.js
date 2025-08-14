@@ -27,10 +27,21 @@ exports.handler = async (event, context) => {
   }
 
   try {
+    console.log('📥 Request body:', event.body);
     const { planId, stripePriceId, successUrl, cancelUrl, customerEmail, userId } = JSON.parse(event.body);
+
+    console.log('📊 Parâmetros recebidos:', {
+      planId,
+      stripePriceId,
+      successUrl,
+      cancelUrl,
+      customerEmail,
+      userId
+    });
 
     // Validar parâmetros obrigatórios
     if (!planId || !stripePriceId || !successUrl || !cancelUrl || !customerEmail || !userId) {
+      console.error('❌ Parâmetros em falta');
       return {
         statusCode: 400,
         headers,
@@ -157,6 +168,9 @@ exports.handler = async (event, context) => {
 
     // Criar checkout session
     const session = await stripe.checkout.sessions.create(sessionParams);
+
+    console.log('✅ Checkout session criada:', session.id);
+    console.log('🔗 URL de redirecionamento:', session.url);
 
     return {
       statusCode: 200,

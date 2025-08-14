@@ -98,12 +98,18 @@ const SubscriptionPage = () => {
 
       const user = authService.getCurrentUser();
       if (!user) {
+        console.log('❌ Usuário não autenticado, redirecionando para login');
+        setError('Você precisa estar logado para subscrever um plano.');
         navigation.toLogin();
         return;
       }
 
+      console.log('✅ Usuário autenticado:', user.id, user.email);
+      console.log('📦 Plano selecionado:', plan.name, plan.id);
+
       // Se for trial, criar diretamente
       if (plan.billing_period === 'trial') {
+        console.log('🎁 Iniciando trial gratuito...');
         await subscriptionService.startFreeTrial();
         setShowTrialModal(true);
         await loadData(); // Recarregar dados
@@ -114,6 +120,10 @@ const SubscriptionPage = () => {
       const successUrl = `${window.location.origin}/dashboard?subscription=success`;
       const cancelUrl = `${window.location.origin}/subscription?subscription=cancelled`;
 
+      console.log('💳 Criando checkout session...');
+      console.log('🎯 Success URL:', successUrl);
+      console.log('❌ Cancel URL:', cancelUrl);
+
       await subscriptionService.createCheckoutSession(
         plan.id,
         successUrl,
@@ -121,8 +131,8 @@ const SubscriptionPage = () => {
       );
 
     } catch (err) {
-      console.error('Erro ao selecionar plano:', err);
-      setError(err.message || 'Erro ao processar plano. Tente novamente.');
+      console.error('❌ Erro ao selecionar plano:', err);
+      setError(`Erro: ${err.message || 'Erro ao processar plano. Tente novamente.'}`);
     } finally {
       setProcessingPlan(null);
     }

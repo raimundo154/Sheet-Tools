@@ -108,12 +108,17 @@ class SubscriptionService {
   // Criar checkout session do Stripe
   async createCheckoutSession(planId, successUrl, cancelUrl) {
     try {
+      console.log('🚀 Iniciando createCheckoutSession...');
+      
       const user = authService.getCurrentUser();
       if (!user) {
         throw new Error('Usuário não autenticado');
       }
 
+      console.log('👤 User:', user.id, user.email);
+
       // Obter detalhes do plano
+      console.log('📦 Buscando plano ID:', planId);
       const { data: plan, error: planError } = await supabase
         .from('subscription_plans')
         .select('*')
@@ -121,8 +126,11 @@ class SubscriptionService {
         .single();
 
       if (planError || !plan) {
+        console.error('❌ Erro ao buscar plano:', planError);
         throw new Error('Plano não encontrado');
       }
+
+      console.log('✅ Plano encontrado:', plan.name, plan.stripe_price_id);
 
       // Chamar função serverless para criar checkout session
       const functionsBase = this.getFunctionsBaseUrl();
@@ -130,30 +138,54 @@ class SubscriptionService {
         ? `${functionsBase}/.netlify/functions/create-checkout-session`
         : '/.netlify/functions/create-checkout-session';
 
+      console.log('🌐 URL da função:', url);
+      console.log('📊 Functions base:', functionsBase);
+
+      const requestBody = {
+        planId,
+        stripePriceId: plan.stripe_price_id,
+        successUrl,
+        cancelUrl,
+        customerEmail: user.email,
+        userId: user.id
+      };
+
+      console.log('📤 Enviando request:', requestBody);
+
       const response = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${authService.getCurrentSession()?.access_token}`
         },
-        body: JSON.stringify({
-          planId,
-          stripePriceId: plan.stripe_price_id,
-          successUrl,
-          cancelUrl,
-          customerEmail: user.email,
-          userId: user.id
-        })
+        body: JSON.stringify(requestBody)
       });
+
+      console.log('📥 Response status:', response.status, response.statusText);
 
       if (!response.ok) {
         const errorData = await response.json();
+        console.error('❌ Erro na response:', errorData);
         throw new Error(errorData.error || 'Erro ao criar checkout session');
       }
 
-      const { sessionId } = await response.json();
+      const responseData = await response.json();
+      console.log('✅ Response data:', responseData);
+
+      const { sessionId, url: checkoutUrl } = responseData;
+
+      if (checkoutUrl) {
+        console.log('🔗 Redirecionando para Stripe URL:', checkoutUrl);
+        window.location.href = checkoutUrl;
+        return;
+      }
+
+      if (!sessionId) {
+        throw new Error('SessionId não retornado da função');
+      }
 
       // Redirecionar para o Stripe Checkout
+      console.log('💳 Iniciando redirect para Stripe com sessionId:', sessionId);
       const stripe = await this.getStripe();
       if (!stripe) {
         throw new Error('Stripe não está configurado');
@@ -162,11 +194,12 @@ class SubscriptionService {
       const { error } = await stripe.redirectToCheckout({ sessionId });
       
       if (error) {
+        console.error('❌ Erro no redirect:', error);
         throw new Error(error.message);
       }
 
     } catch (error) {
-      console.error('Erro no createCheckoutSession:', error);
+      console.error('❌ Erro no createCheckoutSession:', error);
       throw error;
     }
   }
