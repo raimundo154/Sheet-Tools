@@ -577,8 +577,12 @@ body {
 
 @media (max-width: 768px) {
   .sidebar {
-    transform: translateX(-100%);
+    /* TEMPORARILY DISABLED - DEBUGGING SIDEBAR VISIBILITY */
+    /* transform: translateX(-100%); */
+    transform: translateX(0) !important;
     transition: transform 0.3s ease;
+    background: red !important;
+    border: 5px solid yellow !important;
   }
   
   .sidebar.open {
