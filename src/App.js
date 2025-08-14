@@ -223,9 +223,7 @@ function App() {
   return (
     <div className="App">
       {/* Sidebar */}
-      <div style={{ backgroundColor: 'red', border: '3px solid yellow', zIndex: 9999 }}>
-        <Sidebar currentPage={currentPage} onPageChange={handlePageChange} onSignOut={handleSignOut} />
-      </div>
+      <Sidebar currentPage={currentPage} onPageChange={handlePageChange} onSignOut={handleSignOut} />
       
       {/* Main Content */}
       <main className="main-content">

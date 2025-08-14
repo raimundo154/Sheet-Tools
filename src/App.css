@@ -34,44 +34,7 @@ body {
   pointer-events: none;
 }
 
-/* Sidebar Styles */
-.sidebar {
-  width: 280px;
-  background: var(--bg-primary);
-  border-right: 1px solid var(--glass-border);
-  display: flex;
-  flex-direction: column;
-  position: fixed;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  z-index: 1000;
-  backdrop-filter: blur(20px);
-  box-shadow: var(--shadow-lg);
-}
-
-.sidebar-logo {
-  padding: 2rem 1.5rem 1.5rem;
-  border-bottom: 1px solid var(--glass-border);
-}
-
-.sidebar-logo h1 {
-  color: var(--text-primary);
-  font-size: 1.5rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-align: center;
-  background: var(--gradient-primary);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.sidebar-nav {
-  flex: 1;
-  padding: 1.5rem 0;
-  overflow-y: auto;
-}
+/* Sidebar Styles - MOVED TO Sidebar.css */
 
 .menu-group {
   margin-bottom: 1rem;
@@ -576,18 +539,7 @@ body {
 }
 
 @media (max-width: 768px) {
-  .sidebar {
-    /* TEMPORARILY DISABLED - DEBUGGING SIDEBAR VISIBILITY */
-    /* transform: translateX(-100%); */
-    transform: translateX(0) !important;
-    transition: transform 0.3s ease;
-    background: red !important;
-    border: 5px solid yellow !important;
-  }
-  
-  .sidebar.open {
-    transform: translateX(0);
-  }
+  /* Sidebar styles moved to Sidebar.css */
   
   .main-content {
     margin-left: 0;
