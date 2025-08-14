@@ -45,7 +45,7 @@ export const useUserPlan = () => {
   const hasPageAccess = (pageName) => {
     if (!hasActivePlan) {
       // Páginas que todos podem acessar sem plano
-      const publicPages = ['dashboard', 'subscription'];
+      const publicPages = ['dashboard', 'subscription', 'rank-up', 'settings'];
       return publicPages.includes(pageName);
     }
 

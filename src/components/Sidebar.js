@@ -18,14 +18,125 @@ const Sidebar = ({ currentPage, onPageChange, onSignOut }) => {
   const { hasActivePlan, hasPageAccess, getPlanInfo, loading } = useUserPlan();
   const planInfo = getPlanInfo();
 
-  // Se está carregando, mostrar sidebar básica
+  // Obter itens básicos que sempre devem aparecer
+  const getBasicMenuItems = () => [
+    {
+      group: 'Principal',
+      items: [
+        { 
+          id: 'dashboard', 
+          label: 'Dashboard', 
+          icon: Home,
+          alwaysVisible: true
+        }
+      ]
+    },
+    {
+      group: 'Configurações',
+      items: [
+        { 
+          id: 'subscription', 
+          label: 'Subscription', 
+          icon: Crown,
+          alwaysVisible: true,
+          badge: 'Upgrade'
+        },
+        { 
+          id: 'rank-up', 
+          label: 'Rank Up', 
+          icon: BarChart3,
+          alwaysVisible: true
+        },
+        { 
+          id: 'settings', 
+          label: 'Settings', 
+          icon: Settings,
+          alwaysVisible: true
+        }
+      ]
+    },
+    {
+      group: 'Sistema',
+      items: [
+        { 
+          id: 'sign-out', 
+          label: 'Sign Out', 
+          icon: LogOut,
+          alwaysVisible: true
+        }
+      ]
+    }
+  ];
+
+  // Função para lidar com cliques nos itens do menu
+  const handleItemClick = (itemId) => {
+    if (itemId === 'sign-out') {
+      onSignOut();
+    } else {
+      onPageChange(itemId);
+    }
+  };
+
+  // Se está carregando, mostrar sidebar básica com menu funcional
   if (loading) {
+    const basicMenuItems = getBasicMenuItems();
+    
     return (
       <div className="sidebar">
         <div className="sidebar-content">
-          <div className="loading-sidebar">
-            <Loader className="loading-icon" size={24} />
-            <p>Carregando menu...</p>
+          {/* Logo/Header */}
+          <div className="sidebar-header">
+            <img 
+              src="/logo/sheet-tools-logo-backgroundremover.png" 
+              alt="Sheet Tools" 
+              className="sidebar-logo"
+            />
+          </div>
+
+          {/* Plan Info - Loading */}
+          <div className="plan-info">
+            <div className="plan-badge">
+              <Crown size={16} />
+              <span>Carregando...</span>
+            </div>
+          </div>
+
+          {/* Menu Básico */}
+          <nav className="sidebar-nav">
+            {basicMenuItems.map((group, groupIndex) => (
+              <div key={groupIndex} className="nav-group">
+                <div className="nav-group-title">{group.group}</div>
+                <ul className="nav-items">
+                  {group.items.map((item) => (
+                    <li key={item.id} className="nav-item">
+                      <button
+                        className={`nav-link ${currentPage === item.id ? 'active' : ''}`}
+                        onClick={() => handleItemClick(item.id)}
+                      >
+                        <item.icon size={20} />
+                        <span className="nav-label">{item.label}</span>
+                        {item.badge && (
+                          <span className="nav-badge">{item.badge}</span>
+                        )}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </nav>
+
+          {/* Footer info */}
+          <div className="sidebar-footer">
+            <div className="upgrade-prompt">
+              <div className="upgrade-card" onClick={() => onPageChange('subscription')}>
+                <Crown size={20} />
+                <div>
+                  <p className="upgrade-title">Upgrade Agora</p>
+                  <p className="upgrade-subtitle">Desbloqueia todas as funcionalidades</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -147,14 +258,6 @@ const Sidebar = ({ currentPage, onPageChange, onSignOut }) => {
   };
 
   const menuItems = getMenuItems();
-
-  const handleItemClick = (itemId) => {
-    if (itemId === 'sign-out') {
-      onSignOut();
-    } else {
-      onPageChange(itemId);
-    }
-  };
 
   return (
     <div className="sidebar">
