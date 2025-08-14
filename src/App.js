@@ -203,7 +203,11 @@ function App() {
   };
 
   // Determinar se deve mostrar sidebar baseado na página atual
+  console.log('🔍 App.js - currentPage:', currentPage);
+  console.log('🔍 App.js - navigation.isAuthRoute():', navigation.isAuthRoute());
+  console.log('🔍 App.js - navigation.isHomePage():', navigation.isHomePage());
   const isStandalonePage = navigation.isAuthRoute() || navigation.isHomePage() || currentPage === 'auth-callback' || currentPage === 'subscription';
+  console.log('🔍 App.js - isStandalonePage:', isStandalonePage);
 
   // Renderização condicional baseada no tipo de página
   if (isStandalonePage) {
