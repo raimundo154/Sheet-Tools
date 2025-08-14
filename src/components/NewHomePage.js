@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { navigation } from '../utils/navigation';
+import subscriptionService from '../services/subscriptionService';
 import { 
   TrendingUp, 
   Target, 
@@ -25,6 +26,8 @@ const NewHomePage = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlay, setIsAutoPlay] = useState(true);
   const [openFAQ, setOpenFAQ] = useState(null);
+  const [plans, setPlans] = useState([]);
+  const [plansLoading, setPlansLoading] = useState(true);
 
   // Carousel slides
   const slides = [
@@ -49,6 +52,26 @@ const NewHomePage = () => {
       icon: Clock
     }
   ];
+
+  // Load real plans from Supabase
+  useEffect(() => {
+    const loadPlans = async () => {
+      try {
+        setPlansLoading(true);
+        const plansData = await subscriptionService.getAvailablePlans();
+        console.log('📦 Homepage - Plans loaded:', plansData);
+        setPlans(plansData);
+      } catch (error) {
+        console.error('❌ Homepage - Error loading plans:', error);
+        // Keep empty array if error
+        setPlans([]);
+      } finally {
+        setPlansLoading(false);
+      }
+    };
+
+    loadPlans();
+  }, []);
 
   // Auto-play carousel
   React.useEffect(() => {
@@ -114,6 +137,49 @@ const NewHomePage = () => {
 
   const handleCTAClick = () => {
     navigation.toLogin();
+  };
+
+  // Organize plans by type and billing period
+  const getOrganizedPlans = () => {
+    if (!plans || plans.length === 0) return { trial: null, monthly: [], yearly: [] };
+
+    const trial = plans.find(plan => plan.billing_period === 'trial');
+    const monthly = plans.filter(plan => plan.billing_period === 'monthly').sort((a, b) => a.price_amount - b.price_amount);
+    const yearly = plans.filter(plan => plan.billing_period === 'yearly').sort((a, b) => a.price_amount - b.price_amount);
+
+    return { trial, monthly, yearly };
+  };
+
+  // Format price for display
+  const formatPrice = (amount, period) => {
+    const price = (amount / 100).toFixed(2);
+    return {
+      currency: '€',
+      amount: price,
+      period: period === 'monthly' ? '/mês' : '/ano'
+    };
+  };
+
+  // Calculate savings for yearly plans
+  const calculateYearlySavings = (yearlyPlan, monthlyPlans) => {
+    if (!yearlyPlan || !monthlyPlans || monthlyPlans.length === 0) return null;
+    
+    // Find corresponding monthly plan by name similarity
+    const planType = yearlyPlan.name.toLowerCase();
+    const monthlyPlan = monthlyPlans.find(plan => 
+      plan.name.toLowerCase().includes('basic') && planType.includes('basic') ||
+      plan.name.toLowerCase().includes('standard') && planType.includes('standard') ||
+      plan.name.toLowerCase().includes('expert') && planType.includes('expert')
+    );
+    
+    if (!monthlyPlan) return null;
+    
+    const yearlyPrice = yearlyPlan.price_amount / 100;
+    const monthlyPrice = (monthlyPlan.price_amount / 100) * 12;
+    const savings = monthlyPrice - yearlyPrice;
+    const savingsPercent = Math.round((savings / monthlyPrice) * 100);
+    
+    return { savings: savings.toFixed(2), percent: savingsPercent };
   };
 
   const scrollToSection = (sectionId) => {
@@ -466,11 +532,11 @@ const NewHomePage = () => {
               }}
             >
               <div className="plan-header">
-                <h3>Gratuito</h3>
+                <h3>{plansLoading ? 'Carregando...' : 'Trial Gratuito'}</h3>
                 <div className="price">
                   <span className="currency">€</span>
                   <span className="amount">0</span>
-                  <span className="period">/15 dias</span>
+                  <span className="period">/10 dias</span>
                 </div>
               </div>
               <ul className="plan-features">
@@ -503,18 +569,18 @@ const NewHomePage = () => {
             >
               <div className="popular-badge">Mais Popular</div>
               <div className="plan-header">
-                <h3>Mensal</h3>
+                <h3>{plansLoading ? 'Carregando...' : 'Basic'}</h3>
                 <div className="price">
                   <span className="currency">€</span>
-                  <span className="amount">15.99</span>
+                  <span className="amount">{plansLoading ? '--' : '14.99'}</span>
                   <span className="period">/mês</span>
                 </div>
               </div>
               <ul className="plan-features">
-                <li><Check size={16} /> Tudo do plano gratuito</li>
-                <li><Check size={16} /> Campanhas ilimitadas</li>
+                <li><Check size={16} /> Daily ROAS Profit Sheet</li>
+                <li><Check size={16} /> Quotation</li>
+                <li><Check size={16} /> Dashboard Analytics</li>
                 <li><Check size={16} /> Histórico completo</li>
-                <li><Check size={16} /> Relatórios avançados</li>
                 <li><Check size={16} /> Suporte prioritário</li>
               </ul>
               <motion.button 
@@ -539,20 +605,20 @@ const NewHomePage = () => {
               }}
             >
               <div className="plan-header">
-                <h3>Anual</h3>
+                <h3>{plansLoading ? 'Carregando...' : 'Basic Anual'}</h3>
                 <div className="price">
                   <span className="currency">€</span>
-                  <span className="amount">12.99</span>
-                  <span className="period">/mês</span>
+                  <span className="amount">{plansLoading ? '--' : '134.91'}</span>
+                  <span className="period">/ano</span>
                 </div>
-                <div className="savings">Poupa 19%</div>
+                {!plansLoading && <div className="savings">Poupa 3 meses</div>}
               </div>
               <ul className="plan-features">
-                <li><Check size={16} /> Tudo do plano mensal</li>
-                <li><Check size={16} /> 2 meses grátis</li>
-                <li><Check size={16} /> Acesso antecipado a novidades</li>
-                <li><Check size={16} /> Consultoria estratégica</li>
-                <li><Check size={16} /> Suporte via WhatsApp</li>
+                <li><Check size={16} /> Daily ROAS Profit Sheet</li>
+                <li><Check size={16} /> Quotation</li>
+                <li><Check size={16} /> Dashboard Analytics</li>
+                <li><Check size={16} /> 3 meses gratuitos</li>
+                <li><Check size={16} /> Suporte prioritário</li>
               </ul>
               <motion.button 
                 className="plan-button"
