@@ -47,8 +47,28 @@ export const useUserPlan = () => {
       }
     });
 
+    // Detectar retorno da página de pagamento
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        // Página tornou-se visível - verificar se há success query param
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('subscription') === 'success') {
+          console.log('🎉 useUserPlan - Retorno do pagamento detectado, recarregando subscription...');
+          setTimeout(() => {
+            loadUserPlan();
+            // Limpar query param
+            const newUrl = window.location.pathname;
+            window.history.replaceState({}, '', newUrl);
+          }, 2000); // Delay para webhook processar
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
     return () => {
       subscription?.unsubscribe();
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, [loadUserPlan]);
 

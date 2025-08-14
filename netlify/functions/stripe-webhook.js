@@ -127,6 +127,22 @@ async function handleCheckoutCompleted(session) {
       return;
     }
 
+    // Função helper para converter timestamp do Stripe (com validação)
+    const convertStripeTimestamp = (timestamp) => {
+      if (!timestamp) return null;
+      
+      // Validar se o timestamp é razoável (entre 2020 e 2030)
+      const minTimestamp = new Date('2020-01-01').getTime() / 1000;
+      const maxTimestamp = new Date('2030-01-01').getTime() / 1000;
+      
+      if (timestamp < minTimestamp || timestamp > maxTimestamp) {
+        console.warn(`Invalid timestamp detected: ${timestamp}, using current time instead`);
+        return new Date().toISOString();
+      }
+      
+      return new Date(timestamp * 1000).toISOString();
+    };
+
     // Criar ou atualizar subscription na base de dados
     const subscriptionData = {
       user_id: metadata.userId,
@@ -134,15 +150,15 @@ async function handleCheckoutCompleted(session) {
       stripe_customer_id: customer,
       stripe_subscription_id: subscription,
       status: stripeSubscription.status,
-      current_period_start: new Date(stripeSubscription.current_period_start * 1000).toISOString(),
-      current_period_end: new Date(stripeSubscription.current_period_end * 1000).toISOString(),
+      current_period_start: convertStripeTimestamp(stripeSubscription.current_period_start),
+      current_period_end: convertStripeTimestamp(stripeSubscription.current_period_end),
       cancel_at_period_end: stripeSubscription.cancel_at_period_end || false
     };
 
     // Adicionar dados de trial se existir
     if (stripeSubscription.trial_start && stripeSubscription.trial_end) {
-      subscriptionData.trial_start = new Date(stripeSubscription.trial_start * 1000).toISOString();
-      subscriptionData.trial_end = new Date(stripeSubscription.trial_end * 1000).toISOString();
+      subscriptionData.trial_start = convertStripeTimestamp(stripeSubscription.trial_start);
+      subscriptionData.trial_end = convertStripeTimestamp(stripeSubscription.trial_end);
     }
 
     const { error: upsertError } = await supabase
@@ -292,18 +308,34 @@ async function handleSubscriptionUpdated(subscription) {
   } = subscription;
   
   try {
+    // Função helper para converter timestamp do Stripe (com validação)
+    const convertStripeTimestamp = (timestamp) => {
+      if (!timestamp) return null;
+      
+      // Validar se o timestamp é razoável (entre 2020 e 2030)
+      const minTimestamp = new Date('2020-01-01').getTime() / 1000;
+      const maxTimestamp = new Date('2030-01-01').getTime() / 1000;
+      
+      if (timestamp < minTimestamp || timestamp > maxTimestamp) {
+        console.warn(`Invalid timestamp detected: ${timestamp}, using current time instead`);
+        return new Date().toISOString();
+      }
+      
+      return new Date(timestamp * 1000).toISOString();
+    };
+
     const updateData = {
       status,
-      current_period_start: new Date(current_period_start * 1000).toISOString(),
-      current_period_end: new Date(current_period_end * 1000).toISOString(),
+      current_period_start: convertStripeTimestamp(current_period_start),
+      current_period_end: convertStripeTimestamp(current_period_end),
       cancel_at_period_end: cancel_at_period_end || false,
-      canceled_at: canceled_at ? new Date(canceled_at * 1000).toISOString() : null
+      canceled_at: convertStripeTimestamp(canceled_at)
     };
 
     // Adicionar dados de trial se existir
     if (trial_start && trial_end) {
-      updateData.trial_start = new Date(trial_start * 1000).toISOString();
-      updateData.trial_end = new Date(trial_end * 1000).toISOString();
+      updateData.trial_start = convertStripeTimestamp(trial_start);
+      updateData.trial_end = convertStripeTimestamp(trial_end);
     }
 
     const { error: updateError } = await supabase
@@ -331,11 +363,27 @@ async function handleSubscriptionDeleted(subscription) {
   const { id, canceled_at } = subscription;
   
   try {
+    // Função helper para converter timestamp do Stripe (com validação)
+    const convertStripeTimestamp = (timestamp) => {
+      if (!timestamp) return null;
+      
+      // Validar se o timestamp é razoável (entre 2020 e 2030)
+      const minTimestamp = new Date('2020-01-01').getTime() / 1000;
+      const maxTimestamp = new Date('2030-01-01').getTime() / 1000;
+      
+      if (timestamp < minTimestamp || timestamp > maxTimestamp) {
+        console.warn(`Invalid timestamp detected: ${timestamp}, using current time instead`);
+        return new Date().toISOString();
+      }
+      
+      return new Date(timestamp * 1000).toISOString();
+    };
+
     const { error: updateError } = await supabase
       .from('user_subscriptions')
       .update({
         status: 'canceled',
-        canceled_at: canceled_at ? new Date(canceled_at * 1000).toISOString() : new Date().toISOString()
+        canceled_at: canceled_at ? convertStripeTimestamp(canceled_at) : new Date().toISOString()
       })
       .eq('stripe_subscription_id', id);
 
@@ -360,7 +408,24 @@ async function handleTrialWillEnd(subscription) {
   // Por exemplo, enviar email avisando que o trial acaba em X dias
   
   const { id, trial_end } = subscription;
-  const trialEndDate = new Date(trial_end * 1000);
+  
+  // Função helper para converter timestamp do Stripe (com validação)
+  const convertStripeTimestamp = (timestamp) => {
+    if (!timestamp) return null;
+    
+    // Validar se o timestamp é razoável (entre 2020 e 2030)
+    const minTimestamp = new Date('2020-01-01').getTime() / 1000;
+    const maxTimestamp = new Date('2030-01-01').getTime() / 1000;
+    
+    if (timestamp < minTimestamp || timestamp > maxTimestamp) {
+      console.warn(`Invalid timestamp detected: ${timestamp}, using current time instead`);
+      return new Date();
+    }
+    
+    return new Date(timestamp * 1000);
+  };
+
+  const trialEndDate = convertStripeTimestamp(trial_end);
   const daysLeft = Math.ceil((trialEndDate - new Date()) / (1000 * 60 * 60 * 24));
   
   console.log(`Trial ending in ${daysLeft} days for subscription:`, id);
