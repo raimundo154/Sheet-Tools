@@ -157,6 +157,17 @@ exports.handler = async (event, context) => {
       },
       // Permitir códigos promocionais
       allow_promotion_codes: true,
+      // Personalização visual do checkout
+      custom_text: {
+        submit: {
+          message: 'Subscrever Sheet Tools'
+        }
+      },
+      // Configurações da empresa/branding
+      payment_intent_data: {
+        description: `Sheet Tools - ${plan.name} - ${customerEmail}`,
+        statement_descriptor_suffix: 'Sheet Tools'
+      },
       // Configurar trial se aplicável
       ...(plan.trial_days > 0 && {
         subscription_data: {
