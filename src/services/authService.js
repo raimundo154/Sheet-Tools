@@ -12,17 +12,29 @@ class AuthService {
       const { data: { session }, error } = await supabase.auth.getSession()
       if (error) {
         console.error('Erro ao obter sessão:', error)
+        this.session = null
+        this.user = null
         return null
       }      
-      if (session) {
+      
+      if (session && session.user) {
         this.session = session
         this.user = session.user
+        console.log('Auth service initialized with user:', session.user.email)
+      } else {
+        this.session = null
+        this.user = null
+        console.log('No active session found')
       }      
+      
       return session
     } catch (error) {
       console.error('Erro ao inicializar auth service:', error)
+      this.session = null
+      this.user = null
       return null
-    }  }
+    }
+  }
   // Login com Google
   async signInWithGoogle() {
     try {

@@ -13,7 +13,7 @@ import {
   HelpCircle
 } from 'lucide-react';
 
-const Sidebar = ({ currentPage, onPageChange, onSignOut }) => {
+const Sidebar = ({ currentPage, onPageChange, onSignOut, onOpenHelp }) => {
   const menuItems = [
     {
       group: 'Principal',
@@ -28,8 +28,7 @@ const Sidebar = ({ currentPage, onPageChange, onSignOut }) => {
       group: 'Ferramentas',
       items: [
         { id: 'product-research', label: 'Product Research', icon: Search },
-        { id: 'campaigns', label: 'Campaigns', icon: Megaphone },
-        { id: 'sales', label: 'Vendas', icon: ShoppingCart }
+        { id: 'campaigns', label: 'Campaigns', icon: Megaphone }
       ]
     },
     {
@@ -90,7 +89,10 @@ const Sidebar = ({ currentPage, onPageChange, onSignOut }) => {
       {/* Bottom Section */}
       <div className="sidebar-bottom">
         <div className="menu-divider"></div>
-        <button className="menu-item">
+        <button 
+          className="menu-item"
+          onClick={onOpenHelp}
+        >
           <HelpCircle size={20} />
           <span>Get Help</span>
         </button>
@@ -101,6 +103,7 @@ const Sidebar = ({ currentPage, onPageChange, onSignOut }) => {
           >
             Privacy Policy
           </button>
+          <span className="link-separator">•</span>
           <button 
             className="bottom-link"
             onClick={() => onPageChange('terms')}

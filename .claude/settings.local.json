@@ -13,7 +13,8 @@
       "Bash(npm install:*)",
       "mcp__ide__getDiagnostics",
       "Bash(sed:*)",
-      "Bash(del:*)"
+      "Bash(del:*)",
+      "Bash(touch:*)"
     ],
     "deny": []
   }
