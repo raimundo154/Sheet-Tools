@@ -217,10 +217,22 @@ class SubscriptionService {
         throw new Error('Usuário não autenticado');
       }
 
+      console.log('🚀 Iniciando customer portal para user:', user.id);
+
       // Obter subscription ativa
       const subscription = await this.getUserActiveSubscription();
       if (!subscription) {
         throw new Error('Nenhuma subscription ativa encontrada');
+      }
+
+      console.log('📊 Subscription encontrada:', subscription);
+
+      // Verificar se é um trial (não tem customer_id do Stripe)
+      if (!subscription.stripe_customer_id || subscription.status === 'trialing') {
+        console.log('⚠️ Trial detectado - redirecionando para página de upgrade');
+        // Para trials, redirecionar para página de subscrições
+        window.location.href = '/subscription?upgrade=true';
+        return;
       }
 
       // Chamar função serverless para criar portal session
@@ -228,6 +240,8 @@ class SubscriptionService {
       const url = functionsBase
         ? `${functionsBase}/.netlify/functions/create-portal-session`
         : '/.netlify/functions/create-portal-session';
+
+      console.log('🌐 URL da função portal:', url);
 
       const response = await fetch(url, {
         method: 'POST',
@@ -241,18 +255,22 @@ class SubscriptionService {
         })
       });
 
+      console.log('📥 Response status:', response.status);
+
       if (!response.ok) {
         const errorData = await response.json();
+        console.error('❌ Erro na response:', errorData);
         throw new Error(errorData.error || 'Erro ao criar portal session');
       }
 
       const { url: portalUrl } = await response.json();
+      console.log('✅ Portal URL obtido:', portalUrl);
 
       // Redirecionar para o portal
       window.location.href = portalUrl;
 
     } catch (error) {
-      console.error('Erro no createCustomerPortalSession:', error);
+      console.error('❌ Erro no createCustomerPortalSession:', error);
       throw error;
     }
   }

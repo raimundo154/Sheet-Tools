@@ -116,20 +116,37 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // Verificar se já tem subscription ativa
-    const { data: existingSubscription } = await supabase
+    // Verificar se já tem subscription ativa (excluindo trials)
+    const { data: existingSubscription, error: subError } = await supabase
       .from('user_subscriptions')
-      .select('*')
+      .select('*, subscription_plans!inner(*)')
       .eq('user_id', userId)
       .eq('status', 'active')
+      .neq('subscription_plans.billing_period', 'trial')
       .single();
 
-    if (existingSubscription) {
+    console.log('🔍 Verificando subscription existente:', { existingSubscription, subError });
+
+    if (existingSubscription && !subError) {
+      console.log('❌ User já tem subscription ativa (não trial)');
       return {
         statusCode: 400,
         headers,
         body: JSON.stringify({ error: 'Já possui uma subscription ativa' })
       };
+    }
+
+    // Se tem trial, pode fazer upgrade - cancelar trial primeiro
+    const { data: trialSubscription } = await supabase
+      .from('user_subscriptions')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('status', 'trialing')
+      .single();
+
+    if (trialSubscription) {
+      console.log('🔄 Trial encontrado, será cancelado após pagamento bem-sucedido');
+      // O trial será cancelado pelo webhook após pagamento
     }
 
     // Configurar parâmetros da session baseado no tipo de plano

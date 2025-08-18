@@ -161,6 +161,28 @@ async function handleCheckoutCompleted(session) {
       subscriptionData.trial_end = convertStripeTimestamp(stripeSubscription.trial_end);
     }
 
+    // Cancelar trial existente se houver
+    if (metadata.userId) {
+      console.log('🔄 Verificando se há trial para cancelar...');
+      const { data: existingTrial } = await supabase
+        .from('user_subscriptions')
+        .select('*')
+        .eq('user_id', metadata.userId)
+        .eq('status', 'trialing')
+        .single();
+
+      if (existingTrial) {
+        console.log('❌ Cancelando trial existente:', existingTrial.id);
+        await supabase
+          .from('user_subscriptions')
+          .update({ 
+            status: 'canceled',
+            canceled_at: new Date().toISOString()
+          })
+          .eq('id', existingTrial.id);
+      }
+    }
+
     const { error: upsertError } = await supabase
       .from('user_subscriptions')
       .upsert(subscriptionData, { 
