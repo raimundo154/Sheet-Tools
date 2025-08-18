@@ -162,25 +162,62 @@ async function handleCheckoutCompleted(session) {
     }
 
     // Cancelar trial existente se houver
-    if (metadata.userId) {
-      console.log('🔄 Verificando se há trial para cancelar...');
-      const { data: existingTrial } = await supabase
-        .from('user_subscriptions')
-        .select('*')
-        .eq('user_id', metadata.userId)
-        .eq('status', 'trialing')
-        .single();
+    console.log('🔍 Metadata recebido:', metadata);
+    const userId = metadata.userId || metadata.userEmail;
+    
+    if (userId) {
+      console.log('🔄 Verificando se há trial para cancelar para user:', userId);
+      
+      // Tentar encontrar por user_id primeiro
+      let existingTrial = null;
+      if (metadata.userId) {
+        const { data } = await supabase
+          .from('user_subscriptions')
+          .select('*')
+          .eq('user_id', metadata.userId)
+          .eq('status', 'trialing')
+          .single();
+        existingTrial = data;
+      }
+      
+      // Se não encontrou e tem email, tentar por email
+      if (!existingTrial && metadata.userEmail) {
+        console.log('🔍 Tentando encontrar trial por email:', metadata.userEmail);
+        const { data: userData } = await supabase.auth.admin.listUsers();
+        const user = userData.users.find(u => u.email === metadata.userEmail);
+        
+        if (user) {
+          console.log('👤 User encontrado por email:', user.id);
+          const { data } = await supabase
+            .from('user_subscriptions')
+            .select('*')
+            .eq('user_id', user.id)
+            .eq('status', 'trialing')
+            .single();
+          existingTrial = data;
+        }
+      }
 
       if (existingTrial) {
         console.log('❌ Cancelando trial existente:', existingTrial.id);
-        await supabase
+        const { error: cancelError } = await supabase
           .from('user_subscriptions')
           .update({ 
             status: 'canceled',
             canceled_at: new Date().toISOString()
           })
           .eq('id', existingTrial.id);
+          
+        if (cancelError) {
+          console.error('❌ Erro ao cancelar trial:', cancelError);
+        } else {
+          console.log('✅ Trial cancelado com sucesso');
+        }
+      } else {
+        console.log('ℹ️ Nenhum trial encontrado para cancelar');
       }
+    } else {
+      console.log('⚠️ Nenhum userId ou email encontrado nos metadados');
     }
 
     const { error: upsertError } = await supabase
