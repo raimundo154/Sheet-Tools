@@ -199,19 +199,16 @@ async function handleCheckoutCompleted(session) {
       }
 
       if (existingTrial) {
-        console.log('❌ Cancelando trial existente:', existingTrial.id);
-        const { error: cancelError } = await supabase
+        console.log('❌ Removendo trial existente:', existingTrial.id);
+        const { error: deleteError } = await supabase
           .from('user_subscriptions')
-          .update({ 
-            status: 'canceled',
-            canceled_at: new Date().toISOString()
-          })
+          .delete()
           .eq('id', existingTrial.id);
           
-        if (cancelError) {
-          console.error('❌ Erro ao cancelar trial:', cancelError);
+        if (deleteError) {
+          console.error('❌ Erro ao remover trial:', deleteError);
         } else {
-          console.log('✅ Trial cancelado com sucesso');
+          console.log('✅ Trial removido com sucesso - subscription paga será a única ativa');
         }
       } else {
         console.log('ℹ️ Nenhum trial encontrado para cancelar');
