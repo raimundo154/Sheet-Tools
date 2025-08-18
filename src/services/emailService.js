@@ -109,7 +109,106 @@ class EmailService {
     }
   }
 
+  // Enviar email de suporte para info@sheet-tools.com
+  async sendSupportEmail(message, userInfo = null) {
+    try {
+      // Get current user info if not provided
+      if (!userInfo) {
+        const currentUser = this.getCurrentUser();
+        userInfo = {
+          email: currentUser?.email || 'Usuário não identificado',
+          name: currentUser?.user_metadata?.display_name || 
+                currentUser?.user_metadata?.full_name || 
+                'Nome não disponível',
+          userId: currentUser?.id || 'ID não disponível'
+        };
+      }
 
+      // Prepare email parameters for support
+      const templateParams = {
+        to_email: 'info@sheet-tools.com',
+        from_name: userInfo.name,
+        from_email: userInfo.email,
+        user_id: userInfo.userId,
+        message: message,
+        timestamp: new Date().toLocaleString('pt-PT'),
+        subject: `Suporte - Mensagem de ${userInfo.name}`,
+        reply_to: userInfo.email
+      };
+
+      console.log('🔄 Enviando email de suporte...');
+      console.log('Para:', templateParams.to_email);
+      console.log('De:', `${templateParams.from_name} <${templateParams.from_email}>`);
+      console.log('Mensagem:', templateParams.message);
+
+      // Check if EmailJS is configured for support emails
+      const supportServiceId = process.env.REACT_APP_EMAILJS_SUPPORT_SERVICE_ID || process.env.REACT_APP_EMAILJS_SERVICE_ID;
+      const supportTemplateId = process.env.REACT_APP_EMAILJS_SUPPORT_TEMPLATE_ID;
+
+      if (!supportServiceId || !supportTemplateId) {
+        console.log('⚠️ EmailJS para suporte não configurado, simulando envio...');
+        
+        // Log detailed email information for development
+        console.log('=== EMAIL DE SUPORTE SERIA ENVIADO ===');
+        console.log('Para:', templateParams.to_email);
+        console.log('De:', `${templateParams.from_name} <${templateParams.from_email}>`);
+        console.log('Assunto:', templateParams.subject);
+        console.log('Mensagem:', templateParams.message);
+        console.log('Data:', templateParams.timestamp);
+        console.log('ID do Usuário:', templateParams.user_id);
+        console.log('======================================');
+        
+        return {
+          success: true,
+          message: 'Email de suporte simulado enviado com sucesso (modo desenvolvimento)',
+          details: templateParams
+        };
+      }
+
+      // Send actual support email using EmailJS
+      const response = await emailjs.send(
+        supportServiceId,
+        supportTemplateId,
+        templateParams
+      );
+
+      console.log('✅ Email de suporte enviado com sucesso:', response);
+
+      return {
+        success: true,
+        message: 'Email de suporte enviado com sucesso!',
+        response: response
+      };
+
+    } catch (error) {
+      console.error('❌ Erro ao enviar email de suporte:', error);
+      
+      return {
+        success: false,
+        message: 'Erro ao enviar email de suporte. Por favor, contacte-nos diretamente em info@sheet-tools.com',
+        error: error.message
+      };
+    }
+  }
+
+  // Helper method to get current user (since we can't import authService here due to circular dependency)
+  getCurrentUser() {
+    try {
+      // Try to get from localStorage or sessionStorage
+      const supabaseAuth = localStorage.getItem('sb-iqgwxnscnlfqwqakqxol-auth-token') || 
+                          sessionStorage.getItem('sb-iqgwxnscnlfqwqakqxol-auth-token');
+      
+      if (supabaseAuth) {
+        const authData = JSON.parse(supabaseAuth);
+        return authData.user;
+      }
+      
+      return null;
+    } catch (error) {
+      console.error('Erro ao obter usuário atual:', error);
+      return null;
+    }
+  }
 
   // Testar configuração do EmailJS
   async testEmailConfiguration() {

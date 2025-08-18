@@ -10,11 +10,12 @@ import {
   TrendingUp,
   BarChart3,
   Search,
-  FileText
+  FileText,
+  HelpCircle
 } from 'lucide-react';
 import './Sidebar.css';
 
-const Sidebar = ({ currentPage, onPageChange, onSignOut }) => {
+const Sidebar = ({ currentPage, onPageChange, onSignOut, onOpenHelp }) => {
   const { hasActivePlan, hasPageAccess, getPlanInfo, loading } = useUserPlan();
   const planInfo = getPlanInfo();
   
@@ -22,8 +23,6 @@ const Sidebar = ({ currentPage, onPageChange, onSignOut }) => {
   console.log('🔍 New Sidebar - Has active plan:', hasActivePlan);
   console.log('🔍 New Sidebar - Plan info:', planInfo);
   console.log('🔍 New Sidebar - Loading:', loading);
-
-  // Definir todos os itens do menu com suas condições
   const menuItems = [
     // SEMPRE VISÍVEIS (todos os users)
     {
@@ -182,6 +181,33 @@ const Sidebar = ({ currentPage, onPageChange, onSignOut }) => {
             </div>
           </div>
         )}
+
+        {/* Bottom Section */}
+        <div className="sidebar-bottom">
+          <div className="menu-divider"></div>
+          <button 
+            className="menu-item"
+            onClick={onOpenHelp}
+          >
+            <HelpCircle size={20} />
+            <span>Get Help</span>
+          </button>
+          <div className="bottom-links">
+            <button 
+              className="bottom-link"
+              onClick={() => onPageChange('privacy')}
+            >
+              Privacy Policy
+            </button>
+            <span className="link-separator">•</span>
+            <button 
+              className="bottom-link"
+              onClick={() => onPageChange('terms')}
+            >
+              Terms of Service
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

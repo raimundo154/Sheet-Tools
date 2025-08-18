@@ -47,7 +47,7 @@ body {
 }
 
 .menu-item {
-  width: 100%;
+  width: calc(100% - 1rem);
   padding: 0.75rem 1.5rem;
   background: none;
   border: none;
@@ -61,7 +61,12 @@ body {
   font-weight: 500;
   position: relative;
   border-radius: var(--radius-md);
-  margin: 0 var(--spacing-sm);
+  margin: 0 0.5rem;
+  white-space: nowrap;
+  text-align: left;
+  justify-content: flex-start;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .menu-item:hover {
@@ -91,13 +96,16 @@ body {
   padding: 1rem 1.5rem 2rem;
   background: linear-gradient(180deg, transparent, rgba(150, 242, 215, 0.05));
   border-top: 1px solid var(--glass-border);
+  flex-shrink: 0;
 }
 
 .bottom-links {
   margin-top: 1rem;
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .bottom-link {
@@ -115,14 +123,23 @@ body {
   color: var(--accent-primary);
 }
 
+.link-separator {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  opacity: 0.5;
+}
+
 /* Main Content Styles */
 .main-content {
   flex: 1;
-  margin-left: 280px;
+  margin-left: var(--sidebar-width);
   min-height: 100vh;
   position: relative;
   z-index: 1;
   background: transparent;
+  width: calc(100vw - var(--sidebar-width));
+  max-width: calc(100vw - var(--sidebar-width));
+  overflow-x: auto;
 }
 
 .main-content-full {
@@ -526,11 +543,13 @@ body {
 /* Responsive Design */
 @media (max-width: 1024px) {
   .sidebar {
-    width: 240px;
+    width: var(--sidebar-width-tablet);
   }
   
   .main-content {
-    margin-left: 240px;
+    margin-left: var(--sidebar-width-tablet);
+    width: calc(100vw - var(--sidebar-width-tablet));
+    max-width: calc(100vw - var(--sidebar-width-tablet));
   }
   
   .content-wrapper {

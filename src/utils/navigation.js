@@ -21,7 +21,7 @@ export const ROUTES = {
   PROFIT_SHEET: '/profit-sheet', // Folha de lucros (ProfitSheet)
   PRODUCT_RESEARCH: '/product-research', // Pesquisa de produtos (ProductResearch)
   RANK_UP: '/rank-up',          // Rank Up (placeholder)
-  SETTINGS: '/settings',        // Settings (placeholder)
+  SETTINGS: '/settings',        // Configurações da conta (SettingsPage)
   
   // Páginas legais
   PRIVACY: '/privacy',          // Política de privacidade

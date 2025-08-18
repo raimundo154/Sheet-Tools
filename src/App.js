@@ -3,7 +3,7 @@ import Sidebar from './components/Sidebar';
 import HomePage from './components/HomePage';
 import NewHomePage from './components/NewHomePage';
 import CampaignDashboard from './components/CampaignDashboard';
-
+import SettingsPage from './components/SettingsPage';
 import QuotationPage from './components/QuotationPage';
 import DailyRoasPageNew from './components/DailyRoasPageNew';
 import ProfitSheet from './components/ProfitSheet';
@@ -17,6 +17,7 @@ import LoginPage from './components/LoginPage';
 import SignupPage from './components/SignupPage';
 import EmailVerification from './components/EmailVerification';
 import AuthCallback from './components/AuthCallback';
+import HelpChatBot from './components/HelpChatBot';
 import authService from './services/authService';
 import NavigationService, { ROUTES, navigation } from './utils/navigation';
 import './styles/GlobalDesignSystem.css';
@@ -24,6 +25,7 @@ import './App.css';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home-landing');
+  const [isHelpChatOpen, setIsHelpChatOpen] = useState(false);
 
   // Inicializar página baseada na URL atual e autenticação
   useEffect(() => {
@@ -141,6 +143,14 @@ function App() {
     navigation.toSignup();
   };
 
+  const handleOpenHelp = () => {
+    setIsHelpChatOpen(true);
+  };
+
+  const handleCloseHelp = () => {
+    setIsHelpChatOpen(false);
+  };
+
   const renderContent = () => {
     switch (currentPage) {
       case 'login':
@@ -199,10 +209,7 @@ function App() {
           <p>Página em desenvolvimento...</p>
         </div>;
       case 'settings':
-        return <div style={{padding: '2rem', textAlign: 'center', color: '#ffffff'}}>
-          <h1>⚙️ Settings</h1>
-          <p>Página em desenvolvimento...</p>
-        </div>;
+        return <SettingsPage />;
       case 'privacy':
         return <PrivacyPolicy />;
       case 'terms':
@@ -227,7 +234,12 @@ function App() {
   return (
     <div className="App">
       {/* Sidebar */}
-      <Sidebar currentPage={currentPage} onPageChange={handlePageChange} onSignOut={handleSignOut} />
+      <Sidebar 
+        currentPage={currentPage} 
+        onPageChange={handlePageChange} 
+        onSignOut={handleSignOut}
+        onOpenHelp={handleOpenHelp}
+      />
       
       {/* Main Content */}
       <main className="main-content">
@@ -237,6 +249,12 @@ function App() {
           {renderContent()}
         </div>
       </main>
+
+      {/* Help Chat Bot */}
+      <HelpChatBot 
+        isOpen={isHelpChatOpen}
+        onClose={handleCloseHelp}
+      />
     </div>
   );
 }
