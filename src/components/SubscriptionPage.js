@@ -153,11 +153,30 @@ const SubscriptionPage = () => {
   // Gerenciar subscription
   const handleManageSubscription = async () => {
     try {
+      // Verificar se é trial
+      if (currentSubscription && currentSubscription.status === 'trialing') {
+        console.log('⚠️ User em trial - mostrando opções de upgrade');
+        setBillingCycle('monthly'); // Mostrar planos mensais por defeito
+        setError(''); // Limpar erros
+        // Scroll para os planos
+        document.querySelector('.plans-grid')?.scrollIntoView({ behavior: 'smooth' });
+        return;
+      }
+
       const returnUrl = `${window.location.origin}/subscription`;
       await subscriptionService.createCustomerPortalSession(returnUrl);
     } catch (err) {
       console.error('Erro ao abrir portal:', err);
-      setError('Erro ao abrir portal de gestão. Tente novamente.');
+      
+      // Se é trial, mostrar opções de upgrade em vez de erro
+      if (currentSubscription && currentSubscription.status === 'trialing') {
+        console.log('⚠️ Portal falhou para trial - mostrando upgrade options');
+        setBillingCycle('monthly');
+        setError('');
+        document.querySelector('.plans-grid')?.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        setError('Erro ao abrir portal de gestão. Tente novamente.');
+      }
     }
   };
 

@@ -140,8 +140,8 @@ class SubscriptionService {
       // Chamar função serverless para criar checkout session
       const functionsBase = this.getFunctionsBaseUrl();
       const url = functionsBase
-        ? `${functionsBase}/.netlify/functions/create-checkout-session`
-        : '/.netlify/functions/create-checkout-session';
+        ? `${functionsBase}/.netlify/functions/create-checkout-session-simple`
+        : '/.netlify/functions/create-checkout-session-simple';
 
       console.log('🌐 URL da função:', url);
       console.log('📊 Functions base:', functionsBase);
