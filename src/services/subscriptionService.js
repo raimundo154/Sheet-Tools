@@ -265,49 +265,36 @@ class SubscriptionService {
         throw new Error('Usuário não autenticado');
       }
 
-      // Verificar se já tem subscription ativa
-      const existingSubscription = await this.getUserActiveSubscription();
-      if (existingSubscription) {
-        throw new Error('Já possui uma subscription ativa');
-      }
+      console.log('🚀 Iniciando free trial para user:', user.id);
 
-      // Obter plano free trial
-      const { data: plan, error: planError } = await supabase
-        .from('subscription_plans')
-        .select('*')
-        .eq('stripe_price_id', 'price_free_trial')
-        .single();
-
-      if (planError || !plan) {
-        throw new Error('Plano free trial não encontrado');
-      }
-
-      // Criar subscription trial
-      const trialEnd = new Date();
-      trialEnd.setDate(trialEnd.getDate() + plan.trial_days);
-
+      // Usar função segura do Supabase para criar trial
       const { data, error } = await supabase
-        .from('user_subscriptions')
-        .insert({
-          user_id: user.id,
-          plan_id: plan.id,
-          status: 'trialing',
-          trial_start: new Date().toISOString(),
-          trial_end: trialEnd.toISOString(),
-          current_period_start: new Date().toISOString(),
-          current_period_end: trialEnd.toISOString()
-        })
-        .select()
-        .single();
+        .rpc('start_free_trial');
+
+      console.log('📊 Resultado start_free_trial:', { data, error });
 
       if (error) {
-        console.error('Erro ao criar trial:', error);
+        console.error('❌ Erro na função start_free_trial:', error);
         throw new Error('Erro ao iniciar período gratuito');
       }
 
-      return data;
+      if (!data || data.length === 0) {
+        throw new Error('Nenhum resultado retornado da função');
+      }
+
+      const result = data[0];
+      console.log('✅ Resultado do trial:', result);
+
+      if (!result.success) {
+        throw new Error(result.message || 'Erro ao iniciar trial');
+      }
+
+      return {
+        id: result.subscription_id,
+        message: result.message
+      };
     } catch (error) {
-      console.error('Erro no startFreeTrial:', error);
+      console.error('❌ Erro no startFreeTrial:', error);
       throw error;
     }
   }
