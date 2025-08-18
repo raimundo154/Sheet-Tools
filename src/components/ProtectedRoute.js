@@ -132,22 +132,27 @@ const getRequiredPlanInfo = (pageName, requiredFeature) => {
     'daily-roas': {
       minPlan: 'Basic',
       feature: 'Daily ROAS Profit Sheet',
-      description: 'Análise automática de campanhas com recomendações inteligentes'
+      description: 'Análise automática de campanhas com Daily ROAS Profit Sheet (1 loja, 15 campanhas)'
+    },
+    'profit-sheet': {
+      minPlan: 'Basic',
+      feature: 'Daily ROAS Profit Sheet',
+      description: 'Daily ROAS Profit Sheet completo (1 loja, 15 campanhas)'
     },
     'quotation': {
-      minPlan: 'Basic',
+      minPlan: 'Standard',
       feature: 'Quotation',
-      description: 'Cotações de moedas em tempo real e calculadora avançada'
+      description: 'Cotações de moedas em tempo real e calculadora avançada (2 lojas, 40 campanhas)'
     },
     'campaigns': {
       minPlan: 'Standard',
       feature: 'Campaigns',
-      description: 'Gestão completa de campanhas com automação e integração Facebook Ads'
+      description: 'Gestão completa de campanhas com automação (2 lojas, 40 campanhas)'
     },
     'product-research': {
       minPlan: 'Expert',
       feature: 'Product Research',
-      description: 'Pesquisa avançada de produtos com análise de tendências de mercado'
+      description: 'Pesquisa avançada de produtos com análise de tendências (4 lojas, campanhas ilimitadas)'
     }
   };
 

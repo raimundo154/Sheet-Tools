@@ -58,19 +58,23 @@ const Sidebar = ({ currentPage, onPageChange, onSignOut }) => {
       alwaysVisible: true
     },
     
-    // PLANO BÁSICO+ (Basic, Standard, Expert)
+    // PLANO BEGINNER+ (Beginner - Daily ROAS básico)
     {
       id: 'daily-roas',
       label: 'Daily ROAS',
       icon: TrendingUp,
-      requiredFeature: 'Daily ROAS Profit Sheet'
+      requiredFeature: 'Daily ROAS básico'
     },
+    
+    // PLANO BASIC+ (Basic - Daily ROAS Profit Sheet)
     {
       id: 'profit-sheet',
       label: 'Profit Sheet', 
       icon: FileText,
       requiredFeature: 'Daily ROAS Profit Sheet'
     },
+    
+    // PLANO STANDARD+ (Standard - adiciona Quotation)
     {
       id: 'quotation',
       label: 'Quotation',

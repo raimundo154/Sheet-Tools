@@ -78,6 +78,18 @@ const SubscriptionPage = () => {
     return subscriptionService.calculateYearlyDiscount(monthlyPlan.price_amount);
   };
 
+  // Obter preço original para planos anuais (preço mensal × 12)
+  const getOriginalYearlyPrice = (yearlyPlan) => {
+    const planName = yearlyPlan.name.replace(' Anual', '');
+    const monthlyPlan = plans.find(p => 
+      p.name === planName && p.billing_period === 'monthly'
+    );
+    
+    if (!monthlyPlan) return null;
+    
+    return monthlyPlan.price_amount * 12; // preço mensal × 12 meses
+  };
+
   // Verificar se plano está ativo
   const isPlanActive = (plan) => {
     return currentSubscription?.plan_name === plan.name;
@@ -310,7 +322,7 @@ const SubscriptionPage = () => {
             onClick={() => setBillingCycle('yearly')}
           >
             Anual
-            <span className="savings-badge">Poupa até 25%</span>
+            <span className="savings-badge">Poupa 3 meses</span>
           </button>
         </div>
       </motion.div>
@@ -327,6 +339,7 @@ const SubscriptionPage = () => {
           const isCurrentPlan = isPlanActive(plan);
           const canChange = canChangeToPlan(plan);
           const discount = billingCycle === 'yearly' ? calculateDiscount(plan) : null;
+          const originalYearlyPrice = plan.billing_period === 'yearly' ? getOriginalYearlyPrice(plan) : null;
 
           return (
             <motion.div
@@ -344,9 +357,11 @@ const SubscriptionPage = () => {
               <div className="plan-header">
                 <h3 className="plan-name">{plan.name}</h3>
                 <div className="plan-price">
-                  {discount && (
+                  {originalYearlyPrice && (
                     <div className="original-price">
-                      {subscriptionService.formatPrice(discount.originalPrice)}
+                      <span style={{ textDecoration: 'line-through', color: '#999', fontSize: '14px' }}>
+                        {subscriptionService.formatPrice(originalYearlyPrice)}
+                      </span>
                     </div>
                   )}
                   <div className="current-price">
@@ -361,7 +376,16 @@ const SubscriptionPage = () => {
                   </div>
                   {discount && (
                     <div className="discount-info">
-                      Poupa {subscriptionService.formatPrice(discount.discount)}
+                      <strong style={{ color: '#10b981' }}>
+                        Poupa {subscriptionService.formatPrice(discount.discount)} (3 meses grátis)
+                      </strong>
+                    </div>
+                  )}
+                  {originalYearlyPrice && !discount && (
+                    <div className="discount-info">
+                      <strong style={{ color: '#10b981' }}>
+                        3 meses grátis incluídos
+                      </strong>
                     </div>
                   )}
                 </div>

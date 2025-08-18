@@ -111,7 +111,8 @@ export const useUserPlan = () => {
   const getAvailablePages = () => {
     const allPages = [
       { id: 'dashboard', name: 'Dashboard', icon: 'Home', alwaysVisible: true },
-      { id: 'daily-roas', name: 'Daily ROAS', icon: 'TrendingUp', feature: 'Daily ROAS Profit Sheet' },
+      { id: 'daily-roas', name: 'Daily ROAS', icon: 'TrendingUp', feature: 'Daily ROAS básico' },
+      { id: 'profit-sheet', name: 'Profit Sheet', icon: 'FileText', feature: 'Daily ROAS Profit Sheet' },
       { id: 'quotation', name: 'Quotation', icon: 'DollarSign', feature: 'Quotation' },
       { id: 'campaigns', name: 'Campaigns', icon: 'Target', feature: 'Campaigns' },
       { id: 'product-research', name: 'Product Research', icon: 'Search', feature: 'Product Research' },
@@ -150,6 +151,7 @@ export const useUserPlan = () => {
 
   // Determinar tipo do plano
   const getPlanType = (planName) => {
+    if (planName?.toLowerCase().includes('beginner')) return 'beginner';
     if (planName?.toLowerCase().includes('basic')) return 'basic';
     if (planName?.toLowerCase().includes('standard')) return 'standard';
     if (planName?.toLowerCase().includes('expert')) return 'expert';
@@ -167,6 +169,7 @@ export const useUserPlan = () => {
     getAvailablePages,
     getPlanInfo,
     planType: getPlanType(userPlan?.plan_name),
+    isBeginner: getPlanType(userPlan?.plan_name) === 'beginner',
     isBasic: getPlanType(userPlan?.plan_name) === 'basic',
     isStandard: getPlanType(userPlan?.plan_name) === 'standard',
     isExpert: getPlanType(userPlan?.plan_name) === 'expert',

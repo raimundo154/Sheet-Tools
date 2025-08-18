@@ -532,18 +532,17 @@ const NewHomePage = () => {
               }}
             >
               <div className="plan-header">
-                <h3>{plansLoading ? 'Carregando...' : 'Trial Gratuito'}</h3>
+                <h3>{plansLoading ? 'Carregando...' : 'Beginner'}</h3>
                 <div className="price">
                   <span className="currency">€</span>
-                  <span className="amount">0</span>
-                  <span className="period">/10 dias</span>
+                  <span className="amount">{plansLoading ? '--' : '4.99'}</span>
+                  <span className="period">/mês</span>
                 </div>
               </div>
               <ul className="plan-features">
-                <li><Check size={16} /> Acesso total às funcionalidades</li>
-                <li><Check size={16} /> Até 10 campanhas</li>
-                <li><Check size={16} /> Métricas em tempo real</li>
-                <li><Check size={16} /> Recomendações automáticas</li>
+                <li><Check size={16} /> Daily ROAS sem automatização</li>
+                <li><Check size={16} /> Análise básica de campanhas</li>
+                <li><Check size={16} /> Dashboard simples</li>
                 <li><Check size={16} /> Suporte por email</li>
               </ul>
               <motion.button 
@@ -552,7 +551,7 @@ const NewHomePage = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                Começar Grátis
+                Começar Agora
               </motion.button>
             </motion.div>
 
@@ -569,18 +568,18 @@ const NewHomePage = () => {
             >
               <div className="popular-badge">Mais Popular</div>
               <div className="plan-header">
-                <h3>{plansLoading ? 'Carregando...' : 'Basic'}</h3>
+                <h3>{plansLoading ? 'Carregando...' : 'Standard'}</h3>
                 <div className="price">
                   <span className="currency">€</span>
-                  <span className="amount">{plansLoading ? '--' : '14.99'}</span>
+                  <span className="amount">{plansLoading ? '--' : '34.99'}</span>
                   <span className="period">/mês</span>
                 </div>
               </div>
               <ul className="plan-features">
-                <li><Check size={16} /> Daily ROAS Profit Sheet</li>
-                <li><Check size={16} /> Quotation</li>
-                <li><Check size={16} /> Dashboard Analytics</li>
-                <li><Check size={16} /> Histórico completo</li>
+                <li><Check size={16} /> Daily ROAS Profit Sheet completo</li>
+                <li><Check size={16} /> Gestão de Campanhas</li>
+                <li><Check size={16} /> Quotation em tempo real</li>
+                <li><Check size={16} /> 2 lojas, 40 campanhas</li>
                 <li><Check size={16} /> Suporte prioritário</li>
               </ul>
               <motion.button 
@@ -605,20 +604,27 @@ const NewHomePage = () => {
               }}
             >
               <div className="plan-header">
-                <h3>{plansLoading ? 'Carregando...' : 'Basic Anual'}</h3>
+                <h3>{plansLoading ? 'Carregando...' : 'Expert Anual'}</h3>
                 <div className="price">
+                  {!plansLoading && (
+                    <div className="original-price" style={{ marginBottom: '0.5rem' }}>
+                      <span style={{ textDecoration: 'line-through', color: '#999', fontSize: '1rem' }}>
+                        €599.88
+                      </span>
+                    </div>
+                  )}
                   <span className="currency">€</span>
-                  <span className="amount">{plansLoading ? '--' : '134.91'}</span>
+                  <span className="amount">{plansLoading ? '--' : '449.91'}</span>
                   <span className="period">/ano</span>
                 </div>
-                {!plansLoading && <div className="savings">Poupa 3 meses</div>}
+                {!plansLoading && <div className="savings">Poupa €149.97 (3 meses grátis)</div>}
               </div>
               <ul className="plan-features">
-                <li><Check size={16} /> Daily ROAS Profit Sheet</li>
-                <li><Check size={16} /> Quotation</li>
-                <li><Check size={16} /> Dashboard Analytics</li>
-                <li><Check size={16} /> 3 meses gratuitos</li>
-                <li><Check size={16} /> Suporte prioritário</li>
+                <li><Check size={16} /> Tudo do Standard</li>
+                <li><Check size={16} /> Product Research avançado</li>
+                <li><Check size={16} /> 4 lojas, campanhas ilimitadas</li>
+                <li><Check size={16} /> Análise de tendências</li>
+                <li><Check size={16} /> Suporte VIP</li>
               </ul>
               <motion.button 
                 className="plan-button"
