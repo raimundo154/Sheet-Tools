@@ -180,11 +180,6 @@ exports.handler = async (event, context) => {
           message: 'Subscrever Sheet Tools'
         }
       },
-      // Configurações da empresa/branding
-      payment_intent_data: {
-        description: `Sheet Tools - ${plan.name} - ${customerEmail}`,
-        statement_descriptor_suffix: 'Sheet Tools'
-      },
       // Configurar trial se aplicável
       ...(plan.trial_days > 0 && {
         subscription_data: {
