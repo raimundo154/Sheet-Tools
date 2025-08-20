@@ -91,8 +91,8 @@ export const useUserPlan = () => {
     const planFeatures = userPlan.features || [];
     
     const pageFeatureMap = {
-      'daily-roas': 'Daily ROAS Profit Sheet',
-      'profit-sheet': 'Daily ROAS Profit Sheet',
+      'daily-roas': 'Daily ROAS básico',
+      'profit-sheet': 'Daily ROAS Profit Sheet', 
       'quotation': 'Quotation',
       'campaigns': 'Campaigns',
       'product-research': 'Product Research'

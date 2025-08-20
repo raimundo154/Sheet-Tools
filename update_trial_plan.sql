@@ -34,7 +34,7 @@ INSERT INTO subscription_plans (
  'EUR', 
  'monthly', 
  10, 
- '["Daily ROAS", "Profit Sheet", "1 loja", "15 campanhas"]', 
+ '["Daily ROAS básico", "Daily ROAS Profit Sheet", "1 loja", "15 campanhas"]', 
  true, 
  0, 
  now(), 

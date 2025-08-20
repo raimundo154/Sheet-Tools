@@ -153,22 +153,24 @@ const SubscriptionPage = () => {
   // Gerenciar subscription
   const handleManageSubscription = async () => {
     try {
-      // Verificar se é trial
-      if (currentSubscription && currentSubscription.status === 'trialing') {
-        console.log('⚠️ User em trial - mostrando opções de upgrade');
-        setBillingCycle('monthly'); // Mostrar planos mensais por defeito
-        setError(''); // Limpar erros
-        // Scroll para os planos
+      console.log('🔧 Abrindo portal de gestão...', currentSubscription);
+
+      // Se é trial interno (sem stripe_customer_id), mostrar upgrade options
+      if (currentSubscription && currentSubscription.status === 'trialing' && !currentSubscription.stripe_customer_id) {
+        console.log('⚠️ Trial interno - mostrando opções de upgrade');
+        setBillingCycle('monthly');
+        setError('');
         document.querySelector('.plans-grid')?.scrollIntoView({ behavior: 'smooth' });
         return;
       }
 
+      // Para trials Stripe e subscriptions pagas, abrir Customer Portal
       const returnUrl = `${window.location.origin}/subscription`;
       await subscriptionService.createCustomerPortalSession(returnUrl);
     } catch (err) {
       console.error('Erro ao abrir portal:', err);
       
-      // Se é trial, mostrar opções de upgrade em vez de erro
+      // Fallback: Se falhou e é trial, mostrar upgrade options
       if (currentSubscription && currentSubscription.status === 'trialing') {
         console.log('⚠️ Portal falhou para trial - mostrando upgrade options');
         setBillingCycle('monthly');
