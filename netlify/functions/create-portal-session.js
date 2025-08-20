@@ -27,10 +27,13 @@ exports.handler = async (event, context) => {
   }
 
   try {
+    console.log('🔧 create-portal-session - Iniciando...');
     const { userId, returnUrl } = JSON.parse(event.body);
+    console.log('📥 Parâmetros recebidos:', { userId, returnUrl });
 
     // Validar parâmetros obrigatórios
     if (!userId || !returnUrl) {
+      console.log('❌ Parâmetros em falta');
       return {
         statusCode: 400,
         headers,
@@ -49,6 +52,7 @@ exports.handler = async (event, context) => {
     }
 
     // Buscar subscription ativa do usuário
+    console.log('🔍 Buscando subscription para user:', userId);
     const { data: subscription, error: subscriptionError } = await supabase
       .from('user_subscriptions')
       .select('stripe_customer_id, stripe_subscription_id, status')
@@ -58,7 +62,11 @@ exports.handler = async (event, context) => {
       .limit(1)
       .single();
 
+    console.log('📊 Subscription encontrada:', subscription);
+    console.log('❌ Erro na subscription:', subscriptionError);
+
     if (subscriptionError || !subscription) {
+      console.log('❌ Nenhuma subscription ativa encontrada');
       return {
         statusCode: 400,
         headers,
@@ -67,12 +75,15 @@ exports.handler = async (event, context) => {
     }
 
     if (!subscription.stripe_customer_id) {
+      console.log('❌ Customer ID não encontrado na subscription');
       return {
         statusCode: 400,
         headers,
         body: JSON.stringify({ error: 'Customer ID não encontrado' })
       };
     }
+
+    console.log('✅ Customer ID encontrado:', subscription.stripe_customer_id);
 
     // Verificar se customer existe no Stripe
     let customer;
@@ -94,47 +105,19 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // Configurar portal session
+    // Configurar portal session (versão simplificada para test mode)
+    console.log('🔧 Criando portal session...');
     const portalSessionParams = {
       customer: subscription.stripe_customer_id,
-      return_url: returnUrl,
-      // Configurações do portal
-      configuration: {
-        business_profile: {
-          headline: 'Gerir a tua subscription do Sheet Tools',
-        },
-        features: {
-          payment_method_update: {
-            enabled: true,
-          },
-          subscription_cancel: {
-            enabled: true,
-            mode: 'at_period_end', // Cancelar no fim do período
-            cancellation_reason: {
-              enabled: true,
-              options: [
-                'too_expensive',
-                'missing_features',
-                'switched_service',
-                'unused',
-                'other'
-              ]
-            }
-          },
-          subscription_update: {
-            enabled: true,
-            default_allowed_updates: ['price', 'promotion_code'],
-            proration_behavior: 'create_prorations'
-          },
-          invoice_history: {
-            enabled: true,
-          }
-        }
-      }
+      return_url: returnUrl
     };
 
+    console.log('📋 Parâmetros do portal:', portalSessionParams);
+
     // Criar portal session
+    console.log('🚀 Chamando Stripe API...');
     const portalSession = await stripe.billingPortal.sessions.create(portalSessionParams);
+    console.log('✅ Portal session criado:', portalSession.id);
 
     return {
       statusCode: 200,
