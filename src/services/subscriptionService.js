@@ -275,7 +275,7 @@ class SubscriptionService {
     }
   }
 
-  // Iniciar trial gratuito
+  // Iniciar trial gratuito via Stripe Checkout
   async startFreeTrial() {
     try {
       const user = authService.getCurrentUser();
@@ -283,34 +283,35 @@ class SubscriptionService {
         throw new Error('Usuário não autenticado');
       }
 
-      console.log('🚀 Iniciando free trial para user:', user.id);
+      console.log('🚀 Iniciando free trial via Stripe para user:', user.id);
 
-      // Usar função segura do Supabase para criar trial
-      const { data, error } = await supabase
-        .rpc('start_free_trial');
+      // Buscar plano de trial do Stripe (Basic com 10 dias trial)
+      const { data: trialPlan, error } = await supabase
+        .from('subscription_plans')
+        .select('*')
+        .eq('trial_days', 10)
+        .eq('billing_period', 'monthly')
+        .eq('price_amount', 1499)  // Basic plan €14.99
+        .single();
 
-      console.log('📊 Resultado start_free_trial:', { data, error });
-
-      if (error) {
-        console.error('❌ Erro na função start_free_trial:', error);
-        throw new Error('Erro ao iniciar período gratuito');
+      if (error || !trialPlan) {
+        console.error('❌ Erro ao buscar plano trial:', error);
+        throw new Error('Plano de trial não encontrado');
       }
 
-      if (!data || data.length === 0) {
-        throw new Error('Nenhum resultado retornado da função');
-      }
+      console.log('📦 Plano trial encontrado:', trialPlan);
 
-      const result = data[0];
-      console.log('✅ Resultado do trial:', result);
+      // Criar checkout session para trial (€0 hoje, €14.99 após 10 dias)
+      const checkoutUrl = await this.createCheckoutSession(
+        trialPlan.id,
+        `${window.location.origin}/dashboard?trial=success`,
+        `${window.location.origin}/subscription?trial=cancelled`
+      );
 
-      if (!result.success) {
-        throw new Error(result.message || 'Erro ao iniciar trial');
-      }
-
-      return {
-        id: result.subscription_id,
-        message: result.message
-      };
+      // Redirecionar para Stripe Checkout
+      window.location.href = checkoutUrl;
+      
+      return { success: true, checkout_url: checkoutUrl };
     } catch (error) {
       console.error('❌ Erro no startFreeTrial:', error);
       throw error;
