@@ -170,7 +170,9 @@ exports.handler = async (event, context) => {
           userId,
           planId,
           userEmail: customerEmail
-        }
+        },
+        // Adicionar trial se o plano tiver trial_days > 0
+        ...(plan.trial_days > 0 && { trial_period_days: plan.trial_days })
       },
       // Permitir códigos promocionais
       allow_promotion_codes: true,
@@ -179,14 +181,7 @@ exports.handler = async (event, context) => {
         submit: {
           message: 'Subscrever Sheet Tools'
         }
-      },
-      // Configurar trial se aplicável
-      ...(plan.trial_days > 0 && {
-        subscription_data: {
-          ...sessionParams.subscription_data,
-          trial_period_days: plan.trial_days
-        }
-      })
+      }
     };
 
     // Criar checkout session
