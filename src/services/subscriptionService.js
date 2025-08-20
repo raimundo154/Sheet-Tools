@@ -227,10 +227,10 @@ class SubscriptionService {
 
       console.log('📊 Subscription encontrada:', subscription);
 
-      // Verificar se é um trial (não tem customer_id do Stripe)
-      if (!subscription.stripe_customer_id || subscription.status === 'trialing') {
-        console.log('⚠️ Trial detectado - redirecionando para página de upgrade');
-        // Para trials, redirecionar para página de subscrições
+      // Verificar se é um trial interno (sem customer_id do Stripe)
+      if (!subscription.stripe_customer_id) {
+        console.log('⚠️ Trial interno detectado - redirecionando para página de upgrade');
+        // Para trials internos, redirecionar para página de subscrições
         window.location.href = '/subscription?upgrade=true';
         return;
       }
@@ -242,6 +242,13 @@ class SubscriptionService {
         : '/.netlify/functions/create-portal-session';
 
       console.log('🌐 URL da função portal:', url);
+
+      console.log('📤 Enviando request:', {
+        userId: user.id,
+        returnUrl,
+        hasStripeCustomerId: subscription.stripe_customer_id ? 'SIM' : 'NÃO',
+        subscriptionStatus: subscription.status
+      });
 
       const response = await fetch(url, {
         method: 'POST',
@@ -267,6 +274,7 @@ class SubscriptionService {
       console.log('✅ Portal URL obtido:', portalUrl);
 
       // Redirecionar para o portal
+      console.log('🌐 Redirecionando para portal...');
       window.location.href = portalUrl;
 
     } catch (error) {
