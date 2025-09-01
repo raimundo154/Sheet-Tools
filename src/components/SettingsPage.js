@@ -21,6 +21,7 @@ import {
 import authService from '../services/authService';
 import { supabase } from '../config/supabase';
 import { userConfigService } from '../services/userConfigService';
+import PageHeader from './PageHeader';
 import './SettingsPage.css';
 
 const SettingsPage = () => {
@@ -471,14 +472,11 @@ const SettingsPage = () => {
   if (loading) {
     return (
       <div className="settings-page">
-        <div className="settings-header">
-          <div className="header-content">
-            <div className="header-title">
-              <SettingsIcon size={28} />
-              <h1>Configurações da Conta</h1>
-            </div>
-          </div>
-        </div>
+        <PageHeader 
+          title="Configurações"
+          subtitle="Gerencie suas informações pessoais e conexões"
+          showProfile={true}
+        />
         
         <div className="settings-content">
           <div className="loading-state">
@@ -493,17 +491,11 @@ const SettingsPage = () => {
   return (
     <div className="settings-page">
       {/* Header */}
-      <div className="settings-header">
-        <div className="header-content">
-          <div className="header-title">
-            <SettingsIcon size={28} />
-            <h1>Account Settings</h1>
-          </div>
-          <p className="header-subtitle">
-            Manage your personal information and connections
-          </p>
-        </div>
-      </div>
+      <PageHeader 
+        title="Configurações"
+        subtitle="Gerencie suas informações pessoais e conexões"
+        showProfile={true}
+      />
 
       <div className="settings-content">
         {/* Message Display */}

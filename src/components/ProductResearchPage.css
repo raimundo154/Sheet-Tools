@@ -1,10 +1,13 @@
 /* Product Research Page Styles - Baseado na NewHomePage */
 .product-research-page {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background-color: #091618;
+  background-color: transparent;
   color: #ffffff;
   min-height: 100vh;
   padding: 2rem;
+  width: 100%;
+  max-width: none;
+  box-sizing: border-box;
 }
 
 /* Header */
@@ -15,6 +18,8 @@
 .header-content {
   max-width: 1200px;
   margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .header-info {
@@ -47,6 +52,8 @@
 .search-section {
   max-width: 1200px;
   margin: 0 auto 3rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .search-form {

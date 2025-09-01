@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import productService from '../services/productService';
 import salesService from '../services/salesService';
+import ProfilePhoto from './ProfilePhoto';
 import './QuotationPage.css';
 
 const QuotationPage = () => {
@@ -338,21 +339,29 @@ const QuotationPage = () => {
   return (
     <div className="quotation-page">
       {/* Header */}
-      <div className="quotation-header">
+      <div className="page-header">
         <div className="header-content">
           <div className="header-info">
-            <h1 className="quotation-title">
-              <Package size={32} />
-              Cotação de Produtos
+            <h1 className="page-title">
+              <span className="title-highlight">Cotação de Produtos</span>
             </h1>
-            <p className="quotation-subtitle">
+            <p className="page-subtitle">
               Gere as suas cotações de produtos e veja os dados de vendas!
             </p>
           </div>
-          <button className="add-new-product-btn" onClick={() => setShowProductModal(true)}>
-            <Plus size={16} />
-            Adicionar Produto
-          </button>
+          
+          <div className="header-actions">
+            <button className="add-new-product-btn" onClick={() => setShowProductModal(true)}>
+              <Plus size={16} />
+              Adicionar Produto
+            </button>
+            <div className="header-profile">
+              <ProfilePhoto 
+                size="medium" 
+                showUploadOptions={true}
+              />
+            </div>
+          </div>
         </div>
       </div>
 

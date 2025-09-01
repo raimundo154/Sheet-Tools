@@ -31,6 +31,15 @@
   --gradient-accent: linear-gradient(135deg, #1c6f5b 0%, #96f2d7 100%);
   --gradient-hero: linear-gradient(to bottom, rgba(9, 22, 24, 1) 0%, rgba(15, 58, 50, 0.8) 50%, rgba(9, 22, 24, 1) 100%);
   
+  /* Layout & Sidebar */
+  --sidebar-width: 280px;
+  --sidebar-width-tablet: 260px;
+  --sidebar-width-mobile: 100vw;
+  --main-content-padding: 2rem;
+  --main-content-padding-tablet: 1.75rem;
+  --main-content-padding-mobile: 1.5rem;
+  --main-content-padding-small: 1rem;
+
   /* Spacing */
   --spacing-xs: 0.25rem;
   --spacing-sm: 0.5rem;
@@ -632,3 +641,108 @@ body {
 
 .opacity-50 { opacity: 0.5; }
 .opacity-75 { opacity: 0.75; }
+
+/* ===== RESPONSIVE LAYOUT SYSTEM ===== */
+
+/* Global responsive layout utilities */
+.responsive-container {
+  width: 100%;
+  max-width: none;
+  padding: var(--main-content-padding);
+  box-sizing: border-box;
+}
+
+.responsive-grid {
+  display: grid;
+  gap: var(--spacing-lg);
+}
+
+.responsive-grid-auto {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.responsive-grid-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.responsive-grid-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+/* Page layouts */
+.page-layout {
+  width: 100%;
+  max-width: none;
+  background: transparent;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.page-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Responsive breakpoints system */
+@media (max-width: 1200px) {
+  :root {
+    --main-content-padding: var(--main-content-padding-tablet);
+  }
+  
+  .responsive-container {
+    padding: var(--main-content-padding-tablet);
+  }
+  
+  .responsive-grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .responsive-grid-auto {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --main-content-padding: var(--main-content-padding-mobile);
+  }
+  
+  .responsive-container {
+    padding: var(--main-content-padding-mobile);
+  }
+  
+  .responsive-grid-2,
+  .responsive-grid-3 {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+  
+  .responsive-grid-auto {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+  
+  .page-content {
+    padding: 0 var(--spacing-sm);
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --main-content-padding: var(--main-content-padding-small);
+  }
+  
+  .responsive-container {
+    padding: var(--main-content-padding-small);
+  }
+  
+  .responsive-grid-2,
+  .responsive-grid-3,
+  .responsive-grid-auto {
+    grid-template-columns: 1fr;
+  }
+  
+  .page-content {
+    padding: 0 var(--spacing-xs);
+  }
+}

@@ -1,8 +1,11 @@
 /* Settings Page Styles */
 .settings-page {
   min-height: 100vh;
-  background: var(--bg-primary);
+  background: transparent;
   color: var(--text-primary);
+  width: 100%;
+  max-width: none;
+  box-sizing: border-box;
 }
 
 /* Header */
@@ -16,6 +19,8 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 var(--spacing-xl);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .header-title {

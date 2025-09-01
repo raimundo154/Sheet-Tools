@@ -3,14 +3,19 @@ import React from 'react';
 const LoadingScreen = ({ message = 'Carregando...' }) => {
   return (
     <div style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
-      minHeight: '100vh',
       backgroundColor: '#ffffff',
       fontFamily: 'Inter, sans-serif',
-      overflow: 'hidden'
+      overflow: 'hidden',
+      zIndex: 999999
     }}>
       {/* Container da animação do favicon */}
       <div style={{

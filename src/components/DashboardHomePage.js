@@ -14,6 +14,8 @@ import {
   XCircle
 } from 'lucide-react';
 import OnboardingTutorial from './OnboardingTutorial';
+import PageHeader from './PageHeader';
+import authService from '../services/authService';
 
 const DashboardHomePage = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -195,24 +197,11 @@ const DashboardHomePage = () => {
         />
       )}
       {/* Header */}
-      <div className="dashboard-header">
-        <div className="header-content">
-          <div>
-            <h1 className="dashboard-title">
-              Bem-vindo de volta!
-              <span className="title-highlight"> Dashboard</span>
-            </h1>
-            <p className="dashboard-subtitle">
-              Gerencie suas campanhas e maximize seus resultados
-            </p>
-          </div>
-          <div className="user-profile">
-            <div className="profile-avatar">
-              <span>U</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      <PageHeader 
+        title="Dashboard"
+        subtitle="Gerencie suas campanhas e maximize seus resultados"
+        showProfile={true}
+      />
 
       {/* Stats Cards */}
       <div className="stats-section">

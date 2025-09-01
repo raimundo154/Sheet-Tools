@@ -14,6 +14,7 @@ import {
   Heart,
   Loader
 } from 'lucide-react';
+import PageHeader from './PageHeader';
 import './ProductResearchPage.css';
 
 const ProductResearchPage = () => {
@@ -173,22 +174,15 @@ const ProductResearchPage = () => {
     <div className="product-research-page">
       {/* Header */}
       <motion.div 
-        className="research-header"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        <div className="header-content">
-          <div className="header-info">
-            <h1 className="research-title">
-              <Search size={32} />
-              Product Research
-            </h1>
-            <p className="research-subtitle">
-              Descobre produtos vencedores com dados de mercado e análise de tendências avançada
-            </p>
-          </div>
-        </div>
+        <PageHeader 
+          title="Product Research"
+          subtitle="Descobre produtos vencedores com dados de mercado e análise de tendências avançada"
+          showProfile={true}
+        />
       </motion.div>
 
       {/* Search & Filters */}
