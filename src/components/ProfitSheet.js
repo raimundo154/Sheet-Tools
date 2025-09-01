@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { DollarSign, TrendingUp, BarChart3, Calculator, FileText, Download } from 'lucide-react';
 import './ProfitSheet.css';
+import '../styles/GlobalDesignSystem.css';
 
 const ProfitSheet = () => {
   const [selectedPeriod, setSelectedPeriod] = useState('thisMonth');
@@ -117,12 +118,12 @@ const ProfitSheet = () => {
           </div>
           {productBreakdown.map((product, index) => (
             <div key={index} className="table-row">
-              <div className="product-name">{product.name}</div>
-              <div className="revenue">{formatCurrency(product.revenue)}</div>
-              <div className="cost">{formatCurrency(product.cost)}</div>
-              <div className="profit">{formatCurrency(product.profit)}</div>
-              <div className="units">{product.units}</div>
-              <div className="margin">{((product.profit / product.revenue) * 100).toFixed(1)}%</div>
+              <div className="product-name" data-label="Produto">{product.name}</div>
+              <div className="revenue" data-label="Receita">{formatCurrency(product.revenue)}</div>
+              <div className="cost" data-label="Custo">{formatCurrency(product.cost)}</div>
+              <div className="profit" data-label="Lucro">{formatCurrency(product.profit)}</div>
+              <div className="units" data-label="Unidades">{product.units}</div>
+              <div className="margin" data-label="Margem">{((product.profit / product.revenue) * 100).toFixed(1)}%</div>
             </div>
           ))}
         </div>
