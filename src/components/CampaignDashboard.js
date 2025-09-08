@@ -16,18 +16,18 @@ const CampaignDashboard = () => {
   const [selectedMarketType, setSelectedMarketType] = useState('all');
   const [showMetaConnector, setShowMetaConnector] = useState(false);
 
-  // Opções do dropdown de filtro de mercado
+  // Market filter dropdown options
   const marketTypeOptions = [
-    { value: 'all', label: 'Todos os mercados' },
-    { value: 'low', label: 'Mercado Baixo CPC (<0.7€)' },
-    { value: 'high', label: 'Mercado Alto CPC (>0.7€)' }
+    { value: 'all', label: 'All markets' },
+    { value: 'low', label: 'Low CPC Market (<0.7€)' },
+    { value: 'high', label: 'High CPC Market (>0.7€)' }
   ];
 
-  // Carregar campanhas específicas do usuário
+  // Load user-specific campaigns
   useEffect(() => {
     if (userService.isLoggedIn()) {
       const userCampaigns = userService.getUserData('campaigns') || [];
-      // Calcular métricas e decisões para cada campanha
+      // Calculate metrics and decisions for each campaign
       const campaignsWithDecisions = userCampaigns.map(campaign => {
         if (campaign.days && campaign.days.length > 0) {
           const metrics = calculateMetrics(campaign.days, campaign.productPrice, campaign.cogs);
@@ -44,7 +44,7 @@ const CampaignDashboard = () => {
     }
   }, []);
 
-  // Salvar campanhas específicas do usuário
+  // Save user-specific campaigns
   useEffect(() => {
     if (userService.isLoggedIn() && campaigns.length > 0) {
       userService.saveUserData('campaigns', campaigns);
@@ -53,14 +53,14 @@ const CampaignDashboard = () => {
 
   const handleSaveCampaign = (campaignData) => {
     if (editingCampaign) {
-      // Editar campanha existente
+      // Edit existing campaign
       setCampaigns(prev => prev.map(camp => 
         camp.id === editingCampaign.id 
           ? { ...campaignData, id: editingCampaign.id }
           : camp
       ));
     } else {
-      // Nova campanha
+      // New campaign
       const newCampaign = {
         ...campaignData,
         id: Date.now(),
@@ -89,7 +89,7 @@ const CampaignDashboard = () => {
           days: [...(campaign.days || []), dayData]
         };
         
-        // Recalcular métricas e decisão
+        // Recalculate metrics and decision
         const metrics = calculateMetrics(updatedCampaign.days, campaign.productPrice, campaign.cogs);
         const decision = calculateDecision(updatedCampaign, updatedCampaign.days, metrics);
         
@@ -125,7 +125,7 @@ const CampaignDashboard = () => {
     return campaign.marketType === selectedMarketType;
   });
 
-  // Calcular métricas gerais
+  // Calculate general metrics
   const totalMetrics = campaigns.reduce((acc, campaign) => {
     const totalSpent = campaign.days?.reduce((sum, day) => sum + day.spend, 0) || 0;
     const totalSales = campaign.days?.reduce((sum, day) => sum + day.sales, 0) || 0;
@@ -151,7 +151,7 @@ const CampaignDashboard = () => {
               Campaign Dashboard
             </h1>
             <p className="campaign-subtitle">
-              Gerir e otimizar campanhas Facebook Ads
+              Manage and optimize Facebook Ads campaigns
             </p>
           </div>
           
@@ -162,7 +162,7 @@ const CampaignDashboard = () => {
               className="campaign-btn primary"
             >
               <Plus size={16} />
-              Nova Campanha
+              New Campaign
             </button>
 
             <button
@@ -170,7 +170,7 @@ const CampaignDashboard = () => {
               className="campaign-btn"
             >
               <Link size={16} />
-              {showMetaConnector ? 'Ocultar' : 'Conectar'} Meta
+              {showMetaConnector ? 'Hide' : 'Connect'} Meta
             </button>
           </div>
         </div>
@@ -192,7 +192,7 @@ const CampaignDashboard = () => {
               {totalMetrics.totalSpent.toFixed(2)}€
             </h3>
             <p className="stat-title">
-              Investimento Total
+              Total Investment
             </p>
           </div>
 
@@ -205,14 +205,14 @@ const CampaignDashboard = () => {
                 background: averageROAS >= 3 ? 'rgba(150, 242, 215, 0.15)' : 'rgba(245, 158, 11, 0.15)',
                 color: averageROAS >= 3 ? '#96f2d7' : '#f59e0b'
               }}>
-                {averageROAS >= 3 ? 'Bom' : 'Médio'}
+                {averageROAS >= 3 ? 'Good' : 'Average'}
               </div>
             </div>
             <h3 className="stat-value">
               {averageROAS.toFixed(1)}x
             </h3>
             <p className="stat-title">
-              ROAS Médio
+              Average ROAS
             </p>
           </div>
 
@@ -225,14 +225,14 @@ const CampaignDashboard = () => {
                 background: activeCampaigns > 0 ? 'rgba(150, 242, 215, 0.15)' : 'rgba(239, 68, 68, 0.15)',
                 color: activeCampaigns > 0 ? '#96f2d7' : '#ef4444'
               }}>
-                {activeCampaigns > 0 ? 'Ativas' : 'Pausadas'}
+                {activeCampaigns > 0 ? 'Active' : 'Paused'}
               </div>
             </div>
             <h3 className="stat-value">
               {campaigns.length}
             </h3>
             <p className="stat-title">
-              Campanhas Totais
+              Total Campaigns
             </p>
           </div>
 
@@ -249,7 +249,7 @@ const CampaignDashboard = () => {
               {totalMetrics.totalSales}
             </h3>
             <p className="stat-title">
-              Conversões Totais
+              Total Conversions
             </p>
           </div>
         </div>
@@ -262,7 +262,7 @@ const CampaignDashboard = () => {
           value={selectedMarketType}
           onChange={setSelectedMarketType}
           className="filter-style"
-          placeholder="Selecionar tipo de mercado..."
+          placeholder="Select market type..."
         />
       </div>
 
@@ -279,7 +279,7 @@ const CampaignDashboard = () => {
       <div className="campaign-table-section">
         <div className="section-header">
           <h2 className="section-title">
-            Campanhas Ativas
+            Active Campaigns
           </h2>
         </div>
         

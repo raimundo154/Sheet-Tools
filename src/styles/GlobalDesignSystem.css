@@ -244,6 +244,11 @@ body {
 
 /* Highlight Text - NewHomePage Style */
 .highlight {
+  color: #1dd1a1;
+}
+
+/* For specific use cases that need gradient text */
+.gradient-text {
   background: var(--gradient-primary);
   background-clip: text;
   -webkit-background-clip: text;

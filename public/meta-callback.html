@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meta Login - Processando...</title>
+    <title>Meta Login - Processing...</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -68,8 +68,8 @@
     <div class="container">
         <div class="meta-logo">M</div>
         <div class="spinner"></div>
-        <h2>Conectando ao Meta Business Manager...</h2>
-        <p>Processando sua autenticação e buscando ad accounts.</p>
+        <h2>Connecting to Meta Business Manager...</h2>
+        <p>Processing your authentication and fetching ad accounts.</p>
         <div id="status"></div>
         <div id="error-container"></div>
     </div>
@@ -82,7 +82,7 @@
             try {
                 // Verificar se estamos em popup
                 if (!window.opener) {
-                    showError('Esta página deve ser aberta em popup.');
+                    showError('This page should be opened in a popup.');
                     return;
                 }
 
@@ -98,7 +98,7 @@
                 }
 
                 if (!code) {
-                    showError('Código de autorização não recebido');
+                    showError('Authorization code not received');
                     return;
                 }
 
@@ -106,13 +106,13 @@
                 processAuthCode(code);
 
             } catch (err) {
-                showError('Erro inesperado: ' + err.message);
+                showError('Unexpected error: ' + err.message);
             }
         })();
 
         async function processAuthCode(code) {
             try {
-                updateStatus('Trocando código por token de acesso...');
+                updateStatus('Exchanging code for access token...');
 
                 // Tentar trocar código por token via backend
                 let authData;
@@ -131,15 +131,15 @@
                     if (response.ok) {
                         authData = await response.json();
                     } else {
-                        throw new Error('Backend não disponível');
+                        throw new Error('Backend not available');
                     }
                 } catch (backendError) {
-                    console.warn('Backend não disponível, usando Graph API diretamente');
+                    console.warn('Backend not available, using Graph API directly');
                     
                     // Fallback: usar Graph API diretamente (apenas para demonstração)
-                    // NOTA: Em produção, isto deve ser feito no backend por segurança
+                    // NOTE: In production, this should be done in the backend for security
                     
-                    // Construir redirect URI dinamicamente baseado no ambiente
+                    // Build redirect URI dynamically based on environment
                     const redirectUri = window.location.protocol === 'https:' 
                         ? `${window.location.origin}/meta-callback`
                         : 'http://localhost:3000/meta-callback';
@@ -152,7 +152,7 @@
                     }));
 
                     if (!tokenResponse.ok) {
-                        throw new Error('Erro ao obter token de acesso');
+                        throw new Error('Error obtaining access token');
                     }
 
                     const tokenData = await tokenResponse.json();
@@ -162,7 +162,7 @@
                     };
                 }
 
-                updateStatus('Login realizado com sucesso!');
+                updateStatus('Login successful!');
                 
                 // Enviar dados para janela pai
                 window.opener.postMessage({
@@ -175,7 +175,7 @@
 
             } catch (err) {
                 console.error('Erro no processamento:', err);
-                showError('Erro ao processar login: ' + err.message);
+                showError('Error processing login: ' + err.message);
                 
                 // Enviar erro para janela pai
                 window.opener.postMessage({
@@ -193,8 +193,8 @@
             document.querySelector('.container').innerHTML = `
                 <div class="meta-logo">M</div>
                 <div class="success">✓</div>
-                <h2 style="color: #4CAF50;">Conectado com sucesso!</h2>
-                <p>Redirecionando para importar suas campanhas...</p>
+                <h2 style="color: #4CAF50;">Successfully connected!</h2>
+                <p>Redirecting to import your campaigns...</p>
             `;
             
             // Fechar popup após 2 segundos

@@ -26,6 +26,9 @@ export const ROUTES = {
   // Páginas legais
   PRIVACY: '/privacy',          // Política de privacidade
   TERMS: '/terms',             // Termos de serviço
+  
+  // Error pages
+  NOT_FOUND: '/404',           // Página 404 (NotFoundPage)
 };
 
 export const PAGE_NAMES = {
@@ -46,6 +49,7 @@ export const PAGE_NAMES = {
   [ROUTES.SETTINGS]: 'settings',
   [ROUTES.PRIVACY]: 'privacy',
   [ROUTES.TERMS]: 'terms',
+  [ROUTES.NOT_FOUND]: 'not-found',
 };
 
 // Utilitário para navegação
@@ -96,7 +100,29 @@ class NavigationService {
    */
   static getCurrentPageName() {
     const currentRoute = this.getCurrentRoute();
-    return PAGE_NAMES[currentRoute] || 'home-landing';
+    
+    // Check if this is a valid route
+    if (PAGE_NAMES[currentRoute]) {
+      return PAGE_NAMES[currentRoute];
+    }
+    
+    // For unknown routes, return 404 if user should be authenticated, otherwise home
+    const knownRoutes = Object.values(ROUTES);
+    if (!knownRoutes.includes(currentRoute)) {
+      return 'not-found';
+    }
+    
+    // Fallback to home for any other edge cases
+    return 'home-landing';
+  }
+
+  /**
+   * Check if current route is valid
+   */
+  static isValidRoute(route = null) {
+    const checkRoute = route || this.getCurrentRoute();
+    const knownRoutes = Object.values(ROUTES);
+    return knownRoutes.includes(checkRoute);
   }
 
   /**
@@ -158,6 +184,9 @@ export const navigation = {
   toPrivacy: () => NavigationService.navigate(ROUTES.PRIVACY),
   toTerms: () => NavigationService.navigate(ROUTES.TERMS),
   
+  // Error pages
+  toNotFound: () => NavigationService.navigate(ROUTES.NOT_FOUND),
+  
   // Redirecionamentos especiais
   redirectAfterLogin: () => NavigationService.navigate(ROUTES.DASHBOARD, true),
   redirectAfterLogout: () => NavigationService.navigate(ROUTES.HOME, true),
@@ -170,6 +199,7 @@ export const navigation = {
   requiresAuth: (route) => NavigationService.requiresAuth(route),
   isAuthRoute: (route) => NavigationService.isAuthRoute(route),
   isHomePage: (route) => NavigationService.isHomePage(route),
+  isValidRoute: (route) => NavigationService.isValidRoute(route),
 };
 
 export default NavigationService;

@@ -25,44 +25,44 @@ const DashboardHomePage = () => {
   const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
-    // Simular carregamento de dados
+    // Simulate data loading
     const loadDashboardData = async () => {
-      // Simular delay de carregamento
+      // Simulate loading delay
       await new Promise(resolve => setTimeout(resolve, 2000));
       
-      // Verificar se deve mostrar o onboarding (simulando primeira visita)
+      // Check if onboarding should be shown (simulating first visit)
       const hasCompletedOnboarding = localStorage.getItem('onboarding_completed');
       if (!hasCompletedOnboarding) {
         setShowOnboarding(true);
       }
       
-      // Para teste - sempre mostrar o onboarding
+      // For testing - always show onboarding
       setShowOnboarding(true);
 
       setStats([
         {
-          title: 'ROAS Total',
+          title: 'Total ROAS',
           value: '3.2x',
           change: '+12.5%',
           icon: TrendingUp,
           color: 'success'
         },
         {
-          title: 'Receita Total',
+          title: 'Total Revenue',
           value: '€45.2k',
           change: '+8.3%',
           icon: DollarSign,
           color: 'primary'
         },
         {
-          title: 'Campanhas Ativas',
+          title: 'Active Campaigns',
           value: '12',
           change: '+2',
           icon: Target,
           color: 'warning'
         },
         {
-          title: 'Conversões',
+          title: 'Conversions',
           value: '1.2k',
           change: '+15.7%',
           icon: Users,
@@ -72,26 +72,26 @@ const DashboardHomePage = () => {
 
       setQuickActions([
         {
-          title: 'Campanhas',
-          description: 'Gerir campanhas ativas do Facebook Ads',
+          title: 'Campaigns',
+          description: 'Manage active Facebook Ads campaigns',
           icon: Megaphone,
           route: 'campaigns'
         },
         {
-          title: 'Produtos',
-          description: 'Gerir catálogo de produtos',
+          title: 'Products',
+          description: 'Manage product catalog',
           icon: ShoppingCart,
           route: 'quotation'
         },
         {
           title: 'Daily ROAS',
-          description: 'Acompanhar retorno diário',
+          description: 'Track daily returns',
           icon: Calendar,
           route: 'daily-roas'
         },
         {
-          title: 'Relatórios',
-          description: 'Análises e métricas detalhadas',
+          title: 'Reports',
+          description: 'Detailed analytics and metrics',
           icon: BarChart3,
           route: 'reports'
         }
@@ -100,20 +100,20 @@ const DashboardHomePage = () => {
       setRecentActivity([
         {
           type: 'campaign',
-          title: 'Campanha "Produto A" atualizada',
-          time: '2 horas atrás',
+          title: 'Campaign "Product A" updated',
+          time: '2 hours ago',
           status: 'success'
         },
         {
           type: 'analysis',
-          title: 'Análise de ROAS concluída',
-          time: '4 horas atrás',
+          title: 'ROAS analysis completed',
+          time: '4 hours ago',
           status: 'info'
         },
         {
           type: 'product',
-          title: 'Novo produto adicionado',
-          time: '6 horas atrás',
+          title: 'New product added',
+          time: '6 hours ago',
           status: 'warning'
         }
       ]);
@@ -137,7 +137,7 @@ const DashboardHomePage = () => {
   if (isLoading) {
     return (
       <div className="loading-screen">
-        {/* Linhas Animadas de Fundo */}
+        {/* Animated Background Lines */}
         <div className="animated-lines">
           <div className="line line-1"></div>
           <div className="line line-2"></div>
@@ -147,7 +147,7 @@ const DashboardHomePage = () => {
           <div className="line line-6"></div>
         </div>
         
-        {/* Círculos Flutuantes */}
+        {/* Floating Circles */}
         <div className="floating-circles">
           <div className="circle circle-1"></div>
           <div className="circle circle-2"></div>
@@ -159,11 +159,11 @@ const DashboardHomePage = () => {
           <div className="circle circle-8"></div>
         </div>
 
-        {/* Container do conteúdo */}
+        {/* Content Container */}
         <div className="loading-content">
-          {/* Container da animação do logo */}
+          {/* Logo Animation Container */}
           <div className="loading-animation">
-            {/* Logo animado */}
+            {/* Animated Logo */}
             <div className="loading-logo">
               <img 
                 src="/logo/sheet-tools-logo-backgroundremover.png" 
@@ -171,16 +171,16 @@ const DashboardHomePage = () => {
               />
             </div>
             
-            {/* Trilha/linha de fundo */}
+            {/* Background Track/Line */}
             <div className="loading-track"></div>
             
-            {/* Linha de progresso */}
+            {/* Progress Line */}
             <div className="loading-progress"></div>
           </div>
 
-          {/* Mensagem */}
+          {/* Message */}
           <p className="loading-message">
-            Carregando seu dashboard...
+            Loading your dashboard...
           </p>
         </div>
       </div>
@@ -199,7 +199,7 @@ const DashboardHomePage = () => {
       {/* Header */}
       <PageHeader 
         title="Dashboard"
-        subtitle="Gerencie suas campanhas e maximize seus resultados"
+        subtitle="Manage your campaigns and maximize your results"
         showProfile={true}
       />
 
@@ -233,8 +233,8 @@ const DashboardHomePage = () => {
       {/* Quick Actions */}
       <div className="quick-actions-section">
         <div className="section-header">
-          <h2 className="section-title">Ferramentas Rápidas</h2>
-          <p className="section-description">Acesse suas ferramentas mais utilizadas</p>
+          <h2 className="section-title">Quick Tools</h2>
+          <p className="section-description">Access your most used tools</p>
         </div>
         <div className="quick-actions-grid">
           {quickActions.map((action, index) => {
@@ -262,7 +262,7 @@ const DashboardHomePage = () => {
       {/* Recent Activity */}
       <div className="recent-activity-section">
         <div className="section-header">
-          <h2 className="section-title">Atividade Recente</h2>
+          <h2 className="section-title">Recent Activity</h2>
         </div>
         <div className="activity-list">
           {recentActivity.map((activity, index) => (
@@ -280,20 +280,20 @@ const DashboardHomePage = () => {
       {/* Performance Overview */}
       <div className="performance-section">
         <div className="section-header">
-          <h2 className="section-title">Visão Geral de Performance</h2>
+          <h2 className="section-title">Performance Overview</h2>
         </div>
         <div className="performance-card">
           <div className="performance-header">
-            <h3>ROAS dos Últimos 7 Dias</h3>
+            <h3>Last 7 Days ROAS</h3>
             <div className="performance-badge">
               <Award size={16} />
-              <span>Excelente</span>
+              <span>Excellent</span>
             </div>
           </div>
           <div className="performance-chart">
             <div className="chart-placeholder">
               <BarChart3 size={48} />
-              <p>Gráfico de performance será exibido aqui</p>
+              <p>Performance chart will be displayed here</p>
             </div>
           </div>
         </div>

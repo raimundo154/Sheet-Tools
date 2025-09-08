@@ -5,28 +5,28 @@ import LoadingScreen from './LoadingScreen';
 
 const AuthCallback = ({ onAuthSuccess, onAuthError }) => {
   const [loading, setLoading] = useState(true);
-  const [message, setMessage] = useState('Processando autenticação...');
+  const [message, setMessage] = useState('Processing authentication...');
 
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
-        // O Supabase automaticamente processa o callback
-        // Apenas precisamos verificar se o usuário foi autenticado
+        // Supabase automatically processes the callback
+        // We just need to check if the user was authenticated
         const session = await authService.initialize();
         
         if (session && session.user) {
-          setMessage('Login realizado com sucesso! Redirecionando...');
+          setMessage('Login successful! Redirecting...');
           setTimeout(() => {
             onAuthSuccess && onAuthSuccess(session.user);
-            // Redirecionar para o dashboard
+            // Redirect to dashboard
             navigation.redirectAfterLogin();
           }, 2000);
         } else {
-          throw new Error('Falha na autenticação');
+          throw new Error('Authentication failed');
         }
       } catch (error) {
-        console.error('Erro no callback de autenticação:', error);
-        setMessage('Erro na autenticação. Tente novamente.');
+        console.error('Authentication callback error:', error);
+        setMessage('Authentication error. Please try again.');
         onAuthError && onAuthError(error);
       } finally {
         setLoading(false);

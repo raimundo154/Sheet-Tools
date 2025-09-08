@@ -279,7 +279,7 @@ const SettingsPage = () => {
     return (completedSteps / totalSteps) * 100;
   };
 
-  // Carregar domínio Shopify ao abrir modal
+  // Load Shopify domain when opening modal
   useEffect(() => {
     if (showShopifyModal) {
       loadShopifyDomain();
@@ -293,15 +293,15 @@ const SettingsPage = () => {
         setShopifyDomain(result.data);
       }
     } catch (error) {
-      console.error('Erro ao carregar domínio Shopify:', error);
+      console.error('Error loading Shopify domain:', error);
     }
   };
 
   const handleSaveDomain = async () => {
-    console.log('🔄 Iniciando handleSaveDomain com domínio:', shopifyDomain);
+    console.log('🔄 Starting handleSaveDomain with domain:', shopifyDomain);
     
     if (!shopifyDomain.trim()) {
-      console.log('❌ Domínio vazio');
+      console.log('❌ Empty domain');
       setDomainSaveMessage('Please enter a valid domain');
       return;
     }
@@ -310,20 +310,20 @@ const SettingsPage = () => {
     setDomainSaveMessage('Saving...');
 
     try {
-      console.log('🚀 Chamando userConfigService.saveShopifyDomain...');
+      console.log('🚀 Calling userConfigService.saveShopifyDomain...');
       const result = await userConfigService.saveShopifyDomain(shopifyDomain);
-      console.log('📥 Resultado recebido:', result);
+      console.log('📥 Result received:', result);
       
       if (result.success) {
-        console.log('✅ Sucesso no salvamento');
+        console.log('✅ Save successful');
         setDomainSaveMessage('✅ Domain saved successfully!');
         setTimeout(() => setDomainSaveMessage(''), 3000);
       } else {
-        console.error('❌ Falha no salvamento:', result.error);
+        console.error('❌ Save failed:', result.error);
         setDomainSaveMessage(`❌ Error: ${result.error}`);
       }
     } catch (error) {
-      console.error('💥 Erro inesperado:', error);
+      console.error('💥 Unexpected error:', error);
       setDomainSaveMessage(`❌ Unexpected error: ${error.message}`);
     } finally {
       setIsSavingDomain(false);
@@ -473,8 +473,8 @@ const SettingsPage = () => {
     return (
       <div className="settings-page">
         <PageHeader 
-          title="Configurações"
-          subtitle="Gerencie suas informações pessoais e conexões"
+          title="Settings"
+          subtitle="Manage your personal information and connections"
           showProfile={true}
         />
         
@@ -492,8 +492,8 @@ const SettingsPage = () => {
     <div className="settings-page">
       {/* Header */}
       <PageHeader 
-        title="Configurações"
-        subtitle="Gerencie suas informações pessoais e conexões"
+        title="Settings"
+        subtitle="Manage your personal information and connections"
         showProfile={true}
       />
 
@@ -530,7 +530,7 @@ const SettingsPage = () => {
                   Account created on
                 </div>
                 <div className="info-value">
-                  {user?.created_at ? new Date(user.created_at).toLocaleDateString('pt-PT', {
+                  {user?.created_at ? new Date(user.created_at).toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric'
@@ -780,9 +780,9 @@ const SettingsPage = () => {
                 <p>Add the webhook below to your Shopify store settings:</p>
                 
                 <div className="webhook-url">
-                  <span>https://seu-site.netlify.app/.netlify/functions/shopify-webhook</span>
+                  <span>https://your-site.netlify.app/.netlify/functions/shopify-webhook</span>
                   <button 
-                    onClick={() => copyToClipboard('https://seu-site.netlify.app/.netlify/functions/shopify-webhook')}
+                    onClick={() => copyToClipboard('https://your-site.netlify.app/.netlify/functions/shopify-webhook')}
                     className="copy-btn"
                   >
                     <Copy size={16} />

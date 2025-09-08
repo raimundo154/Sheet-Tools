@@ -20,7 +20,7 @@ const SubscriptionPage = () => {
   const [loading, setLoading] = useState(true);
   const [processingPlan, setProcessingPlan] = useState(null);
   const [error, setError] = useState('');
-  const [billingCycle, setBillingCycle] = useState('monthly'); // 'monthly' ou 'yearly'
+  const [billingCycle, setBillingCycle] = useState('monthly'); // 'monthly' or 'yearly'
   const [showTrialModal, setShowTrialModal] = useState(false);
 
   useEffect(() => {
@@ -32,7 +32,7 @@ const SubscriptionPage = () => {
       setLoading(true);
       setError('');
 
-      // Carregar planos e subscription atual em paralelo
+      // Load plans and current subscription in parallel
       const [plansData, subscriptionData] = await Promise.all([
         subscriptionService.getAvailablePlans(),
         subscriptionService.getUserActiveSubscription()
@@ -41,14 +41,14 @@ const SubscriptionPage = () => {
       setPlans(plansData);
       setCurrentSubscription(subscriptionData);
     } catch (err) {
-      console.error('Erro ao carregar dados:', err);
-      setError('Erro ao carregar informações. Tente novamente.');
+      console.error('Error loading data:', err);
+      setError('Error loading information. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  // Filtrar planos por ciclo de cobrança
+  // Filter plans by billing cycle
   const getFilteredPlans = () => {
     if (billingCycle === 'trial') {
       return plans.filter(plan => plan.billing_period === 'trial');
@@ -56,7 +56,7 @@ const SubscriptionPage = () => {
     return plans.filter(plan => plan.billing_period === billingCycle);
   };
 
-  // Organizar planos por tipo
+  // Organize plans by type
   const organizedPlans = () => {
     const filtered = getFilteredPlans();
     const trial = plans.find(plan => plan.billing_period === 'trial');
@@ -66,7 +66,7 @@ const SubscriptionPage = () => {
     return { trial, monthly, yearly };
   };
 
-  // Calcular desconto do plano anual
+  // Calculate annual plan discount
   const calculateDiscount = (yearlyPlan) => {
     const planName = yearlyPlan.name.replace(' Anual', '');
     const monthlyPlan = plans.find(p => 
@@ -78,7 +78,7 @@ const SubscriptionPage = () => {
     return subscriptionService.calculateYearlyDiscount(monthlyPlan.price_amount);
   };
 
-  // Obter preço original para planos anuais (preço mensal × 12)
+  // Get original price for annual plans (monthly price × 12)
   const getOriginalYearlyPrice = (yearlyPlan) => {
     const planName = yearlyPlan.name.replace(' Anual', '');
     const monthlyPlan = plans.find(p => 
@@ -87,22 +87,22 @@ const SubscriptionPage = () => {
     
     if (!monthlyPlan) return null;
     
-    return monthlyPlan.price_amount * 12; // preço mensal × 12 meses
+    return monthlyPlan.price_amount * 12; // monthly price × 12 months
   };
 
-  // Verificar se plano está ativo
+  // Check if plan is active
   const isPlanActive = (plan) => {
     return currentSubscription?.plan_name === plan.name;
   };
 
-  // Verificar se usuário pode fazer upgrade/downgrade
+  // Check if user can upgrade/downgrade
   const canChangeToPlan = (plan) => {
     if (!currentSubscription) return true;
     if (currentSubscription.status === 'trialing' && plan.billing_period !== 'trial') return true;
     return !isPlanActive(plan);
   };
 
-  // Iniciar processo de subscription
+  // Start subscription process
   const handleSelectPlan = async (plan) => {
     try {
       setProcessingPlan(plan.id);
@@ -110,29 +110,29 @@ const SubscriptionPage = () => {
 
       const user = authService.getCurrentUser();
       if (!user) {
-        console.log('❌ Usuário não autenticado, redirecionando para login');
-        setError('Você precisa estar logado para subscrever um plano.');
+        console.log('❌ User not authenticated, redirecting to login');
+        setError('You need to be logged in to subscribe to a plan.');
         navigation.toLogin();
         return;
       }
 
-      console.log('✅ Usuário autenticado:', user.id, user.email);
-      console.log('📦 Plano selecionado:', plan.name, plan.id);
+      console.log('✅ User authenticated:', user.id, user.email);
+      console.log('📦 Selected plan:', plan.name, plan.id);
 
-      // Se for trial, criar diretamente
+      // If trial, create directly
       if (plan.billing_period === 'trial') {
-        console.log('🎁 Iniciando trial gratuito...');
+        console.log('🎁 Starting free trial...');
         await subscriptionService.startFreeTrial();
         setShowTrialModal(true);
-        await loadData(); // Recarregar dados
+        await loadData(); // Reload data
         return;
       }
 
-      // Para planos pagos, criar checkout session
+      // For paid plans, create checkout session
       const successUrl = `${window.location.origin}/dashboard?subscription=success`;
       const cancelUrl = `${window.location.origin}/subscription?subscription=cancelled`;
 
-      console.log('💳 Criando checkout session...');
+      console.log('💳 Creating checkout session...');
       console.log('🎯 Success URL:', successUrl);
       console.log('❌ Cancel URL:', cancelUrl);
 
@@ -143,64 +143,102 @@ const SubscriptionPage = () => {
       );
 
     } catch (err) {
-      console.error('❌ Erro ao selecionar plano:', err);
-      setError(`Erro: ${err.message || 'Erro ao processar plano. Tente novamente.'}`);
+      console.error('❌ Error selecting plan:', err);
+      setError(`Error: ${err.message || 'Error processing plan. Please try again.'}`);
     } finally {
       setProcessingPlan(null);
     }
   };
 
-  // Gerenciar subscription
+  // Manage subscription
   const handleManageSubscription = async () => {
     try {
-      console.log('🔧 Abrindo portal de gestão...', currentSubscription);
+      console.log('🔧 Opening management portal...', currentSubscription);
 
-      // Se é trial interno (sem stripe_customer_id), mostrar upgrade options
+      // If internal trial (no stripe_customer_id), show upgrade options
       if (currentSubscription && currentSubscription.status === 'trialing' && !currentSubscription.stripe_customer_id) {
-        console.log('⚠️ Trial interno - mostrando opções de upgrade');
+        console.log('⚠️ Internal trial - showing upgrade options');
         setBillingCycle('monthly');
         setError('');
         document.querySelector('.plans-grid')?.scrollIntoView({ behavior: 'smooth' });
         return;
       }
 
-      // Para trials Stripe e subscriptions pagas, abrir Customer Portal
+      // For Stripe trials and paid subscriptions, open Customer Portal
       const returnUrl = `${window.location.origin}/subscription`;
       await subscriptionService.createCustomerPortalSession(returnUrl);
     } catch (err) {
-      console.error('Erro ao abrir portal:', err);
+      console.error('Error opening portal:', err);
       
-      // Fallback: Se falhou e é trial, mostrar upgrade options
+      // Fallback: If failed and is trial, show upgrade options
       if (currentSubscription && currentSubscription.status === 'trialing') {
-        console.log('⚠️ Portal falhou para trial - mostrando upgrade options');
+        console.log('⚠️ Portal failed for trial - showing upgrade options');
         setBillingCycle('monthly');
         setError('');
         document.querySelector('.plans-grid')?.scrollIntoView({ behavior: 'smooth' });
       } else {
-        setError('Erro ao abrir portal de gestão. Tente novamente.');
+        setError('Error opening management portal. Please try again.');
       }
     }
   };
 
-  // Animation variants
+  // Enhanced Animation variants
   const fadeInUp = {
-    hidden: { opacity: 0, y: 30 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
+    hidden: { opacity: 0, y: 60 },
+    visible: { 
+      opacity: 1, 
+      y: 0, 
+      transition: { 
+        duration: 0.8,
+        ease: [0.25, 0.46, 0.45, 0.94]
+      } 
+    }
+  };
+
+  const fadeInLeft = {
+    hidden: { opacity: 0, x: -60 },
+    visible: { 
+      opacity: 1, 
+      x: 0, 
+      transition: { 
+        duration: 0.8,
+        ease: [0.25, 0.46, 0.45, 0.94]
+      } 
+    }
+  };
+
+  const fadeInRight = {
+    hidden: { opacity: 0, x: 60 },
+    visible: { 
+      opacity: 1, 
+      x: 0, 
+      transition: { 
+        duration: 0.8,
+        ease: [0.25, 0.46, 0.45, 0.94]
+      } 
+    }
   };
 
   const staggerContainer = {
     hidden: {},
     visible: {
-      transition: { staggerChildren: 0.1 }
+      transition: {
+        staggerChildren: 0.15,
+        delayChildren: 0.1
+      }
     }
   };
 
-  const scaleIn = {
-    hidden: { opacity: 0, scale: 0.95 },
+  const slideInScale = {
+    hidden: { opacity: 0, scale: 0.95, y: 40 },
     visible: { 
       opacity: 1, 
-      scale: 1, 
-      transition: { duration: 0.4 } 
+      scale: 1,
+      y: 0,
+      transition: { 
+        duration: 0.7,
+        ease: [0.25, 0.46, 0.45, 0.94]
+      } 
     }
   };
 
@@ -209,7 +247,7 @@ const SubscriptionPage = () => {
       <div className="subscription-page">
         <div className="loading-container">
           <Loader className="loading-spinner" size={48} />
-          <p>Carregando planos...</p>
+          <p>Loading plans...</p>
         </div>
       </div>
     );
@@ -219,20 +257,27 @@ const SubscriptionPage = () => {
 
   return (
     <div className="subscription-page">
-      {/* Header */}
-      <motion.div 
-        className="subscription-header"
-        variants={fadeInUp}
-        initial="hidden"
-        animate="visible"
-      >
-        <h1 className="subscription-title">
-          Escolhe o teu <span className="highlight">Plano Perfeito</span>
-        </h1>
-        <p className="subscription-subtitle">
-          Planos simples e transparentes para automatizar as tuas campanhas Facebook
-        </p>
-      </motion.div>
+      <div className="container">
+        {/* Header */}
+        <motion.div 
+          className="subscription-header"
+          variants={staggerContainer}
+          initial="hidden"
+          animate="visible"
+        >
+          <motion.h1 
+            className="subscription-title"
+            variants={fadeInUp}
+          >
+            Choose Your <span className="highlight">Perfect Plan</span>
+          </motion.h1>
+          <motion.p 
+            className="subscription-subtitle"
+            variants={fadeInUp}
+          >
+            Simple and transparent plans to automate your Facebook campaigns
+          </motion.p>
+        </motion.div>
 
       {/* Error Message */}
       {error && (
@@ -258,16 +303,16 @@ const SubscriptionPage = () => {
             <div className="current-info">
               <Crown size={24} />
               <div>
-                <h3>Plano Atual: {currentSubscription.plan_name}</h3>
+                <h3>Current Plan: {currentSubscription.plan_name}</h3>
                 <p>
                   Status: <span className={`status ${currentSubscription.status}`}>
-                    {currentSubscription.status === 'trialing' ? 'Trial Ativo' : 
-                     currentSubscription.status === 'active' ? 'Ativo' : currentSubscription.status}
+                    {currentSubscription.status === 'trialing' ? 'Active Trial' : 
+                     currentSubscription.status === 'active' ? 'Active' : currentSubscription.status}
                   </span>
                 </p>
                 {currentSubscription.trial_end && (
                   <p className="trial-info">
-                    Trial até: {new Date(currentSubscription.trial_end).toLocaleDateString('pt-PT')}
+                    Trial until: {new Date(currentSubscription.trial_end).toLocaleDateString('en-US')}
                   </p>
                 )}
               </div>
@@ -276,7 +321,7 @@ const SubscriptionPage = () => {
               className="btn btn-ghost"
               onClick={handleManageSubscription}
             >
-              Gerir Subscription
+              Manage Subscription
             </button>
           </div>
         </motion.div>
@@ -293,8 +338,8 @@ const SubscriptionPage = () => {
           <div className="trial-card">
             <div className="trial-header">
               <Gift size={32} />
-              <h2>Experimenta Grátis</h2>
-              <p>10 dias de acesso completo, sem cartão de crédito</p>
+              <h2>Try for Free</h2>
+              <p>10 days of full access, no credit card required</p>
             </div>
             
             <div className="trial-features">
@@ -316,7 +361,7 @@ const SubscriptionPage = () => {
               ) : (
                 <>
                   <Sparkles size={20} />
-                  Começar Trial Grátis
+                  Start Free Trial
                 </>
               )}
             </button>
@@ -336,14 +381,14 @@ const SubscriptionPage = () => {
             className={`toggle-btn ${billingCycle === 'monthly' ? 'active' : ''}`}
             onClick={() => setBillingCycle('monthly')}
           >
-            Mensal
+            Monthly
           </button>
           <button
             className={`toggle-btn ${billingCycle === 'yearly' ? 'active' : ''}`}
             onClick={() => setBillingCycle('yearly')}
           >
-            Anual
-            <span className="savings-badge">Poupa 3 meses</span>
+            Annual
+            <span className="savings-badge">Save 3 months</span>
           </button>
         </div>
       </motion.div>
@@ -355,7 +400,7 @@ const SubscriptionPage = () => {
         initial="hidden"
         animate="visible"
       >
-        {getFilteredPlans().map((plan) => {
+        {getFilteredPlans().map((plan, index) => {
           const isPopular = plan.name.includes('Standard');
           const isCurrentPlan = isPlanActive(plan);
           const canChange = canChangeToPlan(plan);
@@ -366,14 +411,15 @@ const SubscriptionPage = () => {
             <motion.div
               key={plan.id}
               className={`plan-card ${isPopular ? 'popular' : ''} ${isCurrentPlan ? 'current' : ''}`}
-              variants={scaleIn}
+              variants={index % 2 === 0 ? fadeInLeft : fadeInRight}
               whileHover={{ 
-                scale: canChange ? 1.05 : 1,
-                transition: { duration: 0.2 }
+                y: -10,
+                scale: canChange ? 1.02 : 1,
+                transition: { duration: 0.3 }
               }}
             >
-              {isPopular && <div className="popular-badge">Mais Popular</div>}
-              {isCurrentPlan && <div className="current-badge">Plano Atual</div>}
+              {isPopular && <div className="popular-badge">Most Popular</div>}
+              {isCurrentPlan && <div className="current-badge">Current Plan</div>}
 
               <div className="plan-header">
                 <h3 className="plan-name">{plan.name}</h3>
@@ -392,20 +438,20 @@ const SubscriptionPage = () => {
                     </span>
                     <span className="period">
                       {plan.billing_period === 'trial' ? '/10 dias' :
-                       plan.billing_period === 'monthly' ? '/mês' : '/ano'}
+                       plan.billing_period === 'monthly' ? '/month' : '/year'}
                     </span>
                   </div>
                   {discount && (
                     <div className="discount-info">
                       <strong style={{ color: '#10b981' }}>
-                        Poupa {subscriptionService.formatPrice(discount.discount)} (3 meses grátis)
+                        Save {subscriptionService.formatPrice(discount.discount)} (3 months free)
                       </strong>
                     </div>
                   )}
                   {originalYearlyPrice && !discount && (
                     <div className="discount-info">
                       <strong style={{ color: '#10b981' }}>
-                        3 meses grátis incluídos
+                        3 months free included
                       </strong>
                     </div>
                   )}
@@ -428,7 +474,7 @@ const SubscriptionPage = () => {
                 {isCurrentPlan ? (
                   <button className="btn btn-ghost btn-full" disabled>
                     <Crown size={16} />
-                    Plano Atual
+                    Current Plan
                   </button>
                 ) : canChange ? (
                   <button
@@ -440,14 +486,14 @@ const SubscriptionPage = () => {
                       <Loader className="btn-loading" size={16} />
                     ) : (
                       <>
-                        {plan.billing_period === 'trial' ? 'Iniciar Trial' : 'Escolher Plano'}
+                        {plan.billing_period === 'trial' ? 'Start Trial' : 'Choose Plan'}
                         <ArrowRight size={16} />
                       </>
                     )}
                   </button>
                 ) : (
                   <button className="btn btn-ghost btn-full" disabled>
-                    Não Disponível
+                    Not Available
                   </button>
                 )}
               </div>
@@ -463,10 +509,10 @@ const SubscriptionPage = () => {
         initial="hidden"
         animate="visible"
       >
-        <h2>Comparação de Funcionalidades</h2>
+        <h2>Feature Comparison</h2>
         <div className="comparison-table">
           <div className="comparison-header">
-            <div className="feature-name">Funcionalidade</div>
+            <div className="feature-name">Feature</div>
             <div className="plan-column">Basic</div>
             <div className="plan-column">Standard</div>
             <div className="plan-column">Expert</div>
@@ -477,8 +523,8 @@ const SubscriptionPage = () => {
             { name: 'Quotation', basic: true, standard: true, expert: true },
             { name: 'Campaigns', basic: false, standard: true, expert: true },
             { name: 'Product Research', basic: false, standard: false, expert: true },
-            { name: 'Suporte Prioritário', basic: false, standard: true, expert: true },
-            { name: 'Histórico Completo', basic: false, standard: true, expert: true }
+            { name: 'Priority Support', basic: false, standard: true, expert: true },
+            { name: 'Complete History', basic: false, standard: true, expert: true }
           ].map((feature, index) => (
             <div key={index} className="comparison-row">
               <div className="feature-name">{feature.name}</div>
@@ -503,23 +549,23 @@ const SubscriptionPage = () => {
         initial="hidden"
         animate="visible"
       >
-        <h2>Perguntas Frequentes</h2>
+        <h2>Frequently Asked Questions</h2>
         <div className="faq-grid">
           <div className="faq-item">
-            <h4>Posso cancelar a qualquer momento?</h4>
-            <p>Sim! Não há fidelidade. Podes cancelar quando quiseres e continuar a usar até ao fim do período pago.</p>
+            <h4>Can I cancel at any time?</h4>
+            <p>Yes! There's no commitment. You can cancel whenever you want and continue using until the end of the paid period.</p>
           </div>
           <div className="faq-item">
-            <h4>Como funciona o trial gratuito?</h4>
-            <p>10 dias completamente grátis com acesso a todas as funcionalidades. Não é necessário cartão de crédito.</p>
+            <h4>How does the free trial work?</h4>
+            <p>10 days completely free with access to all features. No credit card required.</p>
           </div>
           <div className="faq-item">
-            <h4>Posso mudar de plano?</h4>
-            <p>Claro! Podes fazer upgrade ou downgrade a qualquer momento através do portal de gestão.</p>
+            <h4>Can I change my plan?</h4>
+            <p>Of course! You can upgrade or downgrade at any time through the management portal.</p>
           </div>
           <div className="faq-item">
-            <h4>Que métodos de pagamento aceitam?</h4>
-            <p>Cartão de crédito/débito, MB Way, e outras formas de pagamento através do Stripe.</p>
+            <h4>What payment methods do you accept?</h4>
+            <p>Credit/debit card, PayPal, and other payment methods through Stripe.</p>
           </div>
         </div>
       </motion.div>
@@ -535,8 +581,8 @@ const SubscriptionPage = () => {
           >
             <div className="modal-header">
               <Sparkles size={48} className="modal-icon" />
-              <h3>Trial Ativado com Sucesso!</h3>
-              <p>Tens 10 dias de acesso completo a todas as funcionalidades.</p>
+              <h3>Trial Activated Successfully!</h3>
+              <p>You have 10 days of full access to all features.</p>
             </div>
             <div className="modal-actions">
               <button 
@@ -546,18 +592,19 @@ const SubscriptionPage = () => {
                   navigation.toDashboard();
                 }}
               >
-                Ir para Dashboard
+                Go to Dashboard
               </button>
               <button 
                 className="btn btn-ghost"
                 onClick={() => setShowTrialModal(false)}
               >
-                Continuar Aqui
+                Stay Here
               </button>
             </div>
           </motion.div>
         </div>
       )}
+      </div>
     </div>
   );
 };

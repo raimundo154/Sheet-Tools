@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Facebook Login - Processando...</title>
+    <title>Facebook Login - Processing...</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -47,8 +47,8 @@
 <body>
     <div class="container">
         <div class="spinner"></div>
-        <h2>Processando login do Facebook...</h2>
-        <p>Aguarde enquanto verificamos suas credenciais.</p>
+        <h2>Processing Facebook login...</h2>
+        <p>Please wait while we verify your credentials.</p>
         <div id="error-container"></div>
     </div>
 
@@ -58,7 +58,7 @@
             try {
                 // Verificar se estamos em um popup
                 if (!window.opener) {
-                    document.body.innerHTML = '<div class="container"><div class="error">Erro: Esta página deve ser aberta em popup.</div></div>';
+                    document.body.innerHTML = '<div class="container"><div class="error">Error: This page should be opened in a popup.</div></div>';
                     return;
                 }
 
@@ -76,7 +76,7 @@
                     
                     // Mostrar erro na tela
                     document.getElementById('error-container').innerHTML = 
-                        '<div class="error">Erro: ' + (errorDescription || error) + '</div>';
+                        '<div class="error">Error: ' + (errorDescription || error) + '</div>';
                     
                     // Fechar popup após 3 segundos
                     setTimeout(() => window.close(), 3000);
@@ -87,11 +87,11 @@
                     // Processar código de autorização
                     processAuthCode(code);
                 } else {
-                    throw new Error('Nenhum código de autorização recebido');
+                    throw new Error('No authorization code received');
                 }
 
             } catch (err) {
-                console.error('Erro no callback:', err);
+                console.error('Callback error:', err);
                 
                 if (window.opener) {
                     window.opener.postMessage({
@@ -101,14 +101,14 @@
                 }
                 
                 document.getElementById('error-container').innerHTML = 
-                    '<div class="error">Erro: ' + err.message + '</div>';
+                    '<div class="error">Error: ' + err.message + '</div>';
             }
         })();
 
         async function processAuthCode(code) {
             try {
-                // Em produção, esta chamada seria para seu backend
-                // Por agora, simular troca do código por token
+                // In production, this call would be to your backend
+                // For now, simulate code exchange for token
                 
                 const authData = await exchangeCodeForToken(code);
                 
@@ -122,8 +122,8 @@
                 document.querySelector('.container').innerHTML = `
                     <div style="color: #4CAF50;">
                         <div style="font-size: 3rem;">✓</div>
-                        <h2>Login realizado com sucesso!</h2>
-                        <p>Esta janela será fechada automaticamente.</p>
+                        <h2>Login successful!</h2>
+                        <p>This window will close automatically.</p>
                     </div>
                 `;
                 
@@ -131,7 +131,7 @@
                 setTimeout(() => window.close(), 2000);
                 
             } catch (err) {
-                console.error('Erro na troca do token:', err);
+                console.error('Token exchange error:', err);
                 
                 window.opener.postMessage({
                     type: 'FACEBOOK_LOGIN_ERROR',
@@ -139,13 +139,13 @@
                 }, window.location.origin);
                 
                 document.getElementById('error-container').innerHTML = 
-                    '<div class="error">Erro: ' + err.message + '</div>';
+                    '<div class="error">Error: ' + err.message + '</div>';
             }
         }
 
         async function exchangeCodeForToken(code) {
-            // IMPORTANTE: Em produção, esta operação deve ser feita no backend
-            // Nunca expor app_secret no frontend
+            // IMPORTANT: In production, this operation should be done in the backend
+            // Never expose app_secret in frontend
             
             try {
                 // Tentar chamar backend (se existir)
@@ -164,13 +164,13 @@
                     return await response.json();
                 }
                 
-                throw new Error('Backend não disponível');
+                throw new Error('Backend not available');
                 
             } catch (error) {
-                console.warn('Backend não disponível, usando dados simulados:', error);
+                console.warn('Backend not available, using simulated data:', error);
                 
-                // Sem dados hardcoded - backend necessário
-                throw new Error('Backend necessário para trocar código por token. Veja FACEBOOK_OAUTH_SETUP.md');
+                // No hardcoded data - backend required
+                throw new Error('Backend required to exchange code for token. See FACEBOOK_OAUTH_SETUP.md');
             }
         }
     </script>

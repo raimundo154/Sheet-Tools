@@ -21,28 +21,28 @@ const OnboardingTutorial = ({ onComplete, onSkip }) => {
   const steps = [
     {
       id: 'facebook',
-      title: 'Conectar conta do Facebook',
-      description: 'Conecte sua conta do Facebook para importar campanhas e métricas de anúncios.',
+      title: 'Connect Facebook Account',
+      description: 'Connect your Facebook account to import campaigns and ad metrics.',
       icon: Facebook,
       color: '#1877F2',
-      action: 'Conectar Facebook',
+      action: 'Connect Facebook',
       details: [
-        'Importe campanhas automaticamente',
-        'Sincronize métricas de performance',
-        'Gerencie anúncios em tempo real'
+        'Import campaigns automatically',
+        'Synchronize performance metrics',
+        'Manage ads in real-time'
       ]
     },
     {
       id: 'shopify',
-      title: 'Conectar conta do Shopify',
-      description: 'Configure sua loja Shopify com webhook e domínio para sincronizar vendas em tempo real.',
+      title: 'Connect Shopify Account',
+      description: 'Configure your Shopify store with webhook and domain to synchronize sales in real-time.',
       icon: ShoppingBag,
       color: '#96BF48',
-      action: 'Conectar Shopify',
+      action: 'Connect Shopify',
       details: [
-        'Configure webhook: https://seu-site.netlify.app/.netlify/functions/shopify-webhook',
-        'Adicione seu domínio da loja Shopify',
-        'Sincronize vendas em tempo real'
+        'Configure webhook: https://your-site.netlify.app/.netlify/functions/shopify-webhook',
+        'Add your Shopify store domain',
+        'Synchronize sales in real-time'
       ]
     }
   ];
@@ -99,7 +99,7 @@ const OnboardingTutorial = ({ onComplete, onSkip }) => {
         setShopifyDomain(result.data);
       }
     } catch (error) {
-      console.error('Erro ao carregar domínio Shopify:', error);
+      console.error('Error loading Shopify domain:', error);
     }
   };
 
@@ -108,12 +108,12 @@ const OnboardingTutorial = ({ onComplete, onSkip }) => {
     
     if (!shopifyDomain.trim()) {
       console.log('❌ Domínio vazio');
-      setDomainSaveMessage('Por favor, insira um domínio válido');
+      setDomainSaveMessage('Please enter a valid domain');
       return;
     }
 
     setIsSavingDomain(true);
-    setDomainSaveMessage('Salvando...');
+    setDomainSaveMessage('Saving...');
 
     try {
       console.log('🚀 Chamando userConfigService.saveShopifyDomain...');
@@ -122,15 +122,15 @@ const OnboardingTutorial = ({ onComplete, onSkip }) => {
       
       if (result.success) {
         console.log('✅ Sucesso no salvamento');
-        setDomainSaveMessage('✅ Domínio salvo com sucesso!');
+        setDomainSaveMessage('✅ Domain saved successfully!');
         setTimeout(() => setDomainSaveMessage(''), 3000);
       } else {
         console.error('❌ Falha no salvamento:', result.error);
-        setDomainSaveMessage(`❌ Erro: ${result.error}`);
+        setDomainSaveMessage(`❌ Error: ${result.error}`);
       }
     } catch (error) {
       console.error('❌ Erro ao salvar domínio:', error);
-      setDomainSaveMessage(`❌ Erro interno: ${error.message}`);
+      setDomainSaveMessage(`❌ Internal error: ${error.message}`);
     } finally {
       setIsSavingDomain(false);
     }
@@ -142,7 +142,7 @@ const OnboardingTutorial = ({ onComplete, onSkip }) => {
         <div className="modal-header">
           <div className="modal-title">
             <ShoppingBag size={24} color="#96BF48" />
-            <h2>Configuração Shopify</h2>
+            <h2>Shopify Configuration</h2>
           </div>
           <button 
             onClick={() => setShowShopifyModal(false)}
@@ -156,27 +156,27 @@ const OnboardingTutorial = ({ onComplete, onSkip }) => {
           <div className="setup-step">
             <div className="step-number">1</div>
             <div className="step-content">
-              <h3>Configure o Webhook</h3>
-              <p>No painel da Shopify, vá para <strong>Configurações → Notificações → Webhooks</strong></p>
+              <h3>Configure the Webhook</h3>
+              <p>In the Shopify admin panel, go to <strong>Settings → Notifications → Webhooks</strong></p>
               <div className="webhook-config">
-                <label>URL do Webhook:</label>
+                <label>Webhook URL:</label>
                 <div className="copy-field">
                   <input 
                     type="text" 
-                    value="https://seu-site.netlify.app/.netlify/functions/shopify-webhook"
+                    value="https://your-site.netlify.app/.netlify/functions/shopify-webhook"
                     readOnly 
                   />
                   <button 
-                    onClick={() => copyToClipboard('https://seu-site.netlify.app/.netlify/functions/shopify-webhook')}
+                    onClick={() => copyToClipboard('https://your-site.netlify.app/.netlify/functions/shopify-webhook')}
                     className="copy-btn"
                   >
                     <Copy size={16} />
                   </button>
                 </div>
                 <div className="webhook-settings">
-                  <p><strong>Evento:</strong> Order creation</p>
-                  <p><strong>Formato:</strong> JSON</p>
-                  <p><strong>Versão da API:</strong> 2023-10</p>
+                  <p><strong>Event:</strong> Order creation</p>
+                  <p><strong>Format:</strong> JSON</p>
+                  <p><strong>API Version:</strong> 2023-10</p>
                 </div>
               </div>
             </div>
@@ -185,12 +185,12 @@ const OnboardingTutorial = ({ onComplete, onSkip }) => {
           <div className="setup-step">
             <div className="step-number">2</div>
             <div className="step-content">
-              <h3>Domínio da Loja</h3>
-              <p>Insira o domínio da sua loja Shopify</p>
+              <h3>Store Domain</h3>
+              <p>Enter your Shopify store domain</p>
               <div className="domain-input">
                 <input 
                   type="text" 
-                  placeholder="exemplo.myshopify.com"
+                  placeholder="example.myshopify.com"
                   className="domain-field"
                   value={shopifyDomain}
                   onChange={(e) => setShopifyDomain(e.target.value)}
@@ -201,7 +201,7 @@ const OnboardingTutorial = ({ onComplete, onSkip }) => {
                   onClick={handleSaveDomain}
                   disabled={isSavingDomain}
                 >
-                  {isSavingDomain ? 'Salvando...' : 'Salvar'}
+                  {isSavingDomain ? 'Saving...' : 'Save'}
                 </button>
               </div>
               {domainSaveMessage && (
@@ -215,15 +215,15 @@ const OnboardingTutorial = ({ onComplete, onSkip }) => {
           <div className="setup-step">
             <div className="step-number">3</div>
             <div className="step-content">
-              <h3>Teste a Integração</h3>
-              <p>Faça uma venda teste na sua loja para verificar se o webhook está funcionando.</p>
+              <h3>Test the Integration</h3>
+              <p>Make a test sale in your store to verify if the webhook is working.</p>
               <div className="test-integration">
                 <button 
                   className="test-btn"
-                  onClick={() => window.open('https://seu-site.netlify.app/sales', '_blank')}
+                  onClick={() => window.open('https://your-site.netlify.app/sales', '_blank')}
                 >
                   <ExternalLink size={16} />
-                  Ver Página de Vendas
+                  View Sales Page
                 </button>
               </div>
             </div>
@@ -235,14 +235,14 @@ const OnboardingTutorial = ({ onComplete, onSkip }) => {
             onClick={() => setShowShopifyModal(false)}
             className="skip-btn"
           >
-            Configurar Depois
+            Configure Later
           </button>
           <button 
             onClick={handleShopifySetupComplete}
             className="complete-btn"
           >
             <CheckCircle size={16} />
-            Marcar como Concluído
+            Mark as Completed
           </button>
         </div>
       </div>
@@ -256,9 +256,9 @@ const OnboardingTutorial = ({ onComplete, onSkip }) => {
         <div className="banner-content">
           <div className="banner-left">
             <div className="banner-title">
-              <h3>Configuração Inicial</h3>
+              <h3>Initial Configuration</h3>
               <span className="progress-text">
-                {completedSteps.length} de {steps.length} completos
+                {completedSteps.length} of {steps.length} completed
               </span>
             </div>
             <div className="progress-bar">
@@ -316,7 +316,7 @@ const OnboardingTutorial = ({ onComplete, onSkip }) => {
             <button 
               className="skip-tutorial-btn-small"
               onClick={handleSkipTutorial}
-              title="Pular tutorial"
+              title="Skip tutorial"
             >
               <X size={16} />
             </button>

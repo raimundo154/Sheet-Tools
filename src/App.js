@@ -17,6 +17,7 @@ import LoginPage from './components/LoginPage';
 import SignupPage from './components/SignupPage';
 import EmailVerification from './components/EmailVerification';
 import AuthCallback from './components/AuthCallback';
+import NotFoundPage from './components/NotFoundPage';
 import HelpChatBot from './components/HelpChatBot';
 import authService from './services/authService';
 import NavigationService, { ROUTES, navigation } from './utils/navigation';
@@ -206,7 +207,7 @@ function App() {
       case 'rank-up':
         return <div style={{padding: '2rem', textAlign: 'center', color: '#ffffff'}}>
           <h1>🚀 Rank Up</h1>
-          <p>Página em desenvolvimento...</p>
+          <p>Page under development...</p>
         </div>;
       case 'settings':
         return <SettingsPage />;
@@ -214,13 +215,15 @@ function App() {
         return <PrivacyPolicy />;
       case 'terms':
         return <TermsOfService />;
+      case 'not-found':
+        return <NotFoundPage />;
       default:
         return <NewHomePage />;
     }
   };
 
   // Determinar se deve mostrar sidebar baseado na página atual
-  const isStandalonePage = navigation.isAuthRoute() || navigation.isHomePage() || currentPage === 'auth-callback' || currentPage === 'subscription';
+  const isStandalonePage = navigation.isAuthRoute() || navigation.isHomePage() || currentPage === 'auth-callback' || currentPage === 'not-found';
 
   // Renderização condicional baseada no tipo de página
   if (isStandalonePage) {

@@ -17,7 +17,9 @@ import {
   ArrowRight,
   Brain,
   Clock,
-  DollarSign
+  DollarSign,
+  Star,
+  Award
 } from 'lucide-react';
 import './NewHomePage.css';
 
@@ -32,23 +34,23 @@ const NewHomePage = () => {
   // Carousel slides
   const slides = [
     {
-      title: "Calcula métricas automaticamente",
-      description: "CPC, ROAS, CPA, Profit Margin calculados em tempo real",
+      title: "Calculates metrics automatically",
+      description: "CPC, ROAS, CPA, Profit Margin calculated in real-time",
       icon: BarChart3
     },
     {
-      title: "Sugere ações para otimizares",
-      description: "Recomendações inteligentes: Matar, Escalar ou Manter",
+      title: "Suggests optimization actions",
+      description: "Smart recommendations: Kill, Scale or Maintain",
       icon: Brain
     },
     {
-      title: "Facilita decisões de escala",
-      description: "Decisões baseadas em dados, não em intuição",
+      title: "Facilitates scaling decisions",
+      description: "Data-driven decisions, not intuition",
       icon: TrendingUp
     },
     {
-      title: "Automatiza o teu workflow",
-      description: "Poupa horas de análise manual diária",
+      title: "Automates your workflow",
+      description: "Saves hours of daily manual analysis",
       icon: Clock
     }
   ];
@@ -86,51 +88,98 @@ const NewHomePage = () => {
   // FAQ data
   const faqs = [
     {
-      question: "Como funciona o cálculo automático de métricas?",
-      answer: "A Sheet Tools conecta-se diretamente às tuas campanhas do Facebook Ads e calcula automaticamente todas as métricas essenciais como ROAS, CPC, CPA, Profit Margin, BER e muito mais. Os dados são atualizados em tempo real."
+      question: "How does automatic metrics calculation work?",
+      answer: "Sheet Tools connects directly to your Facebook Ads campaigns and automatically calculates all essential metrics like ROAS, CPC, CPA, Profit Margin, BER and much more. Data is updated in real-time."
     },
     {
-      question: "Que tipo de recomendações a plataforma oferece?",
-      answer: "Baseada em regras avançadas de performance, a plataforma sugere automaticamente se deves MATAR uma campanha com baixo desempenho, ESCALAR uma campanha lucrativa, MANTER uma campanha estável ou DESESCALAR quando necessário."
+      question: "What type of recommendations does the platform offer?",
+      answer: "Based on advanced performance rules, the platform automatically suggests whether you should KILL a low-performing campaign, SCALE a profitable campaign, MAINTAIN a stable campaign or DE-SCALE when necessary."
     },
     {
-      question: "Preciso de conhecimento técnico para usar?",
-      answer: "Não! A Sheet Tools foi desenvolvida para ser intuitiva. Basta conectares as tuas campanhas e a plataforma faz todo o trabalho pesado de análise e recomendações automaticamente."
+      question: "Do I need technical knowledge to use it?",
+      answer: "No! Sheet Tools was designed to be intuitive. Just connect your campaigns and the platform does all the heavy lifting of analysis and recommendations automatically."
     },
     {
-      question: "Como funciona o período gratuito?",
-      answer: "Oferecemos 15 dias completamente grátis com acesso total a todas as funcionalidades. Não é necessário cartão de crédito para começares."
+      question: "How does the free trial work?",
+      answer: "We offer 15 days completely free with full access to all features. No credit card required to get started."
     },
     {
-      question: "Posso cancelar a qualquer momento?",
-      answer: "Sim! Não há fidelidade. Podes cancelar a tua subscrição a qualquer momento e continuar a usar até ao fim do período pago."
+      question: "Can I cancel at any time?",
+      answer: "Yes! There's no commitment. You can cancel your subscription at any time and continue using until the end of the paid period."
     }
   ];
 
-  // Animation variants
+  // Enhanced Animation variants
   const fadeInUp = {
-    hidden: { opacity: 0, y: 30 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
+    hidden: { opacity: 0, y: 60 },
+    visible: { 
+      opacity: 1, 
+      y: 0, 
+      transition: { 
+        duration: 0.8,
+        ease: [0.25, 0.46, 0.45, 0.94]
+      } 
+    }
+  };
+
+  const fadeInLeft = {
+    hidden: { opacity: 0, x: -60 },
+    visible: { 
+      opacity: 1, 
+      x: 0, 
+      transition: { 
+        duration: 0.8,
+        ease: [0.25, 0.46, 0.45, 0.94]
+      } 
+    }
+  };
+
+  const fadeInRight = {
+    hidden: { opacity: 0, x: 60 },
+    visible: { 
+      opacity: 1, 
+      x: 0, 
+      transition: { 
+        duration: 0.8,
+        ease: [0.25, 0.46, 0.45, 0.94]
+      } 
+    }
   };
 
   const staggerContainer = {
     hidden: {},
     visible: {
       transition: {
-        staggerChildren: 0.2
+        staggerChildren: 0.15,
+        delayChildren: 0.1
       }
     }
   };
 
   const scaleIn = {
-    hidden: { opacity: 0, scale: 0.8 },
+    hidden: { opacity: 0, scale: 0.8, y: 20 },
     visible: { 
       opacity: 1, 
-      scale: 1, 
+      scale: 1,
+      y: 0,
       transition: { 
-        duration: 0.5,
+        duration: 0.6,
         type: "spring",
-        stiffness: 100
+        stiffness: 120,
+        damping: 15
+      } 
+    }
+  };
+
+  const slideInScale = {
+    hidden: { opacity: 0, scale: 0.9, y: 40 },
+    visible: { 
+      opacity: 1, 
+      scale: 1,
+      y: 0,
+      transition: { 
+        duration: 0.7,
+        ease: [0.25, 0.46, 0.45, 0.94]
       } 
     }
   };
@@ -156,7 +205,7 @@ const NewHomePage = () => {
     return {
       currency: '€',
       amount: price,
-      period: period === 'monthly' ? '/mês' : '/ano'
+      period: period === 'monthly' ? '/month' : '/year'
     };
   };
 
@@ -189,7 +238,7 @@ const NewHomePage = () => {
       const elementPosition = element.getBoundingClientRect().top;
       const offsetPosition = elementPosition + window.pageYOffset - headerHeight;
       
-      // Scroll suave e devagar (2 segundos)
+      // Smooth and slow scroll (2 seconds)
       window.scrollTo({
         top: offsetPosition,
         behavior: 'smooth'
@@ -198,7 +247,7 @@ const NewHomePage = () => {
       // Para dispositivos que não suportam scroll suave nativo, usar animação customizada
       const startPosition = window.pageYOffset;
       const distance = offsetPosition - startPosition;
-      const duration = 2000; // 2 segundos
+      const duration = 2000; // 2 seconds
       let start = null;
 
       function step(timestamp) {
@@ -206,7 +255,7 @@ const NewHomePage = () => {
         const progress = timestamp - start;
         const progressPercentage = Math.min(progress / duration, 1);
         
-        // Easing function para scroll mais suave
+        // Easing function for smoother scroll
         const easeInOutCubic = progressPercentage < 0.5 
           ? 4 * progressPercentage * progressPercentage * progressPercentage
           : 1 - Math.pow(-2 * progressPercentage + 2, 3) / 2;
@@ -218,7 +267,7 @@ const NewHomePage = () => {
         }
       }
       
-      // Fallback para scroll customizado se necessário
+      // Fallback for custom scroll if needed
       if (!CSS.supports('scroll-behavior', 'smooth')) {
         window.requestAnimationFrame(step);
       }
@@ -246,9 +295,9 @@ const NewHomePage = () => {
             </div>
             
             <nav className={`nav ${isMenuOpen ? 'nav-open' : ''}`}>
-              <a href="#about" onClick={() => scrollToSection('about')}>O que é</a>
-              <a href="#features" onClick={() => scrollToSection('features')}>Funcionalidades</a>
-              <a href="#pricing" onClick={() => scrollToSection('pricing')}>Planos</a>
+              <a href="#about" onClick={() => scrollToSection('about')}>What is it</a>
+              <a href="#features" onClick={() => scrollToSection('features')}>Features</a>
+              <a href="#pricing" onClick={() => scrollToSection('pricing')}>Pricing</a>
               <a href="#faq" onClick={() => scrollToSection('faq')}>FAQ</a>
               <motion.button 
                 className="mobile-cta-button"
@@ -256,7 +305,7 @@ const NewHomePage = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                Começar Agora
+                Get Started
               </motion.button>
             </nav>
 
@@ -267,7 +316,7 @@ const NewHomePage = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                Começar Agora
+                Get Started
               </motion.button>
               
               <button 
@@ -285,6 +334,7 @@ const NewHomePage = () => {
       <section className="hero">
         <div className="container">
           <div className="hero-content">
+          <div className="hero-left">
             <motion.div 
               className="hero-text"
               variants={staggerContainer}
@@ -295,16 +345,15 @@ const NewHomePage = () => {
                 className="hero-title"
                 variants={fadeInUp}
               >
-                Automatiza as Tuas 
-                <span className="highlight"> Campanhas Facebook</span>
+                Automate Your
+                <span className="highlight"> Facebook Campaigns</span>
               </motion.h1>
               
               <motion.p 
                 className="hero-subtitle"
                 variants={fadeInUp}
               >
-                A tua plataforma inteligente para cálculo automático de métricas e recomendações de ação. 
-                Para de perder tempo a analisar dados manualmente.
+                Your smart platform for automatic metrics calculation and action recommendations.
               </motion.p>
               
               <motion.div 
@@ -312,37 +361,42 @@ const NewHomePage = () => {
                 variants={fadeInUp}
               >
                 <motion.button 
-                  className="cta-button-large"
+                  className="cta-button-primary"
                   onClick={handleCTAClick}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                 >
-                  Começar Grátis por 15 Dias
-                  <ArrowRight size={20} />
+                  Start Free for 15 Days
+                  <ArrowRight size={18} />
                 </motion.button>
-                <p className="cta-note">
-                  Sem cartão de crédito • Acesso completo
-                </p>
               </motion.div>
             </motion.div>
+          </div>
 
-            {/* Carousel */}
+          <div className="hero-right">
+            {/* Enhanced Carousel */}
             <motion.div 
               className="hero-carousel"
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
+              initial={{ opacity: 0, x: 60, scale: 0.95 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              transition={{ 
+                duration: 0.8,
+                delay: 0.3,
+                ease: [0.25, 0.46, 0.45, 0.94]
+              }}
             >
               <div className="carousel-container">
                 <div className="carousel-header">
-                  <h3>O que a Sheet Tools faz por ti</h3>
+                  <h3>What Sheet Tools does for you</h3>
                   <div className="carousel-controls">
-                    <button
+                    <motion.button
                       onClick={() => setIsAutoPlay(!isAutoPlay)}
                       className="control-button"
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
                     >
                       {isAutoPlay ? <Pause size={16} /> : <Play size={16} />}
-                    </button>
+                    </motion.button>
                   </div>
                 </div>
                 
@@ -350,30 +404,58 @@ const NewHomePage = () => {
                   <motion.div
                     key={currentSlide}
                     className="slide"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    transition={{ duration: 0.5 }}
+                    initial={{ opacity: 0, y: 30, scale: 0.9 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -30, scale: 0.9 }}
+                    transition={{ 
+                      duration: 0.6,
+                      ease: [0.25, 0.46, 0.45, 0.94]
+                    }}
                   >
-                    <div className="slide-icon">
+                    <motion.div 
+                      className="slide-icon"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ 
+                        delay: 0.2,
+                        type: "spring",
+                        stiffness: 200,
+                        damping: 15
+                      }}
+                    >
                       {React.createElement(slides[currentSlide].icon, { size: 48 })}
-                    </div>
-                    <h4>{slides[currentSlide].title}</h4>
-                    <p>{slides[currentSlide].description}</p>
+                    </motion.div>
+                    <motion.h4
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3, duration: 0.5 }}
+                    >
+                      {slides[currentSlide].title}
+                    </motion.h4>
+                    <motion.p
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.4, duration: 0.5 }}
+                    >
+                      {slides[currentSlide].description}
+                    </motion.p>
                   </motion.div>
                 </div>
                 
                 <div className="carousel-indicators">
                   {slides.map((_, index) => (
-                    <button
+                    <motion.button
                       key={index}
                       className={`indicator ${index === currentSlide ? 'active' : ''}`}
                       onClick={() => setCurrentSlide(index)}
+                      whileHover={{ scale: 1.2 }}
+                      whileTap={{ scale: 0.9 }}
                     />
                   ))}
                 </div>
               </div>
             </motion.div>
+          </div>
           </div>
         </div>
       </section>
@@ -386,55 +468,48 @@ const NewHomePage = () => {
             variants={staggerContainer}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true }}
+            viewport={{ once: true, margin: "-100px" }}
           >
             <motion.h2 variants={fadeInUp}>
-              Análise Inteligente de Campanhas
+              Smart Campaign Analysis
             </motion.h2>
             
             <motion.p variants={fadeInUp} className="about-description">
-              A Sheet Tools revoluciona a forma como geres as tuas campanhas do Facebook Ads. 
-              A nossa plataforma analisa automaticamente as tuas métricas e oferece recomendações precisas 
-              para maximizares os teus resultados.
+              Sheet Tools revolutionizes how you manage your Facebook Ads campaigns. 
+              Our platform automatically analyzes your metrics and offers precise recommendations 
+              to maximize your results.
             </motion.p>
 
-            <div className="features-grid">
+            <motion.div 
+              className="about-features"
+              variants={staggerContainer}
+            >
               <motion.div 
-                className="feature-card"
-                variants={scaleIn}
-                whileHover={{ 
-                  scale: 1.05,
-                  transition: { duration: 0.2 }
-                }}
+                className="about-feature"
+                variants={fadeInLeft}
               >
-                <div className="feature-icon">
-                  <BarChart3 size={32} />
+                <div className="about-feature-icon">
+                  <BarChart3 size={28} />
                 </div>
-                <h3>Análise Inteligente</h3>
-                <p>
-                  Calcula automaticamente CPC, ROAS, COGS, CPA, Profit Margin e outras métricas essenciais. 
-                  Integração direta com Facebook Ads para dados em tempo real.
-                </p>
+                <div className="about-feature-content">
+                  <h3>Smart Analysis</h3>
+                  <p>Automatically calculates CPC, ROAS, COGS, CPA, Profit Margin and other essential metrics.</p>
+                </div>
               </motion.div>
 
               <motion.div 
-                className="feature-card"
-                variants={scaleIn}
-                whileHover={{ 
-                  scale: 1.05,
-                  transition: { duration: 0.2 }
-                }}
+                className="about-feature"
+                variants={fadeInRight}
               >
-                <div className="feature-icon">
-                  <Brain size={32} />
+                <div className="about-feature-icon">
+                  <Brain size={28} />
                 </div>
-                <h3>Automação de Decisões</h3>
-                <p>
-                  Recomendações automáticas baseadas em regras avançadas: matar campanhas ruins, 
-                  escalar as lucrativas, manter as estáveis ou desescalar quando necessário.
-                </p>
+                <div className="about-feature-content">
+                  <h3>Decision Automation</h3>
+                  <p>Automatic recommendations: kill bad campaigns, scale profitable ones, maintain stable ones.</p>
+                </div>
               </motion.div>
-            </div>
+            </motion.div>
           </motion.div>
         </div>
       </section>
@@ -448,61 +523,66 @@ const NewHomePage = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h2>Funcionalidades que fazem a diferença</h2>
-            <p>Tudo o que precisas para otimizar as tuas campanhas numa só plataforma</p>
+            <h2>Features that make the difference</h2>
+            <p>Everything you need to optimize your campaigns in one platform</p>
           </motion.div>
 
-          <div className="features-list">
+          <motion.div 
+            className="features-grid-modern"
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+          >
             {[
               {
                 icon: Target,
-                title: "Integração Facebook Ads",
-                description: "Conecta-te diretamente às tuas campanhas para análise em tempo real"
+                title: "Facebook Ads Integration",
+                description: "Connect directly to your campaigns for real-time analysis"
               },
               {
                 icon: TrendingUp,
-                title: "Métricas Automáticas",
-                description: "ROAS, CPC, CPA, CTR, Conversion Rate calculados automaticamente"
+                title: "Automatic Metrics",
+                description: "ROAS, CPC, CPA, CTR, Conversion Rate calculated automatically"
               },
               {
                 icon: Brain,
-                title: "IA para Decisões",
-                description: "Algoritmos inteligentes sugerem as melhores ações para cada campanha"
+                title: "AI for Decisions",
+                description: "Smart algorithms suggest the best actions for each campaign"
               },
               {
                 icon: Zap,
-                title: "Automação Completa",
-                description: "Poupa horas de análise manual com automação inteligente"
+                title: "Complete Automation",
+                description: "Save hours of manual analysis with smart automation"
               },
               {
                 icon: DollarSign,
-                title: "Análise de Lucro",
-                description: "Cálculo preciso de COGS, Profit Margin e ROI real"
+                title: "Profit Analysis",
+                description: "Accurate calculation of COGS, Profit Margin and real ROI"
               },
               {
                 icon: Shield,
-                title: "Dados Seguros",
-                description: "Conexão segura via OAuth, os teus dados sempre protegidos"
+                title: "Secure Data",
+                description: "Secure connection via OAuth, your data always protected"
               }
             ].map((feature, index) => (
               <motion.div
                 key={index}
-                className="feature-item"
-                initial={{ opacity: 0, x: index % 2 === 0 ? -30 : 30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
+                className="feature-card-modern"
+                variants={slideInScale}
+                whileHover={{ 
+                  y: -8,
+                  transition: { duration: 0.2 }
+                }}
               >
-                <div className="feature-icon">
+                <div className="feature-icon-modern">
                   <feature.icon size={24} />
                 </div>
-                <div className="feature-content">
-                  <h4>{feature.title}</h4>
-                  <p>{feature.description}</p>
-                </div>
+                <h4>{feature.title}</h4>
+                <p>{feature.description}</p>
               </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -515,127 +595,135 @@ const NewHomePage = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h2>Planos simples e transparentes</h2>
-            <p>Começa grátis e escala conforme o teu negócio cresce</p>
+            <h2>Simple and transparent plans</h2>
+            <p>Start free and scale as your business grows</p>
           </motion.div>
 
-          <div className="pricing-grid">
+          <motion.div 
+            className="pricing-grid"
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+          >
             <motion.div 
               className="pricing-card"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
+              variants={slideInScale}
               whileHover={{ 
-                scale: 1.05,
-                transition: { duration: 0.2 }
+                y: -10,
+                scale: 1.02,
+                transition: { duration: 0.3 }
               }}
             >
               <div className="plan-header">
-                <h3>{plansLoading ? 'Carregando...' : 'Beginner'}</h3>
+                <h3>{plansLoading ? 'Loading...' : 'Beginner'}</h3>
                 <div className="price">
                   <span className="currency">€</span>
                   <span className="amount">{plansLoading ? '--' : '4.99'}</span>
-                  <span className="period">/mês</span>
+                  <span className="period">/month</span>
                 </div>
               </div>
               <ul className="plan-features">
-                <li><Check size={16} /> Daily ROAS sem automatização</li>
-                <li><Check size={16} /> Análise básica de campanhas</li>
-                <li><Check size={16} /> Dashboard simples</li>
-                <li><Check size={16} /> Suporte por email</li>
+                <li><Check size={16} /> Daily ROAS without automation</li>
+                <li><Check size={16} /> Basic campaign analysis</li>
+                <li><Check size={16} /> Simple dashboard</li>
+                <li><Check size={16} /> Email support</li>
               </ul>
               <motion.button 
                 className="plan-button"
                 onClick={handleCTAClick}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
-                Começar Agora
+                Get Started
               </motion.button>
             </motion.div>
 
             <motion.div 
               className="pricing-card popular"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
+              variants={slideInScale}
               whileHover={{ 
-                scale: 1.05,
-                transition: { duration: 0.2 }
+                y: -15,
+                scale: 1.03,
+                transition: { duration: 0.3 }
               }}
             >
-              <div className="popular-badge">Mais Popular</div>
+              <div className="popular-badge">
+                <Star size={16} />
+                Most Popular
+              </div>
               <div className="plan-header">
-                <h3>{plansLoading ? 'Carregando...' : 'Standard'}</h3>
+                <h3>{plansLoading ? 'Loading...' : 'Standard'}</h3>
                 <div className="price">
                   <span className="currency">€</span>
                   <span className="amount">{plansLoading ? '--' : '34.99'}</span>
-                  <span className="period">/mês</span>
+                  <span className="period">/month</span>
                 </div>
               </div>
               <ul className="plan-features">
-                <li><Check size={16} /> Daily ROAS Profit Sheet completo</li>
-                <li><Check size={16} /> Gestão de Campanhas</li>
-                <li><Check size={16} /> Quotation em tempo real</li>
-                <li><Check size={16} /> 2 lojas, 40 campanhas</li>
-                <li><Check size={16} /> Suporte prioritário</li>
+                <li><Check size={16} /> Complete Daily ROAS Profit Sheet</li>
+                <li><Check size={16} /> Campaign Management</li>
+                <li><Check size={16} /> Real-time Quotation</li>
+                <li><Check size={16} /> 2 stores, 40 campaigns</li>
+                <li><Check size={16} /> Priority support</li>
               </ul>
               <motion.button 
                 className="plan-button"
                 onClick={handleCTAClick}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
-                Escolher Plano
+                Choose Plan
               </motion.button>
             </motion.div>
 
             <motion.div 
               className="pricing-card"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.3 }}
+              variants={slideInScale}
               whileHover={{ 
-                scale: 1.05,
-                transition: { duration: 0.2 }
+                y: -10,
+                scale: 1.02,
+                transition: { duration: 0.3 }
               }}
             >
               <div className="plan-header">
-                <h3>{plansLoading ? 'Carregando...' : 'Expert Anual'}</h3>
+                <h3>{plansLoading ? 'Loading...' : 'Expert Annual'}</h3>
                 <div className="price">
                   {!plansLoading && (
-                    <div className="original-price" style={{ marginBottom: '0.5rem' }}>
-                      <span style={{ textDecoration: 'line-through', color: '#999', fontSize: '1rem' }}>
+                    <div className="original-price">
+                      <span className="crossed-price">
                         €599.88
                       </span>
                     </div>
                   )}
                   <span className="currency">€</span>
                   <span className="amount">{plansLoading ? '--' : '449.91'}</span>
-                  <span className="period">/ano</span>
+                  <span className="period">/year</span>
                 </div>
-                {!plansLoading && <div className="savings">Poupa €149.97 (3 meses grátis)</div>}
+                {!plansLoading && (
+                  <div className="savings">
+                    <Award size={14} />
+                    Save €149.97 (3 months free)
+                  </div>
+                )}
               </div>
               <ul className="plan-features">
-                <li><Check size={16} /> Tudo do Standard</li>
-                <li><Check size={16} /> Product Research avançado</li>
-                <li><Check size={16} /> 4 lojas, campanhas ilimitadas</li>
-                <li><Check size={16} /> Análise de tendências</li>
-                <li><Check size={16} /> Suporte VIP</li>
+                <li><Check size={16} /> Everything from Standard</li>
+                <li><Check size={16} /> Advanced Product Research</li>
+                <li><Check size={16} /> 4 stores, unlimited campaigns</li>
+                <li><Check size={16} /> Trend analysis</li>
+                <li><Check size={16} /> VIP support</li>
               </ul>
               <motion.button 
                 className="plan-button"
                 onClick={handleCTAClick}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
-                Escolher Plano
+                Choose Plan
               </motion.button>
             </motion.div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -648,8 +736,8 @@ const NewHomePage = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h2>Perguntas Frequentes</h2>
-            <p>Tira as tuas dúvidas sobre a Sheet Tools</p>
+            <h2>Frequently Asked Questions</h2>
+            <p>Clear your doubts about Sheet Tools</p>
           </motion.div>
 
           <div className="faq-list">
@@ -703,27 +791,27 @@ const NewHomePage = () => {
                   className="footer-logo-image"
                 />
               </div>
-              <p>Automatiza as tuas campanhas e maximiza os teus resultados</p>
+              <p>Automate your campaigns and maximize your results</p>
             </div>
             
             <div className="footer-links">
               <div className="link-group">
-                <h4>Links Rápidos</h4>
+                <h4>Quick Links</h4>
                 <a href="#about" onClick={() => scrollToSection('about')}>Home</a>
-                <a href="#features" onClick={() => scrollToSection('features')}>Funcionalidades</a>
-                <a href="#pricing" onClick={() => scrollToSection('pricing')}>Planos</a>
+                <a href="#features" onClick={() => scrollToSection('features')}>Features</a>
+                <a href="#pricing" onClick={() => scrollToSection('pricing')}>Pricing</a>
                 <a href="#faq" onClick={() => scrollToSection('faq')}>FAQ</a>
               </div>
               
               <div className="link-group">
-                <h4>Contato</h4>
+                <h4>Contact</h4>
                 <a href="mailto:info@sheet-tools.com">info@sheet-tools.com</a>
               </div>
             </div>
           </div>
           
           <div className="footer-bottom">
-            <p>&copy; 2025 Sheet Tools. Todos os direitos reservados.</p>
+            <p>&copy; 2025 Sheet Tools. All rights reserved.</p>
           </div>
         </div>
       </footer>

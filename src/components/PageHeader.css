@@ -27,10 +27,20 @@
 }
 
 .title-highlight {
-  background: linear-gradient(135deg, #96f2d7 0%, #1c6f5b 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: #1dd1a1 !important;
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  background-clip: unset !important;
+  -webkit-text-fill-color: #1dd1a1 !important;
+  -moz-background-clip: unset !important;
+  -moz-text-fill-color: #1dd1a1 !important;
+}
+
+/* Ensure the page title shows properly */
+.page-header .page-title .title-highlight {
+  display: inline;
+  visibility: visible;
+  opacity: 1;
 }
 
 .page-subtitle {
