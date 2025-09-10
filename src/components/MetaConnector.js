@@ -10,7 +10,7 @@ const MetaConnector = ({ onConnectionSuccess }) => {
   const [selectedAccounts, setSelectedAccounts] = useState([]);
   const [error, setError] = useState('');
 
-  // Sua Facebook App - Sheet Tools
+  // Your Facebook App - Sheet Tools
   const FACEBOOK_APP_ID = process.env.REACT_APP_FACEBOOK_APP_ID || '1525902928789947';
 
   useEffect(() => {
@@ -18,7 +18,7 @@ const MetaConnector = ({ onConnectionSuccess }) => {
   }, []);
 
   const checkExistingConnection = () => {
-    // Verificar se usuário está logado
+    // Check if user is logged in
     if (userService.isLoggedIn()) {
       const user = userService.getCurrentUser();
       const connectionData = userService.getUserData('connection_data');
@@ -33,9 +33,9 @@ const MetaConnector = ({ onConnectionSuccess }) => {
   };
 
   const handleConnectMeta = async () => {
-    // Verificar se App ID está configurado
+    // Check if App ID is configured
     if (!FACEBOOK_APP_ID || FACEBOOK_APP_ID === 'SEU_APP_ID_AQUI') {
-      setError('Facebook App ID não configurado. Veja o arquivo CRIAR_FACEBOOK_APP.md para instruções.');
+      setError('Facebook App ID not configured. See the CRIAR_FACEBOOK_APP.md file for instructions.');
       return;
     }
 
@@ -73,7 +73,7 @@ const MetaConnector = ({ onConnectionSuccess }) => {
       );
 
       if (!popup) {
-        throw new Error('Popup bloqueado. Permita popups para este site.');
+        throw new Error('Popup blocked. Allow popups for this site.');
       }
 
       // Monitorar popup
@@ -81,7 +81,7 @@ const MetaConnector = ({ onConnectionSuccess }) => {
         if (popup.closed) {
           clearInterval(checkClosed);
           setIsConnecting(false);
-          setError('Login cancelado pelo usuário');
+          setError('Login cancelled by user');
         }
       }, 1000);
 
@@ -115,14 +115,14 @@ const MetaConnector = ({ onConnectionSuccess }) => {
 
   const handleLoginSuccess = async (authData) => {
     try {
-      // Buscar informações do usuário
+      // Fetch user information
       const userResponse = await fetch(`https://graph.facebook.com/v23.0/me?access_token=${authData.access_token}`);
       const userData = await userResponse.json();
 
-      // Definir usuário atual no sistema multi-tenant
+      // Set current user in multi-tenant system
       const currentUser = userService.setCurrentUser(userData, authData.access_token);
 
-      // Buscar todas as ad accounts do Business Manager
+      // Fetch all ad accounts from Business Manager
       const accountsResponse = await fetch(
         `https://graph.facebook.com/v23.0/me/adaccounts?fields=id,name,currency,account_status,business&access_token=${authData.access_token}`
       );
@@ -136,10 +136,10 @@ const MetaConnector = ({ onConnectionSuccess }) => {
         selectedAccounts: []
       };
 
-      // Salvar dados específicos do usuário
+      // Save user-specific data
       userService.saveUserData('connection_data', connectionData);
       
-      // Migrar dados globais se existirem (para usuários existentes)
+      // Migrate global data if it exists (for existing users)
       userService.migrateGlobalData();
       
       setIsConnected(true);
@@ -147,13 +147,13 @@ const MetaConnector = ({ onConnectionSuccess }) => {
       setAdAccounts(connectionData.adAccounts);
       setIsConnecting(false);
 
-      // Notificar componente pai
+      // Notify parent component
       if (onConnectionSuccess) {
         onConnectionSuccess(connectionData);
       }
 
     } catch (err) {
-      setError('Erro ao buscar dados do Facebook: ' + err.message);
+      setError('Error fetching Facebook data: ' + err.message);
       setIsConnecting(false);
     }
   };
@@ -164,7 +164,7 @@ const MetaConnector = ({ onConnectionSuccess }) => {
         ? prev.filter(id => id !== accountId)
         : [...prev, accountId];
       
-      // Atualizar dados do usuário
+      // Update user data
       const connectionData = userService.getUserData('connection_data') || {};
       connectionData.selectedAccounts = newSelected;
       userService.saveUserData('connection_data', connectionData);
@@ -175,7 +175,7 @@ const MetaConnector = ({ onConnectionSuccess }) => {
 
   const handleImportCampaigns = async () => {
     if (selectedAccounts.length === 0) {
-      setError('Selecione pelo menos uma ad account para importar campanhas');
+      setError('Select at least one ad account to import campaigns');
       return;
     }
 
@@ -186,7 +186,7 @@ const MetaConnector = ({ onConnectionSuccess }) => {
       
       let allCampaigns = [];
 
-      // Buscar campanhas de cada ad account selecionada
+      // Fetch campaigns from each selected ad account
       for (const accountId of selectedAccounts) {
         try {
           const campaignsResponse = await fetch(
@@ -195,7 +195,7 @@ const MetaConnector = ({ onConnectionSuccess }) => {
           const campaignsData = await campaignsResponse.json();
           
           if (campaignsData.data) {
-            // Buscar insights para cada campanha
+            // Fetch insights for each campaign
             const campaignsWithInsights = await Promise.all(
               campaignsData.data.map(async (campaign) => {
                 try {
@@ -208,7 +208,7 @@ const MetaConnector = ({ onConnectionSuccess }) => {
                     ? insightsData.data[0] 
                     : {};
 
-                  // Converter para formato da plataforma
+                  // Convert to platform format
                   return {
                     id: `fb_${campaign.id}`,
                     facebookCampaignId: campaign.id,
@@ -216,17 +216,17 @@ const MetaConnector = ({ onConnectionSuccess }) => {
                     adAccountId: accountId,
                     status: campaign.status,
                     objective: campaign.objective,
-                    marketType: 'low_cpc', // Usuário pode ajustar depois
+                    marketType: 'low_cpc', // User can adjust later
                     productName: campaign.name,
-                    productPrice: 50, // Usuário deve configurar
-                    cogs: 20, // Usuário deve configurar
+                    productPrice: 50, // User should configure
+                    cogs: 20, // User should configure
                     currentBudget: parseFloat(campaign.daily_budget || campaign.lifetime_budget || 0) / 100,
                     initialBudget: 50,
                     createdAt: campaign.created_time,
                     dailyData: insights.spend ? [{
                       day: 1,
                       spend: parseFloat(insights.spend || 0),
-                      sales: 0, // Será calculado baseado em actions
+                      sales: 0, // Will be calculated based on actions
                       atc: 0,
                       clicks: parseInt(insights.clicks || 0),
                       impressions: parseInt(insights.impressions || 0),
@@ -234,7 +234,7 @@ const MetaConnector = ({ onConnectionSuccess }) => {
                     }] : []
                   };
                 } catch (err) {
-                  console.error(`Erro ao buscar insights para campanha ${campaign.id}:`, err);
+                  console.error(`Error fetching insights for campaign ${campaign.id}:`, err);
                   return {
                     id: `fb_${campaign.id}`,
                     facebookCampaignId: campaign.id,
@@ -257,11 +257,11 @@ const MetaConnector = ({ onConnectionSuccess }) => {
             allCampaigns = [...allCampaigns, ...campaignsWithInsights];
           }
         } catch (err) {
-          console.error(`Erro ao buscar campanhas da conta ${accountId}:`, err);
+          console.error(`Error fetching campaigns from account ${accountId}:`, err);
         }
       }
 
-      // Salvar campanhas importadas para o usuário atual
+      // Save imported campaigns for current user
       const existingCampaigns = userService.getUserData('campaigns') || [];
       const existingIds = existingCampaigns.map(c => c.facebookCampaignId).filter(Boolean);
       const newCampaigns = allCampaigns.filter(c => !existingIds.includes(c.facebookCampaignId));
@@ -270,26 +270,26 @@ const MetaConnector = ({ onConnectionSuccess }) => {
       userService.saveUserData('campaigns', updatedCampaigns);
 
       setIsConnecting(false);
-      alert(`${newCampaigns.length} campanhas importadas com sucesso! Configure preços e COGS para ativar as regras automáticas.`);
+      alert(`${newCampaigns.length} campaigns imported successfully! Configure prices and COGS to activate automatic rules.`);
 
-      // Recarregar página para mostrar campanhas
+      // Reload page to show campaigns
       window.location.reload();
 
     } catch (err) {
-      setError('Erro ao importar campanhas: ' + err.message);
+      setError('Error importing campaigns: ' + err.message);
       setIsConnecting(false);
     }
   };
 
   const handleDisconnect = () => {
-    if (window.confirm('Tem certeza que deseja desconectar do Meta?')) {
+    if (window.confirm('Are you sure you want to disconnect from Meta?')) {
       userService.logout();
       setIsConnected(false);
       setUserInfo(null);
       setAdAccounts([]);
       setSelectedAccounts([]);
       
-      // Recarregar página para limpar estado
+      // Reload page to clear state
       window.location.reload();
     }
   };
@@ -303,9 +303,9 @@ const MetaConnector = ({ onConnectionSuccess }) => {
               <CheckCircle className="text-white" size={24} />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-gray-800">Meta Conectado</h2>
+              <h2 className="text-xl font-bold text-gray-800">Meta Connected</h2>
               <p className="text-sm text-gray-600">
-                Conectado como {userInfo?.name}
+                Connected as {userInfo?.name}
               </p>
             </div>
           </div>
@@ -314,14 +314,14 @@ const MetaConnector = ({ onConnectionSuccess }) => {
             onClick={handleDisconnect}
             className="btn btn-danger"
           >
-            Desconectar
+            Disconnect
           </button>
         </div>
 
         {/* Ad Accounts */}
         <div className="mb-6">
           <h3 className="font-semibold text-gray-800 mb-4">
-            Suas Ad Accounts ({adAccounts.length})
+            Your Ad Accounts ({adAccounts.length})
           </h3>
           
           <div className="space-y-3 max-h-60 overflow-y-auto">
@@ -350,7 +350,7 @@ const MetaConnector = ({ onConnectionSuccess }) => {
                         ID: {account.id.replace('act_', '')} • {account.currency}
                       </p>
                       <p className="text-xs text-gray-500">
-                        Status: {account.account_status === 1 ? 'Ativa' : 'Inativa'}
+                        Status: {account.account_status === 1 ? 'Active' : 'Inactive'}
                       </p>
                     </div>
                   </div>
@@ -370,10 +370,10 @@ const MetaConnector = ({ onConnectionSuccess }) => {
             {isConnecting ? (
               <>
                 <RefreshCw size={16} className="animate-spin mr-2" />
-                Importando Campanhas...
+                Importing Campaigns...
               </>
             ) : (
-              `Importar Campanhas (${selectedAccounts.length} contas)`
+              `Import Campaigns (${selectedAccounts.length} accounts)`
             )}
           </button>
         </div>
@@ -382,7 +382,7 @@ const MetaConnector = ({ onConnectionSuccess }) => {
           <div className="mt-4 bg-red-50 p-4 rounded-lg">
             <div className="flex items-center text-red-800">
               <AlertCircle size={16} className="mr-2" />
-              <span className="font-medium">Erro:</span>
+              <span className="font-medium">Error:</span>
             </div>
             <p className="text-red-700 text-sm mt-1">{error}</p>
           </div>
@@ -399,11 +399,11 @@ const MetaConnector = ({ onConnectionSuccess }) => {
         </div>
         
         <h2 className="text-2xl font-bold text-gray-800 mb-2">
-          Conectar Meta Business Manager
+          Connect Meta Business Manager
         </h2>
         
         <p className="text-gray-600 mb-6">
-          Conecte seu Business Manager para importar automaticamente todas as suas ad accounts e campanhas
+          Connect your Business Manager to automatically import all your ad accounts and campaigns
         </p>
 
         <button
@@ -414,12 +414,12 @@ const MetaConnector = ({ onConnectionSuccess }) => {
           {isConnecting ? (
             <>
               <RefreshCw size={20} className="animate-spin mr-3" />
-              Conectando...
+              Connecting...
             </>
           ) : (
             <>
               <Link size={20} className="mr-3" />
-              Conectar Meta
+              Connect Meta
             </>
           )}
         </button>
@@ -428,52 +428,52 @@ const MetaConnector = ({ onConnectionSuccess }) => {
           <div className="mt-6 bg-red-50 p-4 rounded-lg">
             <div className="flex items-center justify-center text-red-800">
               <AlertCircle size={16} className="mr-2" />
-              <span className="font-medium">Erro:</span>
+              <span className="font-medium">Error:</span>
             </div>
             <p className="text-red-700 text-sm mt-1">{error}</p>
           </div>
         )}
 
-        {/* Instruções de configuração */}
+        {/* Configuration instructions */}
         {(!FACEBOOK_APP_ID || FACEBOOK_APP_ID === 'SEU_APP_ID_AQUI') && (
           <div className="mt-8 p-4 bg-orange-50 border border-orange-200 rounded-lg text-left">
-            <h4 className="font-semibold text-orange-800 mb-3">🔧 Configuração Necessária</h4>
+            <h4 className="font-semibold text-orange-800 mb-3">🔧 Configuration Required</h4>
             <div className="bg-orange-100 p-3 rounded mb-3">
               <p className="text-orange-800 text-sm mb-2">
-                <strong>Facebook App ID não configurado.</strong>
+                <strong>Facebook App ID not configured.</strong>
               </p>
               <p className="text-orange-700 text-sm">
-                Para conectar ao seu Business Manager, você precisa criar uma Facebook App própria.
+                To connect to your Business Manager, you need to create your own Facebook App.
               </p>
             </div>
             
-            <h5 className="font-semibold text-orange-800 mb-2">Passos rápidos (10 minutos):</h5>
+            <h5 className="font-semibold text-orange-800 mb-2">Quick steps (10 minutes):</h5>
             <ol className="text-sm text-orange-700 space-y-1 list-decimal list-inside">
               <li>Acesse <a href="https://developers.facebook.com/apps/" target="_blank" rel="noopener noreferrer" className="underline font-medium">developers.facebook.com/apps</a></li>
-              <li>Crie nova app "Negócios"</li>
-              <li>Adicione "Marketing API" e "Facebook Login"</li>
+              <li>Create new "Business" app</li>
+              <li>Add "Marketing API" and "Facebook Login"</li>
               <li>Configure redirect URI: <code className="bg-white px-1 rounded text-xs">http://localhost:3000/meta-callback</code></li>
-              <li>Copie seu App ID e configure no código</li>
+              <li>Copy your App ID and configure in code</li>
             </ol>
             
             <div className="mt-3 p-2 bg-white rounded border border-orange-300">
               <p className="text-orange-800 text-xs">
-                📋 <strong>Guia completo:</strong> Veja o arquivo <code>CRIAR_FACEBOOK_APP.md</code> na raiz do projeto
+                📋 <strong>Complete guide:</strong> See the <code>CRIAR_FACEBOOK_APP.md</code> file in the project root
               </p>
             </div>
           </div>
         )}
 
-        {/* Instruções normais */}
+        {/* Normal instructions */}
         {FACEBOOK_APP_ID && FACEBOOK_APP_ID !== 'SEU_APP_ID_AQUI' && (
           <div className="mt-8 p-4 bg-blue-50 rounded-lg text-left">
-            <h4 className="font-semibold text-blue-800 mb-2">O que acontece:</h4>
+            <h4 className="font-semibold text-blue-800 mb-2">What happens:</h4>
             <ul className="text-sm text-blue-700 space-y-1 list-disc list-inside">
-              <li>Login seguro no Facebook</li>
-              <li>Acesso ao seu Business Manager</li>
-              <li>Lista todas as suas ad accounts</li>
-              <li>Importa campanhas automaticamente</li>
-              <li>Aplica regras automáticas aos dados reais</li>
+              <li>Secure Facebook login</li>
+              <li>Access to your Business Manager</li>
+              <li>Lists all your ad accounts</li>
+              <li>Imports campaigns automatically</li>
+              <li>Applies automatic rules to real data</li>
             </ul>
           </div>
         )}

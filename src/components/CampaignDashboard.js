@@ -242,7 +242,7 @@ const CampaignDashboard = () => {
                 <Users size={24} />
               </div>
               <div className="stat-change">
-                Vendas
+                Sales
               </div>
             </div>
             <h3 className="stat-value">

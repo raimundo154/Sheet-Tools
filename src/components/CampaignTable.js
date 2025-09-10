@@ -59,7 +59,7 @@ const CampaignTable = ({ campaigns, onEdit, onDelete, onAddDay }) => {
   const getMarketTypeBadge = (marketType) => {
     return (
       <span className={`badge ${marketType === 'low' ? 'badge-success' : 'badge-warning'}`}>
-        {marketType === 'low' ? 'CPC Baixo' : 'CPC Alto'}
+        {marketType === 'low' ? 'Low CPC' : 'High CPC'}
       </span>
     );
   };
@@ -69,10 +69,10 @@ const CampaignTable = ({ campaigns, onEdit, onDelete, onAddDay }) => {
       <div className="bg-white rounded-lg shadow-lg p-8 text-center">
         <AlertTriangle size={48} className="mx-auto text-gray-400 mb-4" />
         <h3 className="text-lg font-semibold text-gray-800 mb-2">
-          Nenhuma campanha encontrada
+          No campaigns found
         </h3>
         <p className="text-gray-600 mb-4">
-          Comece criando sua primeira campanha para começar a acompanhar a performance.
+          Start by creating your first campaign to track performance.
         </p>
       </div>
     );
@@ -85,16 +85,16 @@ const CampaignTable = ({ campaigns, onEdit, onDelete, onAddDay }) => {
           <table className="table">
             <thead>
               <tr>
-                <th>Campanha</th>
-                <th>Produto</th>
-                <th>Mercado</th>
-                <th>Orçamento Atual</th>
-                <th>Dias Testados</th>
-                <th>Total Gasto</th>
-                <th>Total Vendas</th>
+                <th>Campaign</th>
+                <th>Product</th>
+                <th>Market</th>
+                <th>Current Budget</th>
+                <th>Days Tested</th>
+                <th>Total Spent</th>
+                <th>Total Sales</th>
                 <th>Profit Margin</th>
-                <th>Decisão</th>
-                <th>Ações</th>
+                <th>Decision</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -114,7 +114,7 @@ const CampaignTable = ({ campaigns, onEdit, onDelete, onAddDay }) => {
                         <div>
                           <div className="font-semibold text-gray-800">{campaign.name}</div>
                           <div className="text-sm text-gray-500">
-                            Criada em {new Date(campaign.createdAt).toLocaleDateString('pt-PT')}
+                            Created on {new Date(campaign.createdAt).toLocaleDateString('en-US')}
                           </div>
                         </div>
                       </td>
@@ -144,21 +144,21 @@ const CampaignTable = ({ campaigns, onEdit, onDelete, onAddDay }) => {
                           <button
                             onClick={() => handleAddDay(campaign.id)}
                             className="btn btn-primary"
-                            title="Adicionar Dia"
+                            title="Add Day"
                           >
                             <Plus size={16} />
                           </button>
                           <button
                             onClick={() => onEdit(campaign)}
                             className="btn btn-secondary"
-                            title="Editar"
+                            title="Edit"
                           >
                             <Edit size={16} />
                           </button>
                           <button
                             onClick={() => onDelete(campaign.id)}
                             className="btn btn-danger"
-                            title="Excluir"
+                            title="Delete"
                           >
                             <Trash2 size={16} />
                           </button>
@@ -171,14 +171,14 @@ const CampaignTable = ({ campaigns, onEdit, onDelete, onAddDay }) => {
                       <tr>
                         <td colSpan="10" className="bg-gray-50 p-0">
                           <div className="p-4">
-                            <h4 className="font-semibold text-gray-800 mb-3">Dados Diários</h4>
+                            <h4 className="font-semibold text-gray-800 mb-3">Daily Data</h4>
                             <div className="overflow-x-auto">
                               <table className="w-full text-sm">
                                 <thead>
                                   <tr className="border-b">
-                                    <th className="text-left p-2">Dia</th>
-                                    <th className="text-left p-2">Gasto</th>
-                                    <th className="text-left p-2">Vendas</th>
+                                    <th className="text-left p-2">Day</th>
+                                    <th className="text-left p-2">Spent</th>
+                                    <th className="text-left p-2">Sales</th>
                                     <th className="text-left p-2">ATC</th>
                                     <th className="text-left p-2">CPC</th>
                                     <th className="text-left p-2">CPA</th>
@@ -200,7 +200,7 @@ const CampaignTable = ({ campaigns, onEdit, onDelete, onAddDay }) => {
 
                                     return (
                                       <tr key={index} className="border-b">
-                                        <td className="p-2 font-medium">Dia {index + 1}</td>
+                                        <td className="p-2 font-medium">Day {index + 1}</td>
                                         <td className="p-2">€{day.spend.toFixed(2)}</td>
                                         <td className="p-2">{day.sales}</td>
                                         <td className="p-2">{day.atc}</td>
@@ -223,11 +223,11 @@ const CampaignTable = ({ campaigns, onEdit, onDelete, onAddDay }) => {
                             {/* Decision explanation */}
                             {campaign.decision && (
                               <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-                                <h5 className="font-semibold text-blue-800 mb-2">Análise Automática:</h5>
+                                <h5 className="font-semibold text-blue-800 mb-2">Automated Analysis:</h5>
                                 <p className="text-blue-700 text-sm">{campaign.decision.reason}</p>
                                 {campaign.decision.newBudget && (
                                   <p className="text-blue-700 text-sm mt-1">
-                                    <strong>Novo orçamento sugerido:</strong> €{campaign.decision.newBudget}
+                                    <strong>Suggested new budget:</strong> €{campaign.decision.newBudget}
                                   </p>
                                 )}
                               </div>

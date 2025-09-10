@@ -9,7 +9,7 @@ import MetaAdResearch from './MetaAdResearch';
 import './ProductResearch.css';
 
 const ProductResearch = () => {
-  // Estados para os filtros
+  // Filter states
   const [selectedCountry, setSelectedCountry] = useState('');
   const [keywords, setKeywords] = useState('');
   const [selectedKPI, setSelectedKPI] = useState('profit-blueprint');
@@ -17,20 +17,20 @@ const ProductResearch = () => {
   const [showResults, setShowResults] = useState(false);
   const [filteredAds, setFilteredAds] = useState([]);
 
-  // Lista de países suportados
+  // List of supported countries
   const countries = [
-    { code: 'DK', name: 'Dinamarca', flag: '🇩🇰' },
-    { code: 'DE', name: 'Alemanha', flag: '🇩🇪' },
-    { code: 'FR', name: 'França', flag: '🇫🇷' },
-    { code: 'ES', name: 'Espanha', flag: '🇪🇸' },
-    { code: 'IT', name: 'Itália', flag: '🇮🇹' },
-    { code: 'SE', name: 'Suécia', flag: '🇸🇪' },
-    { code: 'NL', name: 'Holanda', flag: '🇳🇱' },
-    { code: 'IE', name: 'Irlanda', flag: '🇮🇪' },
-    { code: 'FI', name: 'Finlândia', flag: '🇫🇮' }
+    { code: 'DK', name: 'Denmark', flag: '🇩🇰' },
+    { code: 'DE', name: 'Germany', flag: '🇩🇪' },
+    { code: 'FR', name: 'France', flag: '🇫🇷' },
+    { code: 'ES', name: 'Spain', flag: '🇪🇸' },
+    { code: 'IT', name: 'Italy', flag: '🇮🇹' },
+    { code: 'SE', name: 'Sweden', flag: '🇸🇪' },
+    { code: 'NL', name: 'Netherlands', flag: '🇳🇱' },
+    { code: 'IE', name: 'Ireland', flag: '🇮🇪' },
+    { code: 'FI', name: 'Finland', flag: '🇫🇮' }
   ];
 
-  // Dados da Profit Blueprint
+  // Profit Blueprint data
   const profitBlueprintData = {
     'DK': { '3-4': '15k', '5-6': '35k', '7-11': '50k', '12-20': '100k', '21-29': '150k', '30+': '200k' },
     'FI': { '3-4': '15k', '5-6': '35k', '7-11': '50k', '12-20': '100k', '21-29': '150k', '30+': '200k' },
@@ -43,18 +43,18 @@ const ProductResearch = () => {
     'IT': { '3-4': 'X', '5-6': 'X', '7-11': '130k', '12-20': '260k', '21-29': '390k', '30+': '520k' }
   };
 
-  // Função para pesquisar
+  // Search function
   const handleSearch = useCallback(() => {
     if (!selectedCountry || !keywords.trim()) {
       return;
     }
 
-    // Simular pesquisa e mostrar resultados
+    // Simulate search and show results
     setShowResults(true);
-    console.log('Pesquisando:', { country: selectedCountry, keywords, kpi: selectedKPI });
+    console.log('Searching:', { country: selectedCountry, keywords, kpi: selectedKPI });
   }, [selectedCountry, keywords, selectedKPI]);
 
-  // Reset quando muda país ou keywords
+  // Reset when country or keywords change
   const handleCountryChange = (country) => {
     setSelectedCountry(country);
     setShowResults(false);
@@ -71,17 +71,17 @@ const ProductResearch = () => {
       <div className="research-header">
         <div className="header-content">
           <h1>Meta Ad Research</h1>
-          <p>Descobre anúncios da concorrência e analisa estratégias de marketing</p>
+          <p>Discover competitor ads and analyze marketing strategies</p>
         </div>
       </div>
 
       {/* Filtering Interface */}
       <div className="search-filters">
-        {/* Primeira linha: País + Keywords + Pesquisar */}
+        {/* First row: Country + Keywords + Search */}
         <div className="filters-row filters-main">
-          {/* Seletor de País */}
+          {/* Country Selector */}
           <div className="filter-group">
-            <label htmlFor="country-select">País</label>
+            <label htmlFor="country-select">Country</label>
             <div className="select-wrapper">
               <select
                 id="country-select"
@@ -89,7 +89,7 @@ const ProductResearch = () => {
                 onChange={(e) => handleCountryChange(e.target.value)}
                 className="filter-select"
               >
-                <option value="">Selecionar país...</option>
+                <option value="">Select country...</option>
                 {countries.map(country => (
                   <option key={country.code} value={country.code}>
                     {country.flag} {country.name}
@@ -100,7 +100,7 @@ const ProductResearch = () => {
             </div>
           </div>
 
-          {/* Barra de Keywords */}
+          {/* Keywords Bar */}
           <div className="filter-group flex-grow">
             <label htmlFor="keywords-input">Keywords</label>
             <div className="search-bar">
@@ -116,7 +116,7 @@ const ProductResearch = () => {
             </div>
           </div>
 
-          {/* Botão Pesquisar */}
+          {/* Search Button */}
           <div className="filter-group">
             <label>&nbsp;</label>
             <button
@@ -125,12 +125,12 @@ const ProductResearch = () => {
               disabled={!selectedCountry || !keywords.trim()}
             >
               <Search size={16} />
-              Pesquisar
+              Search
             </button>
           </div>
         </div>
 
-        {/* Segunda linha: KPIs (apenas mostrar após resultados) */}
+        {/* Second row: KPIs (only show after results) */}
         {showResults && (
           <div className="filters-row filters-kpis">
             {/* Profit Blueprint KPI */}
@@ -149,9 +149,9 @@ const ProductResearch = () => {
               </div>
             </div>
 
-            {/* KPI Personalizada (placeholder) */}
+            {/* Custom KPI (placeholder) */}
             <div className="filter-group">
-              <label htmlFor="custom-kpi-select">KPI Personalizada</label>
+              <label htmlFor="custom-kpi-select">Custom KPI</label>
               <div className="select-wrapper">
                 <select
                   id="custom-kpi-select"
@@ -160,13 +160,13 @@ const ProductResearch = () => {
                   className="filter-select"
                   disabled
                 >
-                  <option value="">Em breve...</option>
+                  <option value="">Coming soon...</option>
                 </select>
                 <ChevronDown className="select-icon" size={16} />
               </div>
             </div>
 
-            {/* Informações da Profit Blueprint */}
+            {/* Profit Blueprint Information */}
             {selectedCountry && profitBlueprintData[selectedCountry] && (
               <div className="profit-blueprint-info">
                 <div className="blueprint-header">
@@ -176,7 +176,7 @@ const ProductResearch = () => {
                 <div className="blueprint-values">
                   {Object.entries(profitBlueprintData[selectedCountry]).map(([days, value]) => (
                     <span key={days} className="blueprint-value">
-                      {days} dias: <strong>{value}</strong>
+                      {days} days: <strong>{value}</strong>
                     </span>
                   ))}
                 </div>
@@ -186,7 +186,7 @@ const ProductResearch = () => {
         )}
       </div>
 
-      {/* Componente Meta Ad Research (apenas mostrar se há resultados) */}
+      {/* Meta Ad Research Component (only show if there are results) */}
       {showResults ? (
         <MetaAdResearch
           initialFilters={{
@@ -198,8 +198,8 @@ const ProductResearch = () => {
         <div className="no-search-state">
           <div className="no-search-content">
             <Globe size={48} />
-            <h3>Pronto para pesquisar</h3>
-            <p>Selecione um país e digite keywords para começar a pesquisa de anúncios</p>
+            <h3>Ready to search</h3>
+            <p>Select a country and enter keywords to start searching ads</p>
           </div>
         </div>
       )}
