@@ -62,13 +62,13 @@ const QuotationPage = () => {
     setError('');
     
     try {
-      // Carregar produtos e vendas em paralelo
+      // Load products and sales in parallel
       const [productsResult, salesProducts] = await Promise.all([
         productService.getProducts(),
         loadSalesData()
       ]);
       
-      // Transformar produtos da base de dados
+      // Transform products from database
       let allProducts = [];
       
       if (productsResult.success) {
@@ -78,40 +78,40 @@ const QuotationPage = () => {
           price: product.price.toString(),
           shippingTime: product.shipping_time || '',
           inStock: product.in_stock,
-          imagePreview: product.image_url || 'https://via.placeholder.com/150x150/b0b7c0/ffffff?text=Produto',
+          imagePreview: product.image_url || 'https://via.placeholder.com/150x150/b0b7c0/ffffff?text=Product',
           isFromSales: false
         }));
         allProducts = [...transformedProducts];
       }
       
-      // Adicionar produtos das vendas que não existem já na lista
+      // Add sales products that don't exist in the list yet
       if (salesProducts.length > 0) {
         salesProducts.forEach(salesProduct => {
-          // Verificar se já existe um produto com o mesmo nome
+          // Check if product with same name already exists
           const existingProduct = allProducts.find(p => 
             p.name.toLowerCase() === salesProduct.name.toLowerCase()
           );
           
           if (!existingProduct) {
-            // Adicionar novo produto das vendas
+            // Add new product from sales
             allProducts.push(salesProduct);
           } else {
-            // Se já existe, adicionar informação de vendas ao existente
+            // If already exists, add sales information to existing
             existingProduct.quantidadeVendida = salesProduct.quantidadeVendida;
             existingProduct.totalVendas = salesProduct.totalVendas;
           }
         });
       }
       
-      console.log('Produtos finais combinados:', allProducts);
+      console.log('Final combined products:', allProducts);
       setAvailableProducts(allProducts);
       
       if (!productsResult.success && salesProducts.length === 0) {
-        setError('Erro ao carregar produtos da base de dados');
+        setError('Error loading products from database');
       }
     } catch (error) {
-      console.error('Erro ao carregar dados:', error);
-      setError('Erro ao carregar dados da base de dados');
+      console.error('Error loading data:', error);
+      setError('Error loading data from database');
     } finally {
       setIsLoading(false);
     }
@@ -120,22 +120,22 @@ const QuotationPage = () => {
   const loadSalesData = async () => {
     setLoadingSales(true);
     try {
-      const result = await salesService.getVendas(50); // Últimas 50 vendas
+      const result = await salesService.getVendas(50); // Last 50 sales
       
       if (result.data && !result.error) {
-        // Agrupar vendas por produto, somando quantidades
+        // Group sales by product, summing quantities
         const salesByProduct = result.data.reduce((acc, venda) => {
           const productKey = venda.produto;
           if (!acc[productKey]) {
             acc[productKey] = {
-              id: `sale_${productKey.replace(/\s+/g, '_').toLowerCase()}`, // ID único baseado no nome
+              id: `sale_${productKey.replace(/\s+/g, '_').toLowerCase()}`, // Unique ID based on name
               name: venda.produto,
-              price: '0.00', // Preço do fornecedor - pode ser editado
-              shippingTime: '', // Pode ser editado
-              inStock: true, // Assumir em stock por padrão
+              price: '0.00', // Supplier price - can be edited
+              shippingTime: '', // Can be edited
+              inStock: true, // Assume in stock by default
               imagePreview: venda.product_image_url || `https://via.placeholder.com/150x150/e2e8f0/64748b?text=${encodeURIComponent(venda.produto.substring(0, 2))}`,
-              quantidadeVendida: 0, // Nova propriedade para mostrar quantidade vendida
-              isFromSales: true, // Flag para identificar que veio das vendas
+              quantidadeVendida: 0, // New property to show quantity sold
+              isFromSales: true, // Flag to identify it came from sales
               totalVendas: 0
             };
           }
@@ -145,13 +145,13 @@ const QuotationPage = () => {
         }, {});
         
         const salesProductsArray = Object.values(salesByProduct);
-        console.log('Produtos das vendas carregados:', salesProductsArray);
+        console.log('Sales products loaded:', salesProductsArray);
         setSalesData(salesProductsArray);
         return salesProductsArray;
       }
       return [];
     } catch (error) {
-      console.error('Erro ao carregar vendas:', error);
+      console.error('Error loading sales:', error);
       return [];
     } finally {
       setLoadingSales(false);
@@ -175,7 +175,7 @@ const QuotationPage = () => {
 
   const createProduct = async () => {
     if (!newProduct.name || !newProduct.price) {
-      setError('Por favor, preencha pelo menos o nome e preço do produto.');
+      setError('Please fill in at least the product name and price.');
       return;
     }
 
@@ -193,21 +193,21 @@ const QuotationPage = () => {
       });
 
       if (result.success) {
-        setSuccess('Produto criado com sucesso!');
+        setSuccess('Product created successfully!');
         
-        // Adicionar o novo produto à lista local
+        // Add the new product to local list
         const newProductForDisplay = {
           id: result.data.id,
           name: result.data.name,
           price: result.data.price.toString(),
           shippingTime: result.data.shipping_time || '',
           inStock: result.data.in_stock,
-          imagePreview: result.data.image_url || 'https://via.placeholder.com/150x150/b0b7c0/ffffff?text=Produto'
+          imagePreview: result.data.image_url || 'https://via.placeholder.com/150x150/b0b7c0/ffffff?text=Product'
         };
         
         setAvailableProducts([newProductForDisplay, ...availableProducts]);
         
-        // Resetar formulário
+        // Reset form
         setNewProduct({
           name: '',
           price: '',
@@ -217,7 +217,7 @@ const QuotationPage = () => {
           imagePreview: null
         });
         
-        // Fechar modal após um breve delay
+        // Close modal after brief delay
         setTimeout(() => {
           setShowProductModal(false);
           setSuccess('');
@@ -226,15 +226,15 @@ const QuotationPage = () => {
         setError(result.message);
       }
     } catch (error) {
-      console.error('Erro ao criar produto:', error);
-      setError('Erro ao criar produto na base de dados');
+      console.error('Error creating product:', error);
+      setError('Error creating product in database');
     } finally {
       setIsCreatingProduct(false);
     }
   };
 
   const removeFromQuotation = async (productId) => {
-    if (!window.confirm('Tem certeza que deseja deletar este produto?')) {
+    if (!window.confirm('Are you sure you want to delete this product?')) {
       return;
     }
 
@@ -246,15 +246,15 @@ const QuotationPage = () => {
         if (expandedProduct === productId) {
           setExpandedProduct(null);
         }
-        setSuccess('Produto removido com sucesso!');
+        setSuccess('Product removed successfully!');
         setTimeout(() => setSuccess(''), 3000);
       } else {
         setError(result.message);
         setTimeout(() => setError(''), 5000);
       }
     } catch (error) {
-      console.error('Erro ao remover produto:', error);
-      setError('Erro ao remover produto da base de dados');
+      console.error('Error removing product:', error);
+      setError('Error removing product from database');
       setTimeout(() => setError(''), 5000);
     }
   };
@@ -263,7 +263,7 @@ const QuotationPage = () => {
     setExpandedProduct(expandedProduct === productId ? null : productId);
   };
 
-  // Funções de edição
+  // Editing functions
   const startEditing = (productId, field, currentValue) => {
     setEditingProduct(productId);
     setEditingField(field);
@@ -278,11 +278,11 @@ const QuotationPage = () => {
 
   const saveEdit = async (productId) => {
     try {
-      // Encontrar o produto
+      // Find the product
       const product = availableProducts.find(p => p.id === productId);
       if (!product) return;
 
-      // Preparar dados atualizados
+      // Prepare updated data
       const updatedData = { ...product };
       
       if (editingField === 'price') {
@@ -293,7 +293,7 @@ const QuotationPage = () => {
         updatedData.inStock = editingValue === 'true';
       }
 
-      // Se o produto não é das vendas (tem ID real), atualizar na base de dados
+      // If product is not from sales (has real ID), update in database
       if (!product.isFromSales && typeof product.id === 'number') {
         const result = await productService.updateProduct(product.id, {
           name: updatedData.name,
@@ -308,18 +308,18 @@ const QuotationPage = () => {
         }
       }
 
-      // Atualizar o estado local
+      // Update local state
       setAvailableProducts(products => 
         products.map(p => p.id === productId ? updatedData : p)
       );
 
-      setSuccess('Produto atualizado com sucesso!');
+      setSuccess('Product updated successfully!');
       setTimeout(() => setSuccess(''), 3000);
       
       cancelEditing();
     } catch (error) {
-      console.error('Erro ao atualizar produto:', error);
-      setError('Erro ao atualizar produto');
+      console.error('Error updating product:', error);
+      setError('Error updating product');
       setTimeout(() => setError(''), 5000);
     }
   };
@@ -343,17 +343,17 @@ const QuotationPage = () => {
         <div className="header-content">
           <div className="header-info">
             <h1 className="page-title">
-              <span className="title-highlight">Cotação de Produtos</span>
+              <span className="title-highlight">Product Quotation</span>
             </h1>
             <p className="page-subtitle">
-              Gere as suas cotações de produtos e veja os dados de vendas!
+              Generate your product quotes and view sales data!
             </p>
           </div>
           
           <div className="header-actions">
             <button className="add-new-product-btn" onClick={() => setShowProductModal(true)}>
               <Plus size={16} />
-              Adicionar Produto
+              Add Product
             </button>
             <div className="header-profile">
               <ProfilePhoto 
@@ -391,7 +391,7 @@ const QuotationPage = () => {
       {/* Products Section */}
       {availableProducts.length > 0 && (
         <div className="selected-products-section">
-          <h2>Produtos na Cotação</h2>
+          <h2>Products in Quotation</h2>
           <div className="selected-products-list">
             {availableProducts.map((product) => (
               <div key={product.id} className="selected-product-dropdown">
@@ -405,7 +405,7 @@ const QuotationPage = () => {
                       alt={product.name}
                       className="dropdown-image"
                       onError={(e) => {
-                        console.log('Erro ao carregar imagem:', product.imagePreview);
+                        console.log('Error loading image:', product.imagePreview);
                         e.target.src = `https://via.placeholder.com/50x50/e2e8f0/64748b?text=${encodeURIComponent(product.name.substring(0, 2))}`;
                       }}
                     />
@@ -414,7 +414,7 @@ const QuotationPage = () => {
                       {product.quantidadeVendida && (
                         <span className="sales-badge">
                           <ShoppingCart size={12} />
-                          {product.quantidadeVendida}x vendido
+                          {product.quantidadeVendida}x sold
                         </span>
                       )}
                     </div>
@@ -442,15 +442,15 @@ const QuotationPage = () => {
                     <div className="product-details">
                       {product.quantidadeVendida && (
                         <div className="detail-row sales-highlight">
-                          <span className="detail-label">Quantidade Vendida:</span>
+                          <span className="detail-label">Quantity Sold:</span>
                           <span className="detail-value sales-quantity">
                             <ShoppingCart size={16} />
-                            {product.quantidadeVendida}x ({product.totalVendas} vendas)
+                            {product.quantidadeVendida}x ({product.totalVendas} sales)
                           </span>
                         </div>
                       )}
                       <div className="detail-row">
-                        <span className="detail-label">Preço do Fornecedor:</span>
+                        <span className="detail-label">Supplier Price:</span>
                         <div className="detail-value-container">
                           {editingProduct === product.id && editingField === 'price' ? (
                             <div className="editing-container">
@@ -493,7 +493,7 @@ const QuotationPage = () => {
                         </div>
                       </div>
                       <div className="detail-row">
-                        <span className="detail-label">Tempo de Envio:</span>
+                        <span className="detail-label">Shipping Time:</span>
                         <div className="detail-value-container">
                           {editingProduct === product.id && editingField === 'shippingTime' ? (
                             <div className="editing-container">
@@ -502,7 +502,7 @@ const QuotationPage = () => {
                                 value={editingValue}
                                 onChange={(e) => setEditingValue(e.target.value)}
                                 className="edit-input"
-                                placeholder="ex: 3-5 dias úteis"
+                                placeholder="e.g: 3-5 business days"
                                 autoFocus
                               />
                               <div className="edit-actions">
@@ -522,7 +522,7 @@ const QuotationPage = () => {
                             </div>
                           ) : (
                             <div className="value-with-edit">
-                              <span className="detail-value">{product.shippingTime || 'Não especificado'}</span>
+                              <span className="detail-value">{product.shippingTime || 'Not specified'}</span>
                               <button 
                                 className="edit-btn"
                                 onClick={() => startEditing(product.id, 'shippingTime', product.shippingTime)}
@@ -534,7 +534,7 @@ const QuotationPage = () => {
                         </div>
                       </div>
                       <div className="detail-row">
-                        <span className="detail-label">Estado do Stock:</span>
+                        <span className="detail-label">Stock Status:</span>
                         <div className="detail-value-container">
                           {editingProduct === product.id && editingField === 'inStock' ? (
                             <div className="editing-container">
@@ -544,8 +544,8 @@ const QuotationPage = () => {
                                 className="edit-select"
                                 autoFocus
                               >
-                                <option value="true">Em Stock</option>
-                                <option value="false">Fora de Stock</option>
+                                <option value="true">In Stock</option>
+                                <option value="false">Out of Stock</option>
                               </select>
                               <div className="edit-actions">
                                 <button 
@@ -568,12 +568,12 @@ const QuotationPage = () => {
                                 {product.inStock ? (
                                   <>
                                     <CheckCircle size={16} />
-                                    Em Stock
+                                    In Stock
                                   </>
                                 ) : (
                                   <>
                                     <XCircle size={16} />
-                                    Fora de Stock
+                                    Out of Stock
                                   </>
                                 )}
                               </span>
@@ -589,9 +589,9 @@ const QuotationPage = () => {
                       </div>
                       {product.isFromSales && (
                         <div className="detail-row">
-                          <span className="detail-label">Origem:</span>
+                          <span className="detail-label">Source:</span>
                           <span className="detail-value sales-origin">
-                            Dados de Vendas Shopify
+                            Shopify Sales Data
                           </span>
                         </div>
                       )}
@@ -610,7 +610,7 @@ const QuotationPage = () => {
         <div className="modal-overlay">
           <div className="product-modal">
             <div className="modal-header">
-              <h2>Criar Novo Produto</h2>
+              <h2>Create New Product</h2>
               <button 
                 className="modal-close-btn"
                 onClick={() => setShowProductModal(false)}
@@ -636,7 +636,7 @@ const QuotationPage = () => {
               )}
 
               <div className="form-group">
-                <label>Imagem do Produto</label>
+                <label>Product Image</label>
                 <div className="image-upload-area">
                   <input
                     type="file"
@@ -652,7 +652,7 @@ const QuotationPage = () => {
                     ) : (
                       <div className="upload-placeholder">
                         <Upload size={32} />
-                        <span>Clique para fazer upload da imagem</span>
+                        <span>Click to upload image</span>
                       </div>
                     )}
                   </label>
@@ -661,19 +661,19 @@ const QuotationPage = () => {
 
               <div className="form-row">
                 <div className="form-group">
-                  <label>Nome do Produto</label>
+                  <label>Product Name</label>
                   <input
                     type="text"
                     value={newProduct.name}
                     onChange={(e) => setNewProduct({...newProduct, name: e.target.value})}
-                    placeholder="Digite o nome do produto"
+                    placeholder="Enter product name"
                     className="form-input"
                     disabled={isCreatingProduct}
                   />
                 </div>
 
                 <div className="form-group">
-                  <label>Preço do Fornecedor (€)</label>
+                  <label>Supplier Price (€)</label>
                   <input
                     type="number"
                     value={newProduct.price}
@@ -689,19 +689,19 @@ const QuotationPage = () => {
 
               <div className="form-row">
                 <div className="form-group">
-                  <label>Tempo de Envio</label>
+                  <label>Shipping Time</label>
                   <input
                     type="text"
                     value={newProduct.shippingTime}
                     onChange={(e) => setNewProduct({...newProduct, shippingTime: e.target.value})}
-                    placeholder="ex: 3-5 dias úteis"
+                    placeholder="e.g: 3-5 business days"
                     className="form-input"
                     disabled={isCreatingProduct}
                   />
                 </div>
 
                 <div className="form-group">
-                  <label>Disponibilidade</label>
+                  <label>Availability</label>
                   <div className="stock-toggle">
                     <button
                       className={`stock-btn ${newProduct.inStock ? 'in-stock' : ''}`}
@@ -709,7 +709,7 @@ const QuotationPage = () => {
                       disabled={isCreatingProduct}
                     >
                       <CheckCircle size={16} />
-                      Em Stock
+                      In Stock
                     </button>
                     <button
                       className={`stock-btn ${!newProduct.inStock ? 'out-stock' : ''}`}
@@ -717,7 +717,7 @@ const QuotationPage = () => {
                       disabled={isCreatingProduct}
                     >
                       <XCircle size={16} />
-                      Fora de Stock
+                      Out of Stock
                     </button>
                   </div>
                 </div>
@@ -730,7 +730,7 @@ const QuotationPage = () => {
                 onClick={() => setShowProductModal(false)}
                 disabled={isCreatingProduct}
               >
-                Cancelar
+                Cancel
               </button>
               <button 
                 className="create-btn"
@@ -740,12 +740,12 @@ const QuotationPage = () => {
                 {isCreatingProduct ? (
                   <>
                     <div className="spinner"></div>
-                    Guardando...
+                    Saving...
                   </>
                 ) : (
                   <>
                     <Plus size={16} />
-                    Criar Produto
+                    Create Product
                   </>
                 )}
               </button>
