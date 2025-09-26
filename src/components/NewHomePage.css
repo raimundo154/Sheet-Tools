@@ -207,17 +207,17 @@ body {
 /* Responsividade */
 @media (max-width: 768px) {
   .header-content {
-    height: 80px;
+    height: 50px;
     padding: 0 0.5rem 0 1rem;
     justify-content: space-between !important;
   }
   
   .logo-image {
-    height: 60px;
+    height: 55px;
   }
   
   .nav {
-    display: none;
+  display: none;
   }
   
   .header-actions {
@@ -236,6 +236,10 @@ body {
     justify-content: center;
     padding: 0.6rem 1.2rem;
     font-size: 0.85rem;
+  }
+
+  .hero-new {
+    padding-top: 100px;
   }
 }
 
@@ -1544,7 +1548,7 @@ body {
   }
   
   .faq-answer-content-new p {
-    font-size: 0.95rem;
+  font-size: 0.95rem;
   }
 }
 
@@ -1821,8 +1825,13 @@ body {
   .header-content {
     justify-content: space-between !important;
     padding: 0 1rem 0 2rem;
+    height: 60px;
   }
   
+  .logo-image {
+    height: 70px;
+  }
+
   .nav {
     display: none;
   }
@@ -1843,6 +1852,10 @@ body {
     justify-content: center;
     padding: 0.65rem 1.5rem;
     font-size: 0.9rem;
+  }
+
+  .hero-new {
+    padding-top: 110px;
   }
   
   .hero-content {
