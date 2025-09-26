@@ -5,6 +5,7 @@ import { supabase } from '../config/supabase';
 import userService from './userService';
 import productService from './productService';
 import salesService from './salesService';
+import facebookCampaignsService from './facebookCampaignsService';
 
 class DailyRoasIntegrationService {
   
@@ -139,22 +140,18 @@ class DailyRoasIntegrationService {
    */
   async getCampaignsData(date) {
     try {
-      if (!userService.isLoggedIn()) {
-        return [];
-      }
-
-      const userCampaigns = userService.getUserData('campaigns') || [];
+      console.log('🔄 Buscando dados de campanhas para:', date);
       
-      // Filtrar campanhas que têm dados para a data específica
-      const campaignsForDate = userCampaigns.filter(campaign => {
-        if (!campaign.days || campaign.days.length === 0) return false;
-        
-        // Verificar se há dados para a data específica
-        return campaign.days.some(day => day.date === date);
-      });
+      // Primeiro, tentar migrar dados do localStorage se necessário
+      await facebookCampaignsService.migrateFromLocalStorage();
+      
+      // Obter campanhas da base de dados
+      const campaigns = await facebookCampaignsService.getCampaignsForDate(date);
+      
+      console.log(`📊 ${campaigns.length} campanhas encontradas para ${date}`);
 
       // Extrair dados relevantes das campanhas
-      const campaignsData = campaignsForDate.map(campaign => {
+      const campaignsData = campaigns.map(campaign => {
         const dayData = campaign.days.find(day => day.date === date);
         
         return {
