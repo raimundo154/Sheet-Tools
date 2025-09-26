@@ -224,6 +224,40 @@ class SalesService {
   }
 
   /**
+   * Buscar vendas por data específica
+   * @param {string} date - Data no formato YYYY-MM-DD
+   * @returns {Promise<{success: boolean, data: Array, error: any}>}
+   */
+  async getSalesByDate(date) {
+    try {
+      console.log(`📅 Buscando vendas para a data: ${date}`);
+      
+      // Converter data para formato ISO com timezone
+      const startDate = new Date(date + 'T00:00:00.000Z');
+      const endDate = new Date(date + 'T23:59:59.999Z');
+      
+      const { data, error } = await supabase
+        .from('vendas')
+        .select('*')
+        .gte('created_at', startDate.toISOString())
+        .lte('created_at', endDate.toISOString())
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error(`❌ Erro ao buscar vendas para data ${date}:`, error);
+        return { success: false, data: [], error };
+      }
+
+      console.log(`✅ ${data?.length || 0} vendas encontradas para ${date}`);
+      return { success: true, data: data || [], error: null };
+
+    } catch (error) {
+      console.error('💥 Erro inesperado ao buscar vendas por data:', error);
+      return { success: false, data: [], error };
+    }
+  }
+
+  /**
    * Formatar moeda
    * @param {number} valor - Valor a ser formatado
    * @param {string} currency - Moeda (padrão: EUR)

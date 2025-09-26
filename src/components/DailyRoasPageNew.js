@@ -387,7 +387,7 @@ const DailyRoasPageNew = () => {
         }
       } else {
         console.log('ℹ️ Nenhum produto encontrado na Quotation sheet');
-        toast.info('Nenhum produto encontrado na Quotation sheet para esta data');
+        toast('Nenhum produto encontrado na Quotation sheet para esta data', { icon: 'ℹ️' });
       }
 
     } catch (error) {
