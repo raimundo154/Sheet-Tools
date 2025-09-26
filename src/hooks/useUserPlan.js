@@ -91,7 +91,7 @@ export const useUserPlan = () => {
     const planFeatures = userPlan.features || [];
     
     const pageFeatureMap = {
-      'daily-roas': 'Daily ROAS básico',
+      'daily-roas': 'Daily ROAS Profit Sheet',
       'profit-sheet': 'Daily ROAS Profit Sheet', 
       'quotation': 'Quotation',
       'campaigns': 'Campaigns',
@@ -111,7 +111,7 @@ export const useUserPlan = () => {
   const getAvailablePages = () => {
     const allPages = [
       { id: 'dashboard', name: 'Dashboard', icon: 'Home', alwaysVisible: true },
-      { id: 'daily-roas', name: 'Daily ROAS', icon: 'TrendingUp', feature: 'Daily ROAS básico' },
+      { id: 'daily-roas', name: 'Daily ROAS', icon: 'TrendingUp', feature: 'Daily ROAS Profit Sheet' },
       { id: 'profit-sheet', name: 'Profit Sheet', icon: 'FileText', feature: 'Daily ROAS Profit Sheet' },
       { id: 'quotation', name: 'Quotation', icon: 'DollarSign', feature: 'Quotation' },
       { id: 'campaigns', name: 'Campaigns', icon: 'Target', feature: 'Campaigns' },

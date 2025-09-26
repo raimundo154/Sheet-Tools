@@ -47,22 +47,56 @@ class DailyRoasService {
         throw new Error('Utilizador não autenticado');
       }
 
-      const productData = this.formatProductToDB(product, user.user.id);
-
-      const { data, error } = await supabase
+      // Primeiro, verificar se já existe um produto com o mesmo nome na mesma data
+      const { data: existingProducts, error: checkError } = await supabase
         .from('daily_roas_data')
-        .upsert(productData, {
-          onConflict: 'user_id,date,product_name'
-        })
-        .select()
-        .single();
+        .select('id')
+        .eq('user_id', user.user.id)
+        .eq('date', product.date)
+        .eq('product_name', product.productName);
 
-      if (error) {
-        console.error('Erro ao salvar produto:', error);
-        throw error;
+      if (checkError && checkError.code !== 'PGRST116') {
+        // PGRST116 é "no rows returned", que é normal quando não há produtos existentes
+        console.error('Erro ao verificar produto existente:', checkError);
+        throw checkError;
       }
 
-      return this.formatProductFromDB(data);
+      let result;
+      if (existingProducts && existingProducts.length > 0) {
+        // Atualizar produto existente (pegar o primeiro se houver múltiplos)
+        const existingProduct = existingProducts[0];
+        const productData = this.formatProductToDB(product, user.user.id, true);
+        
+        const { data, error } = await supabase
+          .from('daily_roas_data')
+          .update(productData)
+          .eq('id', existingProduct.id)
+          .select()
+          .single();
+
+        if (error) {
+          console.error('Erro ao atualizar produto:', error);
+          throw error;
+        }
+        result = data;
+      } else {
+        // Inserir novo produto
+        const productData = this.formatProductToDB(product, user.user.id, false);
+        
+        const { data, error } = await supabase
+          .from('daily_roas_data')
+          .insert(productData)
+          .select()
+          .single();
+
+        if (error) {
+          console.error('Erro ao inserir produto:', error);
+          throw error;
+        }
+        result = data;
+      }
+
+      return this.formatProductFromDB(result);
     } catch (error) {
       console.error('Erro no saveProduct:', error);
       throw error;
@@ -267,11 +301,11 @@ class DailyRoasService {
    * Converter produto do frontend para formato da base de dados
    * @param {Object} product - Produto do frontend
    * @param {string} userId - ID do utilizador
+   * @param {boolean} includeId - Se deve incluir o ID (para updates)
    * @returns {Object} Produto formatado para BD
    */
-  formatProductToDB(product, userId) {
-    return {
-      id: product.id !== Date.now() ? product.id : undefined, // Só incluir ID se não for timestamp
+  formatProductToDB(product, userId, includeId = false) {
+    const productData = {
       user_id: userId,
       date: product.date,
       product_name: product.productName,
@@ -292,6 +326,76 @@ class DailyRoasService {
       margin_pct: product.marginPct || null,
       source: product.source || 'manual'
     };
+
+    // Só incluir ID se for um update e o ID for válido (não timestamp)
+    if (includeId && product.id && typeof product.id === 'string' && product.id.length > 10) {
+      productData.id = product.id;
+    }
+
+    return productData;
+  }
+
+  /**
+   * Limpar duplicados na base de dados (manter apenas o mais recente)
+   * @param {string} date - Data específica (opcional)
+   * @returns {Promise<number>} Número de duplicados removidos
+   */
+  async cleanupDuplicates(date = null) {
+    try {
+      const { data: user } = await supabase.auth.getUser();
+      if (!user?.user?.id) {
+        throw new Error('Utilizador não autenticado');
+      }
+
+      // Construir query base
+      let query = supabase
+        .from('daily_roas_data')
+        .select('id, date, product_name, created_at')
+        .eq('user_id', user.user.id)
+        .order('created_at', { ascending: false });
+
+      if (date) {
+        query = query.eq('date', date);
+      }
+
+      const { data: allProducts, error } = await query;
+
+      if (error) {
+        console.error('Erro ao obter produtos para limpeza:', error);
+        throw error;
+      }
+
+      // Agrupar por date + product_name e manter apenas o mais recente
+      const seen = new Set();
+      const toDelete = [];
+
+      for (const product of allProducts) {
+        const key = `${product.date}_${product.product_name}`;
+        if (seen.has(key)) {
+          toDelete.push(product.id);
+        } else {
+          seen.add(key);
+        }
+      }
+
+      // Eliminar duplicados
+      if (toDelete.length > 0) {
+        const { error: deleteError } = await supabase
+          .from('daily_roas_data')
+          .delete()
+          .in('id', toDelete);
+
+        if (deleteError) {
+          console.error('Erro ao eliminar duplicados:', deleteError);
+          throw deleteError;
+        }
+      }
+
+      return toDelete.length;
+    } catch (error) {
+      console.error('Erro no cleanupDuplicates:', error);
+      throw error;
+    }
   }
 
   /**

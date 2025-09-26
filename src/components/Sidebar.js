@@ -23,6 +23,7 @@ const Sidebar = ({ currentPage, onPageChange, onSignOut, onOpenHelp }) => {
   console.log('🔍 New Sidebar - Has active plan:', hasActivePlan);
   console.log('🔍 New Sidebar - Plan info:', planInfo);
   console.log('🔍 New Sidebar - Loading:', loading);
+  
   const menuItems = [
     // SEMPRE VISÍVEIS (todos os users)
     {
@@ -57,12 +58,12 @@ const Sidebar = ({ currentPage, onPageChange, onSignOut, onOpenHelp }) => {
       alwaysVisible: true
     },
     
-    // PLANO BEGINNER+ (Beginner - Daily ROAS básico)
+    // PLANO BASIC+ (Basic, Standard, Expert - Daily ROAS Profit Sheet)
     {
       id: 'daily-roas',
       label: 'Daily ROAS',
       icon: TrendingUp,
-      requiredFeature: 'Daily ROAS básico'
+      requiredFeature: 'Daily ROAS Profit Sheet'
     },
     
     // PLANO BASIC+ (Basic - Daily ROAS Profit Sheet)

@@ -579,64 +579,70 @@ const DailyRoasPageNew = () => {
           </div>
           
           <div className="header-actions">
-            {isRecalculating && (
-              <div className="recalculating-indicator">
-                <div className="spinner"></div>
-                <span>Recalculando decisões...</span>
+            {/* Ações principais - Excel e Adicionar Produto */}
+            <div className="header-actions-main">
+              {/* Excel Actions */}
+              <div className="excel-actions">
+                <label className="btn btn-excel-import">
+                  <Upload size={20} />
+                  Importar Excel
+                  <input
+                    type="file"
+                    accept=".xlsx,.xls"
+                    onChange={importFromExcel}
+                    style={{ display: 'none' }}
+                  />
+                </label>
+                
+                <button 
+                  onClick={exportToExcel}
+                  className="btn btn-excel-export"
+                  disabled={products.length === 0}
+                >
+                  <Download size={20} />
+                  Exportar Excel
+                  {products.length > 0 && (
+                    <span className="count-badge">{products.length}</span>
+                  )}
+                </button>
               </div>
-            )}
-            
-            {/* Excel Actions - Mais Notórios */}
-            <div className="excel-actions">
-              <label className="btn btn-excel-import">
-                <Upload size={20} />
-                Importar Excel
-                <input
-                  type="file"
-                  accept=".xlsx,.xls"
-                  onChange={importFromExcel}
-                  style={{ display: 'none' }}
-                />
-              </label>
+
+              <div className="divider"></div>
               
               <button 
-                onClick={exportToExcel}
-                className="btn btn-excel-export"
-                disabled={products.length === 0}
+                onClick={() => setShowAddModal(true)}
+                className="btn btn-primary"
               >
-                <Download size={20} />
-                Exportar Excel
-                {products.length > 0 && (
-                  <span className="count-badge">{products.length}</span>
-                )}
+                <Plus size={20} />
+                Adicionar Produto
               </button>
             </div>
 
-            <div className="divider"></div>
-            
-            <button 
-              onClick={() => setShowAddModal(true)}
-              className="btn btn-primary"
-            >
-              <Plus size={20} />
-              Adicionar Produto
-            </button>
-            
-            <div className="view-toggle">
-              <button 
-                onClick={() => setViewMode('cards')}
-                className={`view-btn ${viewMode === 'cards' ? 'active' : ''}`}
-                title="Vista em Cards"
-              >
-                <BarChart3 size={16} />
-              </button>
-              <button 
-                onClick={() => setViewMode('table')}
-                className={`view-btn ${viewMode === 'table' ? 'active' : ''}`}
-                title="Vista em Tabela"
-              >
-                <Filter size={16} />
-              </button>
+            {/* Ações secundárias - View Toggle e Status */}
+            <div className="header-actions-secondary">
+              {isRecalculating && (
+                <div className="recalculating-indicator">
+                  <div className="spinner"></div>
+                  <span>Recalculando decisões...</span>
+                </div>
+              )}
+              
+              <div className="view-toggle">
+                <button 
+                  onClick={() => setViewMode('cards')}
+                  className={`view-btn ${viewMode === 'cards' ? 'active' : ''}`}
+                  title="Vista em Cards"
+                >
+                  <BarChart3 size={16} />
+                </button>
+                <button 
+                  onClick={() => setViewMode('table')}
+                  className={`view-btn ${viewMode === 'table' ? 'active' : ''}`}
+                  title="Vista em Tabela"
+                >
+                  <Filter size={16} />
+                </button>
+              </div>
             </div>
           </div>
         </div>
