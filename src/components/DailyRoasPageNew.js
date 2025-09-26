@@ -677,6 +677,14 @@ const DailyRoasPageNew = () => {
     }
   }, [products, calculateCampaignDecisions]);
 
+  // Função para recalcular decisões (usada em callbacks)
+  const recalculateDecisions = useCallback(async () => {
+    if (products.length > 0) {
+      console.log('🔄 Recalculando decisões...');
+      await calculateCampaignDecisions();
+    }
+  }, [products, calculateCampaignDecisions]);
+
   // Get decision stats for summary
   const decisionStats = Object.values(campaignDecisions).reduce((acc, decision) => {
     acc[decision.action] = (acc[decision.action] || 0) + 1;
