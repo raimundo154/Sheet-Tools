@@ -678,12 +678,11 @@ const NewHomePage = () => {
             <div className="footer-brand">
               <div className="footer-logo">
                 <img 
-                  src="/logo/sheet-tools-logo-backgroundremover.png" 
+                  src="/logo/Adobe Express - file.png" 
                   alt="Sheet Tools" 
                   className="footer-logo-image"
                 />
               </div>
-              <p className="footer-tagline">Automate your campaigns and maximize your results</p>
             </div>
             
             <div className="footer-links">

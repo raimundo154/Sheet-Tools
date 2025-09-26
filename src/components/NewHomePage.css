@@ -240,7 +240,39 @@ body {
 
   .hero-new {
     padding-top: 100px;
+    padding-bottom: 60px;
   }
+
+  .smart-analysis {
+    padding: 60px 0;
+  }
+
+  /* Mais espaçamento lateral no mobile */
+  .hero-container {
+    padding: 0 1.5rem;
+  }
+
+  .smart-analysis .container {
+    padding: 0 1.5rem !important;
+  }
+
+  .features .container {
+    padding: 0 1.5rem !important;
+  }
+
+  .pricing .container {
+    padding: 0 1.5rem !important;
+  }
+
+  .faq-container {
+    padding: 0 1.5rem !important;
+  }
+
+  /* Reduzir gap footer no mobile */
+  .footer-content {
+    gap: 1.5rem !important;
+  }
+
 }
 
 .mobile-cta-button {
@@ -732,11 +764,21 @@ body {
   }
   
   .footer-brand {
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
   }
   
   .footer-logo-image {
-    height: 60px;
+    height: 200px !important;
+    margin-left: -0.5rem !important;
+    margin-top: 0.2rem !important;
+    transform: translateX(-8px) !important;
+  }
+
+  .footer-brand {
+    text-align: left !important;
+    display: flex !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
   }
   
   .newsletter-section {
@@ -1600,14 +1642,16 @@ body {
 
 @media (min-width: 768px) {
   .footer-content {
-    grid-template-columns: 2fr 2fr;
+    grid-template-columns: 1fr 2fr;
     gap: 4rem;
+    align-items: flex-start;
   }
 }
 
 @media (min-width: 1024px) {
   .footer-content {
-    grid-template-columns: 2fr 3fr;
+    grid-template-columns: 1fr 2fr;
+    gap: 6rem;
   }
 }
 
@@ -1618,9 +1662,11 @@ body {
 }
 
 .footer-logo-image {
-  height: 70px;
+  height: 170px !important;
   width: auto;
   margin-bottom: 0.5rem;
+  margin-left: 2rem !important;
+  margin-top: 1rem !important;
   filter: drop-shadow(0 2px 8px rgba(29, 209, 161, 0.2));
 }
 
@@ -1856,6 +1902,46 @@ body {
 
   .hero-new {
     padding-top: 110px;
+    padding-bottom: 70px;
+  }
+
+  .smart-analysis {
+    padding: 70px 0;
+  }
+
+  /* Mais espaçamento lateral no tablet */
+  .hero-container {
+    padding: 0 2rem;
+  }
+
+  .smart-analysis .container {
+    padding: 0 2rem !important;
+  }
+
+  .features .container {
+    padding: 0 2rem !important;
+  }
+
+  .pricing .container {
+    padding: 0 2rem !important;
+  }
+
+  .faq-container {
+    padding: 0 2rem !important;
+  }
+
+  /* Centralizar logo footer no tablet */
+  .footer-brand {
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .footer-logo-image {
+    height: 180px !important;
+    margin-left: 1.5rem !important;
+    margin-top: 0.8rem !important;
   }
   
   .hero-content {
