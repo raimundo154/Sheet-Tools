@@ -333,6 +333,52 @@ const DailyRoasPageNew = () => {
     }
   };
 
+  // Carregar automaticamente produtos da Quotation sheet
+  const loadQuotationProductsAutomatically = async () => {
+    try {
+      console.log('🔄 Carregando produtos da Quotation sheet automaticamente...');
+      
+      const quotationProducts = await dailyRoasIntegrationService.getQuotationProductsForDailyRoas(selectedDate);
+      
+      if (quotationProducts.length > 0) {
+        // Verificar quais produtos já existem no Daily ROAS
+        const existingProductNames = products.map(p => p.productName.toLowerCase());
+        const newProducts = quotationProducts.filter(qp => 
+          !existingProductNames.includes(qp.productName.toLowerCase())
+        );
+
+        if (newProducts.length > 0) {
+          console.log(`✅ ${newProducts.length} novos produtos da Quotation sheet encontrados`);
+          
+          // Adicionar novos produtos ao estado
+          setProducts(prevProducts => [...prevProducts, ...newProducts]);
+          
+          // Salvar automaticamente na base de dados
+          for (const product of newProducts) {
+            try {
+              await dailyRoasService.saveProduct(product);
+            } catch (error) {
+              console.error('Erro ao salvar produto automaticamente:', error);
+            }
+          }
+          
+          toast.success(`${newProducts.length} produtos da Quotation sheet adicionados automaticamente!`);
+          
+          // Recalcular decisões com os novos produtos
+          await recalculateDecisions();
+        } else {
+          console.log('ℹ️ Todos os produtos da Quotation sheet já estão no Daily ROAS');
+        }
+      } else {
+        console.log('ℹ️ Nenhum produto encontrado na Quotation sheet');
+      }
+
+    } catch (error) {
+      console.error('❌ Erro ao carregar produtos da Quotation sheet automaticamente:', error);
+      // Não mostrar toast de erro para não incomodar o usuário
+    }
+  };
+
   // Atualizar produto
   const updateProduct = async (productId, field, value) => {
     try {
@@ -583,6 +629,8 @@ const DailyRoasPageNew = () => {
   // UseEffects
   useEffect(() => {
     loadDataForDate(selectedDate);
+    // Carregar automaticamente produtos da Quotation sheet
+    loadQuotationProductsAutomatically();
   }, [selectedDate]);
 
   useEffect(() => {
@@ -700,6 +748,14 @@ const DailyRoasPageNew = () => {
 
             {/* Ações secundárias - View Toggle e Status */}
             <div className="header-actions-secondary">
+              {/* Indicador de sincronização automática */}
+              <div className="auto-sync-indicator">
+                <div className="sync-status">
+                  <div className="sync-dot active"></div>
+                  <span>Auto-sync ativo</span>
+                </div>
+              </div>
+
               {isRecalculating && (
                 <div className="recalculating-indicator">
                   <div className="spinner"></div>
@@ -1013,6 +1069,12 @@ const ProductCard = ({ product, decision, isExpanded, onToggleExpand, onUpdate, 
                 {product.dataCompleteness && (
                   <span className={`completeness-badge ${product.dataCompleteness.isComplete ? 'complete' : 'incomplete'}`}>
                     {product.dataCompleteness.percentage}%
+                  </span>
+                )}
+                {product.source === 'quotation-auto' && (
+                  <span className="source-badge auto-sync" title="Sincronizado automaticamente da Quotation sheet">
+                    <RefreshCw size={12} />
+                    Auto
                   </span>
                 )}
               </div>

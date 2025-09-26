@@ -50,6 +50,82 @@ class DailyRoasIntegrationService {
   }
 
   /**
+   * Obter produtos da Quotation sheet automaticamente
+   * @param {string} date - Data no formato YYYY-MM-DD
+   * @returns {Promise<Array>} Produtos da quotation formatados para Daily ROAS
+   */
+  async getQuotationProductsForDailyRoas(date) {
+    try {
+      console.log('🔄 Buscando produtos da Quotation sheet para Daily ROAS:', date);
+      
+      // Buscar produtos da tabela products
+      const productsResult = await productService.getProducts();
+      const products = productsResult.success ? productsResult.data : [];
+
+      // Buscar dados de vendas para a data específica
+      const salesResult = await salesService.getSalesByDate(date);
+      const sales = salesResult.success ? salesResult.data : [];
+
+      // Converter produtos para formato Daily ROAS
+      const dailyRoasProducts = products.map(product => {
+        // Encontrar vendas para este produto na data específica
+        const productSales = sales.filter(sale => 
+          sale.produto && sale.produto.toLowerCase() === product.name.toLowerCase()
+        );
+
+        // Calcular métricas de vendas
+        const totalUnitsSold = productSales.reduce((sum, sale) => sum + (sale.quantidade || 0), 0);
+        const totalSales = productSales.reduce((sum, sale) => sum + (sale.total || 0), 0);
+        const numberOfSales = productSales.length;
+
+        // Criar produto no formato Daily ROAS
+        return {
+          id: `quotation-${product.id}-${date}`,
+          productName: product.name,
+          price: product.price,
+          cog: 0, // COG será preenchido manualmente ou via campaigns
+          unitsSold: totalUnitsSold,
+          totalSpend: 0, // Será preenchido via campaigns
+          cpc: 0, // Será preenchido via campaigns
+          atc: 0, // Será preenchido via campaigns
+          purchases: numberOfSales,
+          totalCog: 0, // Calculado automaticamente
+          storeValue: product.price * totalUnitsSold,
+          marginBruta: product.price, // Assumindo COG = 0 inicialmente
+          marginEur: product.price * totalUnitsSold,
+          marginPct: 100, // Assumindo COG = 0 inicialmente
+          roas: 0, // Será calculado quando houver spend
+          cpa: 0, // Será calculado quando houver spend
+          ber: 0, // Será calculado quando houver spend
+          date: date,
+          source: 'quotation-auto',
+          // Dados adicionais da quotation
+          shippingTime: product.shipping_time,
+          inStock: product.in_stock,
+          imageUrl: product.image_url,
+          // Status de dados
+          hasCampaignData: false,
+          hasQuotationData: true,
+          dataCompleteness: {
+            percentage: 50,
+            hasCampaignData: false,
+            hasQuotationData: true,
+            missingFields: ['Dados de Campanhas'],
+            isComplete: false
+          }
+        };
+      });
+
+      console.log('✅ Produtos da Quotation convertidos para Daily ROAS:', dailyRoasProducts);
+      return dailyRoasProducts;
+
+    } catch (error) {
+      console.error('❌ Erro ao obter produtos da Quotation:', error);
+      return [];
+    }
+  }
+
+  /**
    * Obter dados de Campaigns
    * @param {string} date - Data no formato YYYY-MM-DD
    * @returns {Promise<Array>} Dados de campanhas
