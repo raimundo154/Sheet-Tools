@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import * as XLSX from 'xlsx';
 import toast, { Toaster } from 'react-hot-toast';
 import dailyRoasService from '../services/dailyRoasService';
+import dailyRoasIntegrationService from '../services/dailyRoasIntegrationService';
 
 import { 
   decisionEngine, 
@@ -74,6 +75,7 @@ const DailyRoasPageNew = () => {
   const [allProductsHistory, setAllProductsHistory] = useState([]);
   const [marketCPC, setMarketCPC] = useState(0);
   const [isRecalculating, setIsRecalculating] = useState(false);
+  const [isLoadingConsolidated, setIsLoadingConsolidated] = useState(false);
   
   // Estados de interface
   const [expandedCards, setExpandedCards] = useState({});
@@ -261,6 +263,73 @@ const DailyRoasPageNew = () => {
     } catch (error) {
       console.error('Erro ao adicionar produto:', error);
       toast.error('Erro ao adicionar produto');
+    }
+  };
+
+  // Carregar dados consolidados de Campaigns e Quotation
+  const loadConsolidatedData = async () => {
+    try {
+      setIsLoadingConsolidated(true);
+      toast.loading('Carregando dados consolidados...', { id: 'consolidated' });
+
+      const result = await dailyRoasIntegrationService.getConsolidatedDailyRoas(selectedDate);
+      
+      if (result.success && result.data.length > 0) {
+        // Converter dados consolidados para o formato esperado pelo componente
+        const convertedProducts = result.data.map(item => ({
+          id: `${item.productName}-${selectedDate}`,
+          productName: item.productName,
+          price: item.price,
+          cog: item.cogs,
+          unitsSold: item.unitsSold,
+          totalSpend: item.totalSpend,
+          cpc: item.cpc,
+          atc: item.clicks,
+          purchases: item.numberOfSales,
+          totalCog: item.totalCog,
+          storeValue: item.storeValue,
+          marginBruta: item.marginBruta,
+          marginEur: item.marginEur,
+          marginPct: item.marginPct,
+          roas: item.roas,
+          cpa: item.cpa,
+          ber: item.ber,
+          date: selectedDate,
+          source: 'integrated',
+          // Dados adicionais da integração
+          hasCampaignData: item.hasCampaignData,
+          hasQuotationData: item.hasQuotationData,
+          dataCompleteness: item.dataCompleteness,
+          productLink: item.productLink,
+          marketType: item.marketType
+        }));
+
+        setProducts(convertedProducts);
+        
+        // Atualizar resumo
+        if (result.summary) {
+          setSummary({
+            totalSpend: result.summary.totalSpend.toFixed(2),
+            totalRevenue: result.summary.totalRevenue.toFixed(2),
+            totalMarginEur: result.summary.totalMargin.toFixed(2),
+            weightedRoas: result.summary.weightedRoas.toFixed(4)
+          });
+        }
+
+        toast.success(`Dados consolidados carregados: ${result.data.length} produtos`, { id: 'consolidated' });
+        
+        // Recalcular decisões com os novos dados
+        await recalculateDecisions();
+        
+      } else {
+        toast.error('Nenhum dado consolidado encontrado para esta data', { id: 'consolidated' });
+      }
+
+    } catch (error) {
+      console.error('Erro ao carregar dados consolidados:', error);
+      toast.error('Erro ao carregar dados consolidados', { id: 'consolidated' });
+    } finally {
+      setIsLoadingConsolidated(false);
     }
   };
 
@@ -616,6 +685,17 @@ const DailyRoasPageNew = () => {
                 <Plus size={20} />
                 Adicionar Produto
               </button>
+
+              <div className="divider"></div>
+
+              <button 
+                onClick={loadConsolidatedData}
+                className="btn btn-secondary"
+                disabled={isLoadingConsolidated}
+              >
+                <RefreshCw size={20} className={isLoadingConsolidated ? 'spinning' : ''} />
+                {isLoadingConsolidated ? 'Carregando...' : 'Dados Consolidados'}
+              </button>
             </div>
 
             {/* Ações secundárias - View Toggle e Status */}
@@ -913,7 +993,31 @@ const ProductCard = ({ product, decision, isExpanded, onToggleExpand, onUpdate, 
     >
       <div className="card-header">
         <div className="product-info">
-          <h3>{product.productName}</h3>
+          <div className="product-title-row">
+            <h3>{product.productName}</h3>
+            {/* Indicadores de fonte de dados */}
+            {product.source === 'integrated' && (
+              <div className="data-source-indicators">
+                {product.hasCampaignData && (
+                  <span className="source-badge campaigns" title="Dados de Campaigns">
+                    <Target size={12} />
+                    Campaigns
+                  </span>
+                )}
+                {product.hasQuotationData && (
+                  <span className="source-badge quotation" title="Dados de Quotation">
+                    <FileSpreadsheet size={12} />
+                    Quotation
+                  </span>
+                )}
+                {product.dataCompleteness && (
+                  <span className={`completeness-badge ${product.dataCompleteness.isComplete ? 'complete' : 'incomplete'}`}>
+                    {product.dataCompleteness.percentage}%
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
           <div className="product-metrics">
             <span className="metric">
               <DollarSign size={14} />
