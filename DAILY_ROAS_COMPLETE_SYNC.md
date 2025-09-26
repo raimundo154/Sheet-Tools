@@ -192,3 +192,4 @@ await recalculateDecisions();
 ## 🎯 Status
 
 **✅ GARANTIA TOTAL** - TODOS os produtos da Quotation sheet aparecem automaticamente no Daily ROAS, sem exceção! O sistema garante inclusão completa e sincronização automática! 🎉
+
