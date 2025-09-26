@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { navigation } from '../utils/navigation';
-import subscriptionService from '../services/subscriptionService';
 import { 
   TrendingUp, 
   Target, 
@@ -17,9 +16,7 @@ import {
   ArrowRight,
   Brain,
   Clock,
-  DollarSign,
-  Star,
-  Award
+  DollarSign
 } from 'lucide-react';
 import './NewHomePage.css';
 
@@ -28,8 +25,18 @@ const NewHomePage = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlay, setIsAutoPlay] = useState(true);
   const [openFAQ, setOpenFAQ] = useState(null);
-  const [plans, setPlans] = useState([]);
-  const [plansLoading, setPlansLoading] = useState(true);
+  const [scrolled, setScrolled] = useState(false);
+
+  // Header scroll effect
+  useEffect(() => {
+    const handleScroll = () => {
+      const isScrolled = window.scrollY > 50;
+      setScrolled(isScrolled);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Carousel slides
   const slides = [
@@ -55,25 +62,7 @@ const NewHomePage = () => {
     }
   ];
 
-  // Load real plans from Supabase
-  useEffect(() => {
-    const loadPlans = async () => {
-      try {
-        setPlansLoading(true);
-        const plansData = await subscriptionService.getAvailablePlans();
-        console.log('📦 Homepage - Plans loaded:', plansData);
-        setPlans(plansData);
-      } catch (error) {
-        console.error('❌ Homepage - Error loading plans:', error);
-        // Keep empty array if error
-        setPlans([]);
-      } finally {
-        setPlansLoading(false);
-      }
-    };
-
-    loadPlans();
-  }, []);
+  // Plans loading removed since not currently used
 
   // Auto-play carousel
   React.useEffect(() => {
@@ -86,24 +75,30 @@ const NewHomePage = () => {
   }, [isAutoPlay, slides.length]);
 
   // FAQ data
-  const faqs = [
+  // Nova estrutura de FAQs com melhor organização
+  const faqData = [
     {
+      id: 1,
       question: "How does automatic metrics calculation work?",
       answer: "Sheet Tools connects directly to your Facebook Ads campaigns and automatically calculates all essential metrics like ROAS, CPC, CPA, Profit Margin, BER and much more. Data is updated in real-time."
     },
     {
+      id: 2,
       question: "What type of recommendations does the platform offer?",
       answer: "Based on advanced performance rules, the platform automatically suggests whether you should KILL a low-performing campaign, SCALE a profitable campaign, MAINTAIN a stable campaign or DE-SCALE when necessary."
     },
     {
+      id: 3,
       question: "Do I need technical knowledge to use it?",
       answer: "No! Sheet Tools was designed to be intuitive. Just connect your campaigns and the platform does all the heavy lifting of analysis and recommendations automatically."
     },
     {
+      id: 4,
       question: "How does the free trial work?",
       answer: "We offer 15 days completely free with full access to all features. No credit card required to get started."
     },
     {
+      id: 5,
       question: "Can I cancel at any time?",
       answer: "Yes! There's no commitment. You can cancel your subscription at any time and continue using until the end of the paid period."
     }
@@ -122,29 +117,7 @@ const NewHomePage = () => {
     }
   };
 
-  const fadeInLeft = {
-    hidden: { opacity: 0, x: -60 },
-    visible: { 
-      opacity: 1, 
-      x: 0, 
-      transition: { 
-        duration: 0.8,
-        ease: [0.25, 0.46, 0.45, 0.94]
-      } 
-    }
-  };
-
-  const fadeInRight = {
-    hidden: { opacity: 0, x: 60 },
-    visible: { 
-      opacity: 1, 
-      x: 0, 
-      transition: { 
-        duration: 0.8,
-        ease: [0.25, 0.46, 0.45, 0.94]
-      } 
-    }
-  };
+  // Removed unused animation variants
 
   const staggerContainer = {
     hidden: {},
@@ -156,20 +129,7 @@ const NewHomePage = () => {
     }
   };
 
-  const scaleIn = {
-    hidden: { opacity: 0, scale: 0.8, y: 20 },
-    visible: { 
-      opacity: 1, 
-      scale: 1,
-      y: 0,
-      transition: { 
-        duration: 0.6,
-        type: "spring",
-        stiffness: 120,
-        damping: 15
-      } 
-    }
-  };
+  // Removed unused scaleIn animation
 
   const slideInScale = {
     hidden: { opacity: 0, scale: 0.9, y: 40 },
@@ -188,90 +148,39 @@ const NewHomePage = () => {
     navigation.toLogin();
   };
 
-  // Organize plans by type and billing period
-  const getOrganizedPlans = () => {
-    if (!plans || plans.length === 0) return { trial: null, monthly: [], yearly: [] };
-
-    const trial = plans.find(plan => plan.billing_period === 'trial');
-    const monthly = plans.filter(plan => plan.billing_period === 'monthly').sort((a, b) => a.price_amount - b.price_amount);
-    const yearly = plans.filter(plan => plan.billing_period === 'yearly').sort((a, b) => a.price_amount - b.price_amount);
-
-    return { trial, monthly, yearly };
-  };
-
-  // Format price for display
-  const formatPrice = (amount, period) => {
-    const price = (amount / 100).toFixed(2);
-    return {
-      currency: '€',
-      amount: price,
-      period: period === 'monthly' ? '/month' : '/year'
-    };
-  };
-
-  // Calculate savings for yearly plans
-  const calculateYearlySavings = (yearlyPlan, monthlyPlans) => {
-    if (!yearlyPlan || !monthlyPlans || monthlyPlans.length === 0) return null;
-    
-    // Find corresponding monthly plan by name similarity
-    const planType = yearlyPlan.name.toLowerCase();
-    const monthlyPlan = monthlyPlans.find(plan => 
-      plan.name.toLowerCase().includes('basic') && planType.includes('basic') ||
-      plan.name.toLowerCase().includes('standard') && planType.includes('standard') ||
-      plan.name.toLowerCase().includes('expert') && planType.includes('expert')
-    );
-    
-    if (!monthlyPlan) return null;
-    
-    const yearlyPrice = yearlyPlan.price_amount / 100;
-    const monthlyPrice = (monthlyPlan.price_amount / 100) * 12;
-    const savings = monthlyPrice - yearlyPrice;
-    const savingsPercent = Math.round((savings / monthlyPrice) * 100);
-    
-    return { savings: savings.toFixed(2), percent: savingsPercent };
-  };
+  // Removed unused helper functions to clean up warnings
 
   const scrollToSection = (sectionId) => {
+    console.log('🔍 Scrolling to section:', sectionId);
+    
     const element = document.getElementById(sectionId);
     if (element) {
-      const headerHeight = 80;
+      console.log('✅ Element found:', element);
+      
+      const headerHeight = 110;
       const elementPosition = element.getBoundingClientRect().top;
       const offsetPosition = elementPosition + window.pageYOffset - headerHeight;
       
-      // Smooth and slow scroll (2 seconds)
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth'
+      console.log('📍 Scrolling to position:', offsetPosition);
+      
+      // Scroll suave simples e direto
+      element.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
       });
       
-      // Para dispositivos que não suportam scroll suave nativo, usar animação customizada
-      const startPosition = window.pageYOffset;
-      const distance = offsetPosition - startPosition;
-      const duration = 2000; // 2 seconds
-      let start = null;
-
-      function step(timestamp) {
-        if (!start) start = timestamp;
-        const progress = timestamp - start;
-        const progressPercentage = Math.min(progress / duration, 1);
-        
-        // Easing function for smoother scroll
-        const easeInOutCubic = progressPercentage < 0.5 
-          ? 4 * progressPercentage * progressPercentage * progressPercentage
-          : 1 - Math.pow(-2 * progressPercentage + 2, 3) / 2;
-        
-        window.scrollTo(0, startPosition + distance * easeInOutCubic);
-        
-        if (progress < duration) {
-          window.requestAnimationFrame(step);
-        }
-      }
+      // Ajustar para compensar o header fixo
+      setTimeout(() => {
+        window.scrollBy({
+          top: -headerHeight,
+          behavior: 'smooth'
+        });
+      }, 100);
       
-      // Fallback for custom scroll if needed
-      if (!CSS.supports('scroll-behavior', 'smooth')) {
-        window.requestAnimationFrame(step);
-      }
+    } else {
+      console.log('❌ Element not found with ID:', sectionId);
     }
+    
     setIsMenuOpen(false);
   };
 
@@ -279,13 +188,13 @@ const NewHomePage = () => {
     <div className="new-homepage">
       {/* Header */}
       <motion.header 
-        className="header"
+        className={`header ${scrolled ? 'header-scrolled' : ''}`}
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        <div className="container">
-          <div className="header-content">
+        <div className="header-content">
+          <div className="header-left">
             <div className="logo">
               <img 
                 src="/logo/sheet-tools-logo-backgroundremover.png" 
@@ -295,10 +204,10 @@ const NewHomePage = () => {
             </div>
             
             <nav className={`nav ${isMenuOpen ? 'nav-open' : ''}`}>
-              <a href="#about" onClick={() => scrollToSection('about')}>What is it</a>
-              <a href="#features" onClick={() => scrollToSection('features')}>Features</a>
-              <a href="#pricing" onClick={() => scrollToSection('pricing')}>Pricing</a>
-              <a href="#faq" onClick={() => scrollToSection('faq')}>FAQ</a>
+              <a href="#about" onClick={(e) => { e.preventDefault(); scrollToSection('about'); }}>What is it</a>
+              <a href="#features" onClick={(e) => { e.preventDefault(); scrollToSection('features'); }}>Features</a>
+              <a href="#pricing" onClick={(e) => { e.preventDefault(); scrollToSection('pricing'); }}>Pricing</a>
+              <a href="#faq" onClick={(e) => { e.preventDefault(); scrollToSection('faq'); }}>FAQ</a>
               <motion.button 
                 className="mobile-cta-button"
                 onClick={handleCTAClick}
@@ -308,8 +217,9 @@ const NewHomePage = () => {
                 Get Started
               </motion.button>
             </nav>
+          </div>
 
-            <div className="header-actions">
+          <div className="header-actions">
               <motion.button 
                 className="cta-button"
                 onClick={handleCTAClick}
@@ -326,188 +236,185 @@ const NewHomePage = () => {
                 {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
               </button>
             </div>
-          </div>
         </div>
       </motion.header>
 
-      {/* Hero Section */}
-      <section className="hero">
-        <div className="container">
-          <div className="hero-content">
-          <div className="hero-left">
-            <motion.div 
-              className="hero-text"
-              variants={staggerContainer}
-              initial="hidden"
-              animate="visible"
-            >
+      {/* Hero Section - Rebuilt */}
+      <section className="hero-new">
+        <div className="hero-container">
+          <div className="hero-grid">
+            {/* Left Content */}
+            <div className="hero-text-area">
               <motion.h1 
-                className="hero-title"
-                variants={fadeInUp}
+                className="hero-main-title"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
               >
-                Automate Your
-                <span className="highlight"> Facebook Campaigns</span>
+                Automate Your <span className="title-highlight">Facebook Campaigns</span>
               </motion.h1>
               
               <motion.p 
-                className="hero-subtitle"
-                variants={fadeInUp}
+                className="hero-description"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
               >
                 Your smart platform for automatic metrics calculation and action recommendations.
               </motion.p>
-              
+
+              {/* Benefits */}
               <motion.div 
-                className="hero-cta"
-                variants={fadeInUp}
+                className="hero-benefits-list"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.4 }}
+              >
+                <div className="benefit-item">
+                  <span className="benefit-check">✓</span>
+                  <span>Calculates metrics automatically</span>
+                </div>
+                <div className="benefit-item">
+                  <span className="benefit-check">✓</span>
+                  <span>CPC, ROAS, CPA, Profit Margin in real-time</span>
+                </div>
+                <div className="benefit-item">
+                  <span className="benefit-check">✓</span>
+                  <span>Smart recommendations: Kill, Scale, Maintain</span>
+                </div>
+              </motion.div>
+              
+              {/* CTAs */}
+              <motion.div 
+                className="hero-actions"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.6 }}
               >
                 <motion.button 
-                  className="cta-button-primary"
+                  className="primary-cta"
                   onClick={handleCTAClick}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                 >
                   Start Free for 15 Days
-                  <ArrowRight size={18} />
+                  <ArrowRight size={20} />
                 </motion.button>
+                
+                <motion.a 
+                  href="#about"
+                  className="secondary-cta"
+                  onClick={(e) => { e.preventDefault(); scrollToSection('about'); }}
+                >
+                  What Sheet Tools does for you
+                </motion.a>
               </motion.div>
-            </motion.div>
-          </div>
+            </div>
 
-          <div className="hero-right">
-            {/* Enhanced Carousel */}
-            <motion.div 
-              className="hero-carousel"
-              initial={{ opacity: 0, x: 60, scale: 0.95 }}
-              animate={{ opacity: 1, x: 0, scale: 1 }}
-              transition={{ 
-                duration: 0.8,
-                delay: 0.3,
-                ease: [0.25, 0.46, 0.45, 0.94]
-              }}
-            >
-              <div className="carousel-container">
-                <div className="carousel-header">
-                  <h3>What Sheet Tools does for you</h3>
-                  <div className="carousel-controls">
+            {/* Right Carousel */}
+            <div className="hero-carousel-area">
+              <motion.div 
+                className="carousel-widget"
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, delay: 0.4 }}
+              >
+                <div className="carousel-box">
+                  <div className="carousel-top">
+                    <h3>What Sheet Tools does for you</h3>
                     <motion.button
                       onClick={() => setIsAutoPlay(!isAutoPlay)}
-                      className="control-button"
+                      className="play-pause-btn"
                       whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
                     >
                       {isAutoPlay ? <Pause size={16} /> : <Play size={16} />}
                     </motion.button>
                   </div>
-                </div>
-                
-                <div className="carousel-content">
-                  <motion.div
-                    key={currentSlide}
-                    className="slide"
-                    initial={{ opacity: 0, y: 30, scale: 0.9 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -30, scale: 0.9 }}
-                    transition={{ 
-                      duration: 0.6,
-                      ease: [0.25, 0.46, 0.45, 0.94]
-                    }}
-                  >
-                    <motion.div 
-                      className="slide-icon"
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ 
-                        delay: 0.2,
-                        type: "spring",
-                        stiffness: 200,
-                        damping: 15
-                      }}
+                  
+                  <div className="carousel-body">
+                    <motion.div
+                      key={currentSlide}
+                      className="carousel-slide"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.6 }}
                     >
-                      {React.createElement(slides[currentSlide].icon, { size: 48 })}
+                      <div className="slide-icon-wrapper">
+                        {React.createElement(slides[currentSlide].icon, { size: 48 })}
+                      </div>
+                      <h4>{slides[currentSlide].title}</h4>
+                      <p>{slides[currentSlide].description}</p>
                     </motion.div>
-                    <motion.h4
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.3, duration: 0.5 }}
-                    >
-                      {slides[currentSlide].title}
-                    </motion.h4>
-                    <motion.p
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.4, duration: 0.5 }}
-                    >
-                      {slides[currentSlide].description}
-                    </motion.p>
-                  </motion.div>
+                  </div>
+                  
+                  <div className="carousel-dots">
+                    {slides.map((_, index) => (
+                      <button
+                        key={index}
+                        className={`dot ${index === currentSlide ? 'active' : ''}`}
+                        onClick={() => setCurrentSlide(index)}
+                      />
+                    ))}
+                  </div>
                 </div>
-                
-                <div className="carousel-indicators">
-                  {slides.map((_, index) => (
-                    <motion.button
-                      key={index}
-                      className={`indicator ${index === currentSlide ? 'active' : ''}`}
-                      onClick={() => setCurrentSlide(index)}
-                      whileHover={{ scale: 1.2 }}
-                      whileTap={{ scale: 0.9 }}
-                    />
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-          </div>
+              </motion.div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* About Section */}
-      <section id="about" className="about">
+      {/* Smart Campaign Analysis Section - Recriada */}
+      <section id="about" className="smart-analysis">
         <div className="container">
           <motion.div 
-            className="about-content"
+            className="smart-analysis-content"
             variants={staggerContainer}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
           >
-            <motion.h2 variants={fadeInUp}>
+            <motion.h2 
+              className="smart-analysis-title"
+              variants={fadeInUp}
+            >
               Smart Campaign Analysis
             </motion.h2>
             
-            <motion.p variants={fadeInUp} className="about-description">
-              Sheet Tools revolutionizes how you manage your Facebook Ads campaigns. 
-              Our platform automatically analyzes your metrics and offers precise recommendations 
-              to maximize your results.
+            <motion.p 
+              className="smart-analysis-subtitle"
+              variants={fadeInUp}
+            >
+              Sheet Tools revolutionizes how you manage your Facebook Ads campaigns. Our 
+              platform automatically analyzes your metrics and offers precise recommendations to 
+              maximize your results.
             </motion.p>
 
             <motion.div 
-              className="about-features"
+              className="features-grid"
               variants={staggerContainer}
             >
               <motion.div 
-                className="about-feature"
-                variants={fadeInLeft}
+                className="feature-card"
+                variants={fadeInUp}
+                whileHover={{ y: -10, boxShadow: "0 20px 40px rgba(29, 209, 161, 0.1)" }}
               >
-                <div className="about-feature-icon">
-                  <BarChart3 size={28} />
+                <div className="feature-icon-circle">
+                  <BarChart3 size={32} />
                 </div>
-                <div className="about-feature-content">
-                  <h3>Smart Analysis</h3>
-                  <p>Automatically calculates CPC, ROAS, COGS, CPA, Profit Margin and other essential metrics.</p>
-                </div>
+                <h3>Smart Analysis</h3>
+                <p>Automatically calculates CPC, ROAS, COGS, CPA, Profit Margin and other essential metrics.</p>
               </motion.div>
 
               <motion.div 
-                className="about-feature"
-                variants={fadeInRight}
+                className="feature-card"
+                variants={fadeInUp}
+                whileHover={{ y: -10, boxShadow: "0 20px 40px rgba(29, 209, 161, 0.1)" }}
               >
-                <div className="about-feature-icon">
-                  <Brain size={28} />
+                <div className="feature-icon-circle">
+                  <Brain size={32} />
                 </div>
-                <div className="about-feature-content">
-                  <h3>Decision Automation</h3>
-                  <p>Automatic recommendations: kill bad campaigns, scale profitable ones, maintain stable ones.</p>
-                </div>
+                <h3>Decision Automation</h3>
+                <p>Automatic recommendations: kill bad campaigns, scale profitable ones, maintain stable ones.</p>
               </motion.div>
             </motion.div>
           </motion.div>
@@ -616,10 +523,10 @@ const NewHomePage = () => {
               }}
             >
               <div className="plan-header">
-                <h3>{plansLoading ? 'Loading...' : 'Beginner'}</h3>
+                <h3>Beginner</h3>
                 <div className="price">
                   <span className="currency">€</span>
-                  <span className="amount">{plansLoading ? '--' : '4.99'}</span>
+                  <span className="amount">4.99</span>
                   <span className="period">/month</span>
                 </div>
               </div>
@@ -640,7 +547,7 @@ const NewHomePage = () => {
             </motion.div>
 
             <motion.div 
-              className="pricing-card popular"
+              className="pricing-card"
               variants={slideInScale}
               whileHover={{ 
                 y: -15,
@@ -648,22 +555,17 @@ const NewHomePage = () => {
                 transition: { duration: 0.3 }
               }}
             >
-              <div className="popular-badge">
-                <Star size={16} />
-                Most Popular
-              </div>
               <div className="plan-header">
-                <h3>{plansLoading ? 'Loading...' : 'Standard'}</h3>
+                <h3>Standard</h3>
                 <div className="price">
                   <span className="currency">€</span>
-                  <span className="amount">{plansLoading ? '--' : '34.99'}</span>
+                  <span className="amount">34.99</span>
                   <span className="period">/month</span>
                 </div>
               </div>
               <ul className="plan-features">
                 <li><Check size={16} /> Complete Daily ROAS Profit Sheet</li>
                 <li><Check size={16} /> Campaign Management</li>
-                <li><Check size={16} /> Real-time Quotation</li>
                 <li><Check size={16} /> 2 stores, 40 campaigns</li>
                 <li><Check size={16} /> Priority support</li>
               </ul>
@@ -687,31 +589,17 @@ const NewHomePage = () => {
               }}
             >
               <div className="plan-header">
-                <h3>{plansLoading ? 'Loading...' : 'Expert Annual'}</h3>
+                <h3>Expert</h3>
                 <div className="price">
-                  {!plansLoading && (
-                    <div className="original-price">
-                      <span className="crossed-price">
-                        €599.88
-                      </span>
-                    </div>
-                  )}
                   <span className="currency">€</span>
-                  <span className="amount">{plansLoading ? '--' : '449.91'}</span>
-                  <span className="period">/year</span>
+                  <span className="amount">49.99</span>
+                  <span className="period">/month</span>
                 </div>
-                {!plansLoading && (
-                  <div className="savings">
-                    <Award size={14} />
-                    Save €149.97 (3 months free)
-                  </div>
-                )}
               </div>
               <ul className="plan-features">
                 <li><Check size={16} /> Everything from Standard</li>
                 <li><Check size={16} /> Advanced Product Research</li>
                 <li><Check size={16} /> 4 stores, unlimited campaigns</li>
-                <li><Check size={16} /> Trend analysis</li>
                 <li><Check size={16} /> VIP support</li>
               </ul>
               <motion.button 
@@ -727,49 +615,53 @@ const NewHomePage = () => {
         </div>
       </section>
 
-      {/* FAQ Section */}
-      <section id="faq" className="faq">
-        <div className="container">
+      {/* Nova Seção FAQ - Completamente Recriada */}
+      <section id="faq" className="faq-new">
+        <div className="faq-container">
           <motion.div 
-            className="faq-header"
+            className="faq-header-new"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
           >
-            <h2>Frequently Asked Questions</h2>
-            <p>Clear your doubts about Sheet Tools</p>
+            <h2 className="faq-title">Frequently Asked Questions</h2>
+            <p className="faq-subtitle">Clear your doubts about Sheet Tools</p>
           </motion.div>
 
-          <div className="faq-list">
-            {faqs.map((faq, index) => (
+          <div className="faq-list-new">
+            {faqData.map((faq) => (
               <motion.div
-                key={index}
-                className="faq-item"
+                key={faq.id}
+                className="faq-item-new"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
+                transition={{ delay: faq.id * 0.1 }}
               >
-                <button
-                  className={`faq-question ${openFAQ === index ? 'active' : ''}`}
-                  onClick={() => setOpenFAQ(openFAQ === index ? null : index)}
+                <div
+                  className={`faq-question-new ${openFAQ === faq.id ? 'active' : ''}`}
+                  onClick={() => setOpenFAQ(openFAQ === faq.id ? null : faq.id)}
                 >
-                  <span>{faq.question}</span>
-                  <ChevronDown 
-                    size={20} 
-                    className={`chevron ${openFAQ === index ? 'rotated' : ''}`}
-                  />
-                </button>
+                  <h3 className="faq-question-text">{faq.question}</h3>
+                  <div className="faq-icon-wrapper">
+                    <ChevronDown 
+                      size={24} 
+                      className={`faq-chevron ${openFAQ === faq.id ? 'rotated' : ''}`}
+                    />
+                  </div>
+                </div>
+                
                 <motion.div
-                  className="faq-answer"
+                  className="faq-answer-new"
                   initial={false}
                   animate={{
-                    height: openFAQ === index ? 'auto' : 0,
-                    opacity: openFAQ === index ? 1 : 0
+                    height: openFAQ === faq.id ? 'auto' : 0,
+                    opacity: openFAQ === faq.id ? 1 : 0
                   }}
-                  transition={{ duration: 0.3 }}
+                  transition={{ duration: 0.4, ease: "easeInOut" }}
                 >
-                  <div className="faq-answer-content">
+                  <div className="faq-answer-content-new">
                     <p>{faq.answer}</p>
                   </div>
                 </motion.div>
@@ -783,7 +675,7 @@ const NewHomePage = () => {
       <footer className="footer">
         <div className="container">
           <div className="footer-content">
-            <div className="footer-left">
+            <div className="footer-brand">
               <div className="footer-logo">
                 <img 
                   src="/logo/sheet-tools-logo-backgroundremover.png" 
@@ -791,16 +683,22 @@ const NewHomePage = () => {
                   className="footer-logo-image"
                 />
               </div>
-              <p>Automate your campaigns and maximize your results</p>
+              <p className="footer-tagline">Automate your campaigns and maximize your results</p>
             </div>
             
             <div className="footer-links">
               <div className="link-group">
                 <h4>Quick Links</h4>
-                <a href="#about" onClick={() => scrollToSection('about')}>Home</a>
-                <a href="#features" onClick={() => scrollToSection('features')}>Features</a>
-                <a href="#pricing" onClick={() => scrollToSection('pricing')}>Pricing</a>
-                <a href="#faq" onClick={() => scrollToSection('faq')}>FAQ</a>
+                <a href="#about" onClick={(e) => { e.preventDefault(); scrollToSection('about'); }}>Home</a>
+                <a href="#features" onClick={(e) => { e.preventDefault(); scrollToSection('features'); }}>Features</a>
+                <a href="#pricing" onClick={(e) => { e.preventDefault(); scrollToSection('pricing'); }}>Pricing</a>
+                <a href="#faq" onClick={(e) => { e.preventDefault(); scrollToSection('faq'); }}>FAQ</a>
+              </div>
+              
+              <div className="link-group">
+                <h4>Legal</h4>
+                <a href="#terms">Terms of Service</a>
+                <a href="#privacy">Privacy Policy</a>
               </div>
               
               <div className="link-group">
