@@ -805,7 +805,7 @@ const SettingsPage = () => {
                     type="text"
                     value={shopifyDomain}
                     onChange={(e) => setShopifyDomain(e.target.value)}
-                    placeholder="example: mystore.myshopify.com"
+                    placeholder="example: mystore.myshopify.com ou mystore.com"
                     className="domain-input"
                     disabled={isSavingDomain}
                   />

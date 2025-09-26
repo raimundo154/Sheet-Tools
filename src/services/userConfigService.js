@@ -7,8 +7,8 @@ import { authService } from './authService';
 class UserConfigService {
   
   /**
-   * Salvar domínio Shopify do usuário
-   * @param {string} shopifyDomain - Domínio da loja Shopify (ex: minha-loja.myshopify.com)
+   * Salvar domínio da loja do usuário
+   * @param {string} shopifyDomain - Domínio da loja (ex: minha-loja.myshopify.com ou minha-loja.com)
    * @returns {Promise<{success: boolean, data?: any, error?: string}>}
    */
   async saveShopifyDomain(shopifyDomain) {
@@ -27,12 +27,12 @@ class UserConfigService {
         };
       }
 
-      // Validar formato do domínio
-      if (!shopifyDomain || !shopifyDomain.includes('.myshopify.com')) {
-        console.error('❌ Formato de domínio inválido:', shopifyDomain);
+      // Validar se o domínio não está vazio
+      if (!shopifyDomain || !shopifyDomain.trim()) {
+        console.error('❌ Domínio vazio:', shopifyDomain);
         return {
           success: false,
-          error: 'Formato de domínio inválido. Use o formato: exemplo.myshopify.com'
+          error: 'Por favor, insira um domínio válido'
         };
       }
 

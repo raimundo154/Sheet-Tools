@@ -190,7 +190,7 @@ const OnboardingTutorial = ({ onComplete, onSkip }) => {
               <div className="domain-input">
                 <input 
                   type="text" 
-                  placeholder="example.myshopify.com"
+                  placeholder="example.myshopify.com ou example.com"
                   className="domain-field"
                   value={shopifyDomain}
                   onChange={(e) => setShopifyDomain(e.target.value)}
