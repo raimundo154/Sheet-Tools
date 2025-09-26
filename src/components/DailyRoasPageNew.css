@@ -711,6 +711,12 @@
   animation: autoSyncPulse 3s infinite;
 }
 
+.source-badge.no-sales {
+  background: rgba(245, 158, 11, 0.2);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
 @keyframes autoSyncPulse {
   0%, 100% {
     opacity: 1;
@@ -972,6 +978,18 @@
 
 .btn-secondary:hover {
   background: var(--glass-bg-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
+}
+
+.btn-tertiary {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--accent-primary);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.btn-tertiary:hover {
+  background: rgba(16, 185, 129, 0.2);
   transform: translateY(-1px);
   box-shadow: var(--shadow-lg);
 }

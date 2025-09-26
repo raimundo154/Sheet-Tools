@@ -341,28 +341,44 @@ const DailyRoasPageNew = () => {
       const quotationProducts = await dailyRoasIntegrationService.getQuotationProductsForDailyRoas(selectedDate);
       
       if (quotationProducts.length > 0) {
+        console.log(`📊 ${quotationProducts.length} produtos encontrados na Quotation sheet`);
+        
         // Verificar quais produtos já existem no Daily ROAS
         const existingProductNames = products.map(p => p.productName.toLowerCase());
         const newProducts = quotationProducts.filter(qp => 
           !existingProductNames.includes(qp.productName.toLowerCase())
         );
 
+        console.log(`📊 ${newProducts.length} produtos novos para adicionar`);
+        console.log(`📊 ${quotationProducts.length - newProducts.length} produtos já existem no Daily ROAS`);
+
         if (newProducts.length > 0) {
-          console.log(`✅ ${newProducts.length} novos produtos da Quotation sheet encontrados`);
+          console.log(`✅ Adicionando ${newProducts.length} novos produtos da Quotation sheet`);
           
           // Adicionar novos produtos ao estado
           setProducts(prevProducts => [...prevProducts, ...newProducts]);
           
           // Salvar automaticamente na base de dados
+          let savedCount = 0;
           for (const product of newProducts) {
             try {
               await dailyRoasService.saveProduct(product);
+              savedCount++;
             } catch (error) {
               console.error('Erro ao salvar produto automaticamente:', error);
             }
           }
           
-          toast.success(`${newProducts.length} produtos da Quotation sheet adicionados automaticamente!`);
+          // Mostrar toast com informações detalhadas
+          const productsWithSales = newProducts.filter(p => p.hasSalesOnDate).length;
+          const productsWithoutSales = newProducts.filter(p => !p.hasSalesOnDate).length;
+          
+          let message = `${newProducts.length} produtos da Quotation sheet adicionados automaticamente!`;
+          if (productsWithSales > 0) {
+            message += ` (${productsWithSales} com vendas, ${productsWithoutSales} sem vendas)`;
+          }
+          
+          toast.success(message);
           
           // Recalcular decisões com os novos produtos
           await recalculateDecisions();
@@ -371,11 +387,12 @@ const DailyRoasPageNew = () => {
         }
       } else {
         console.log('ℹ️ Nenhum produto encontrado na Quotation sheet');
+        toast.info('Nenhum produto encontrado na Quotation sheet para esta data');
       }
 
     } catch (error) {
       console.error('❌ Erro ao carregar produtos da Quotation sheet automaticamente:', error);
-      // Não mostrar toast de erro para não incomodar o usuário
+      toast.error('Erro ao carregar produtos da Quotation sheet');
     }
   };
 
@@ -744,6 +761,15 @@ const DailyRoasPageNew = () => {
                 <RefreshCw size={20} className={isLoadingConsolidated ? 'spinning' : ''} />
                 {isLoadingConsolidated ? 'Carregando...' : 'Dados Consolidados'}
               </button>
+
+              <button 
+                onClick={loadQuotationProductsAutomatically}
+                className="btn btn-tertiary"
+                disabled={isLoadingConsolidated}
+              >
+                <FileSpreadsheet size={20} />
+                Sincronizar Quotation
+              </button>
             </div>
 
             {/* Ações secundárias - View Toggle e Status */}
@@ -1075,6 +1101,12 @@ const ProductCard = ({ product, decision, isExpanded, onToggleExpand, onUpdate, 
                   <span className="source-badge auto-sync" title="Sincronizado automaticamente da Quotation sheet">
                     <RefreshCw size={12} />
                     Auto
+                  </span>
+                )}
+                {product.source === 'quotation-auto' && product.hasSalesOnDate === false && (
+                  <span className="source-badge no-sales" title="Produto sem vendas nesta data">
+                    <AlertTriangle size={12} />
+                    Sem vendas
                   </span>
                 )}
               </div>

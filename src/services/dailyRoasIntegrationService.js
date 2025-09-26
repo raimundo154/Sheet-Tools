@@ -66,33 +66,33 @@ class DailyRoasIntegrationService {
       const salesResult = await salesService.getSalesByDate(date);
       const sales = salesResult.success ? salesResult.data : [];
 
-      // Converter produtos para formato Daily ROAS
+      // Converter TODOS os produtos para formato Daily ROAS
       const dailyRoasProducts = products.map(product => {
         // Encontrar vendas para este produto na data específica
         const productSales = sales.filter(sale => 
           sale.produto && sale.produto.toLowerCase() === product.name.toLowerCase()
         );
 
-        // Calcular métricas de vendas
+        // Calcular métricas de vendas (mesmo que seja 0)
         const totalUnitsSold = productSales.reduce((sum, sale) => sum + (sale.quantidade || 0), 0);
         const totalSales = productSales.reduce((sum, sale) => sum + (sale.total || 0), 0);
         const numberOfSales = productSales.length;
 
-        // Criar produto no formato Daily ROAS
+        // Criar produto no formato Daily ROAS (SEMPRE, mesmo sem vendas)
         return {
           id: `quotation-${product.id}-${date}`,
           productName: product.name,
           price: product.price,
           cog: 0, // COG será preenchido manualmente ou via campaigns
-          unitsSold: totalUnitsSold,
+          unitsSold: totalUnitsSold, // Pode ser 0 se não houver vendas
           totalSpend: 0, // Será preenchido via campaigns
           cpc: 0, // Será preenchido via campaigns
           atc: 0, // Será preenchido via campaigns
-          purchases: numberOfSales,
+          purchases: numberOfSales, // Pode ser 0 se não houver vendas
           totalCog: 0, // Calculado automaticamente
-          storeValue: product.price * totalUnitsSold,
+          storeValue: product.price * totalUnitsSold, // Pode ser 0 se não houver vendas
           marginBruta: product.price, // Assumindo COG = 0 inicialmente
-          marginEur: product.price * totalUnitsSold,
+          marginEur: product.price * totalUnitsSold, // Pode ser 0 se não houver vendas
           marginPct: 100, // Assumindo COG = 0 inicialmente
           roas: 0, // Será calculado quando houver spend
           cpa: 0, // Será calculado quando houver spend
@@ -112,9 +112,16 @@ class DailyRoasIntegrationService {
             hasQuotationData: true,
             missingFields: ['Dados de Campanhas'],
             isComplete: false
-          }
+          },
+          // Indicador se tem vendas na data
+          hasSalesOnDate: numberOfSales > 0,
+          salesCount: numberOfSales
         };
       });
+
+      console.log(`📊 Total de produtos na Quotation: ${products.length}`);
+      console.log(`📊 Produtos com vendas na data ${date}: ${dailyRoasProducts.filter(p => p.hasSalesOnDate).length}`);
+      console.log(`📊 Produtos sem vendas na data ${date}: ${dailyRoasProducts.filter(p => !p.hasSalesOnDate).length}`);
 
       console.log('✅ Produtos da Quotation convertidos para Daily ROAS:', dailyRoasProducts);
       return dailyRoasProducts;
