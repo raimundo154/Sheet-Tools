@@ -78,10 +78,10 @@ const DashboardHomePage = () => {
           route: 'campaigns'
         },
         {
-          title: 'Products',
-          description: 'Manage product catalog',
+          title: 'Profit Sheet',
+          description: 'Manage profit sheet',
           icon: ShoppingCart,
-          route: 'quotation'
+          route: 'profit-sheet'
         },
         {
           title: 'Daily ROAS',
@@ -90,10 +90,10 @@ const DashboardHomePage = () => {
           route: 'daily-roas'
         },
         {
-          title: 'Reports',
-          description: 'Detailed analytics and metrics',
+          title: 'PR',
+          description: 'Product research',
           icon: BarChart3,
-          route: 'reports'
+          route: 'product-research'
         }
       ]);
 
@@ -189,6 +189,8 @@ const DashboardHomePage = () => {
 
   return (
     <div className="dashboard-home">
+    
+
       {/* Onboarding Tutorial */}
       {showOnboarding && (
         <OnboardingTutorial 
@@ -196,12 +198,6 @@ const DashboardHomePage = () => {
           onSkip={handleOnboardingSkip}
         />
       )}
-      {/* Header */}
-      <PageHeader 
-        title="Dashboard"
-        subtitle="Manage your campaigns and maximize your results"
-        showProfile={true}
-      />
 
       {/* Stats Cards */}
       <div className="stats-section">

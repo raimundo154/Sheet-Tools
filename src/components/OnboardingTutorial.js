@@ -163,11 +163,11 @@ const OnboardingTutorial = ({ onComplete, onSkip }) => {
                 <div className="copy-field">
                   <input 
                     type="text" 
-                    value="https://your-site.netlify.app/.netlify/functions/shopify-webhook"
+                    value="https://sheet-tools.com/.netlify/functions/shopify-webhook"
                     readOnly 
                   />
                   <button 
-                    onClick={() => copyToClipboard('https://your-site.netlify.app/.netlify/functions/shopify-webhook')}
+                    onClick={() => copyToClipboard('https://sheet-tools.com/.netlify/functions/shopify-webhook')}
                     className="copy-btn"
                   >
                     <Copy size={16} />
@@ -252,6 +252,7 @@ const OnboardingTutorial = ({ onComplete, onSkip }) => {
   return (
     <div>
       {showShopifyModal && <ShopifySetupModal />}
+      
       <div className="onboarding-banner">
         <div className="banner-content">
           <div className="banner-left">

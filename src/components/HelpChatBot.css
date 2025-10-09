@@ -29,15 +29,28 @@
   max-width: 100%;
   height: 600px;
   max-height: 80vh;
-  background: var(--bg-primary);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-xl);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(150, 242, 215, 0.15);
+  border-radius: 20px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  box-shadow: var(--shadow-glow);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(20px);
   animation: slideInRight 0.4s ease-out;
+  position: relative;
+}
+
+.help-chatbot::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #96f2d7 0%, #1dd1a1 50%, #1c6f5b 100%);
+  opacity: 0.8;
+  z-index: 1;
 }
 
 @keyframes slideInRight {
@@ -53,17 +66,15 @@
 
 /* Header */
 .chatbot-header {
-  background: linear-gradient(
-    135deg,
-    rgba(150, 242, 215, 0.1) 0%,
-    rgba(28, 111, 91, 0.15) 100%
-  );
-  border-bottom: 1px solid var(--glass-border);
+  background: rgba(150, 242, 215, 0.05);
+  border-bottom: 1px solid rgba(150, 242, 215, 0.1);
   padding: 1.5rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-shrink: 0;
+  position: relative;
+  z-index: 2;
 }
 
 .header-content {
@@ -101,36 +112,36 @@
 .header-icon {
   width: 40px;
   height: 40px;
-  background: var(--gradient-primary);
-  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, #96f2d7, #1dd1a1);
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--bg-primary);
+  color: #000000;
   flex-shrink: 0;
 }
 
 .header-info h3 {
   font-size: 1.1rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: #ffffff;
   margin: 0;
 }
 
 .header-info p {
   font-size: 0.8rem;
-  color: var(--text-secondary);
+  color: #9ca3af;
   margin: 0;
 }
 
 .close-btn {
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(150, 242, 215, 0.1);
+  border-radius: 8px;
   padding: 0.5rem;
-  color: var(--text-secondary);
+  color: #9ca3af;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -161,7 +172,7 @@
 }
 
 .faq-intro p {
-  color: var(--text-secondary);
+  color: #9ca3af;
   font-size: 0.9rem;
   text-align: center;
   margin: 0;
@@ -179,32 +190,32 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(150, 242, 215, 0.1);
+  border-radius: 12px;
   padding: 1rem;
   text-align: left;
   cursor: pointer;
-  transition: all var(--transition-normal);
+  transition: all 0.3s ease;
   font-size: 0.9rem;
   line-height: 1.4;
-  color: var(--text-primary);
+  color: #ffffff;
 }
 
 .faq-item:hover {
-  background: var(--glass-bg-hover);
+  background: rgba(150, 242, 215, 0.1);
   border-color: rgba(150, 242, 215, 0.3);
   transform: translateY(-1px);
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 4px 15px rgba(150, 242, 215, 0.2);
 }
 
 .faq-item svg {
-  color: var(--accent-primary);
+  color: #96f2d7;
   flex-shrink: 0;
 }
 
 .chat-option {
-  border-top: 1px solid var(--glass-border);
+  border-top: 1px solid rgba(150, 242, 215, 0.1);
   padding-top: 1.5rem;
 }
 
@@ -214,20 +225,20 @@
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
-  background: var(--gradient-primary);
-  color: var(--bg-primary);
+  background: linear-gradient(135deg, #96f2d7, #1dd1a1);
+  color: #000000;
   border: none;
-  border-radius: var(--radius-lg);
+  border-radius: 12px;
   padding: 1rem;
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all var(--transition-normal);
+  transition: all 0.3s ease;
 }
 
 .start-chat-btn:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-glow);
+  box-shadow: 0 8px 25px rgba(150, 242, 215, 0.4);
 }
 
 /* Chat Section */

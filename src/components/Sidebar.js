@@ -1,5 +1,6 @@
 import React from 'react';
 import { useUserPlan } from '../hooks/useUserPlan';
+import ProfilePhoto from './ProfilePhoto';
 import { 
   Home, 
   DollarSign, 
@@ -144,9 +145,14 @@ const Sidebar = ({ currentPage, onPageChange, onSignOut, onOpenHelp }) => {
 
         {/* Plan Status */}
         <div className="plan-status">
-          <div className="plan-badge">
-            <Crown size={16} />
-            <span>{loading ? 'Carregando...' : planInfo.name}</span>
+          <div className="plan-status-content">
+            <div className="user-photo">
+              <ProfilePhoto size="small" showUploadOptions={false} />
+            </div>
+            <div className="plan-badge">
+              <Crown size={16} />
+              <span>{loading ? 'Carregando...' : planInfo.name}</span>
+            </div>
           </div>
         </div>
 

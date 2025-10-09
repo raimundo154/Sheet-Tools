@@ -2,7 +2,7 @@
 
 .dashboard-home {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background: transparent;
+  background: linear-gradient(180deg, #000000 0%, #0a0a0a 25%, #050505 50%, #0f0f0f 75%, #000000 100%);
   color: #ffffff;
   min-height: 100vh;
   padding: 2rem;
@@ -10,6 +10,40 @@
   width: 100%;
   max-width: none;
   box-sizing: border-box;
+  position: relative;
+}
+
+/* Animated Background */
+.dashboard-home::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 20% 50%, rgba(96, 165, 250, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 40% 20%, rgba(37, 99, 235, 0.03) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+  animation: backgroundPulse 15s ease-in-out infinite;
+}
+
+@keyframes backgroundPulse {
+  0%, 100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.1);
+  }
+}
+
+.dashboard-home > * {
+  position: relative;
+  z-index: 1;
 }
 
 /* Loading Screen */
@@ -26,7 +60,7 @@
     rgba(9, 22, 24, 1) 100%
   );
   display: flex;
-  flexDirection: column;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   font-family: 'Inter', sans-serif;
@@ -335,7 +369,7 @@
 }
 
 .loading-message {
-  fontSize: 1.2rem;
+  font-size: 1.2rem;
   color: #ffffff;
   text-align: center;
   margin: 0;
@@ -345,12 +379,13 @@
 
 /* Dashboard Header */
 .dashboard-header {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(150, 242, 215, 0.1);
-  border-radius: 20px;
-  padding: 2rem;
-  margin-bottom: 2rem;
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 24px;
+  padding: 2.5rem;
+  margin-bottom: 2.5rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 .header-content {
@@ -367,10 +402,20 @@
 }
 
 .title-highlight {
-  background: linear-gradient(135deg, #96f2d7 0%, #1c6f5b 100%);
+  background: linear-gradient(135deg, #96f2d7 0%, #1dd1a1 50%, #1c6f5b 100%);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  animation: gradientShift 3s ease-in-out infinite;
+}
+
+@keyframes gradientShift {
+  0%, 100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.2);
+  }
 }
 
 .dashboard-subtitle {
@@ -410,14 +455,15 @@
 }
 
 .stat-card {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(150, 242, 215, 0.1);
-  border-radius: 16px;
-  padding: 1.5rem;
-  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  padding: 2rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
 }
 
 .stat-card::before {
@@ -426,15 +472,16 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, #1c6f5b, #96f2d7, #5eccb0);
+  height: 3px;
+  background: linear-gradient(90deg, #96f2d7 0%, #1dd1a1 50%, #1c6f5b 100%);
+  opacity: 0.8;
 }
 
 .stat-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 40px rgba(150, 242, 215, 0.15);
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(150, 242, 215, 0.3);
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 60px rgba(150, 242, 215, 0.2);
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(150, 242, 215, 0.2);
 }
 
 .stat-header {
@@ -545,20 +592,21 @@
 }
 
 .quick-action-card {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(150, 242, 215, 0.1);
-  border-radius: 16px;
-  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  padding: 2rem;
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 1.5rem;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   text-align: left;
   position: relative;
   overflow: hidden;
   width: 100%;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
 }
 
 .quick-action-card::before {
@@ -567,27 +615,35 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, #1c6f5b, #96f2d7, #5eccb0);
+  height: 3px;
+  background: linear-gradient(90deg, #96f2d7 0%, #1dd1a1 50%, #1c6f5b 100%);
+  opacity: 0.8;
 }
 
 .quick-action-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 40px rgba(150, 242, 215, 0.15);
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(150, 242, 215, 0.3);
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 60px rgba(150, 242, 215, 0.2);
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(150, 242, 215, 0.2);
 }
 
 .action-icon {
-  width: 56px;
-  height: 56px;
-  border-radius: 12px;
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #1c6f5b 0%, #96f2d7 100%);
-  color: #091618;
+  background: linear-gradient(135deg, #96f2d7 0%, #1dd1a1 100%);
+  color: #000000;
   flex-shrink: 0;
+  box-shadow: 0 8px 24px rgba(150, 242, 215, 0.3);
+  transition: all 0.3s ease;
+}
+
+.quick-action-card:hover .action-icon {
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: 0 12px 32px rgba(150, 242, 215, 0.4);
 }
 
 .action-content {
@@ -608,13 +664,15 @@
 }
 
 .action-arrow {
-  color: #b0b7c0;
+  color: #64748b;
   transition: all 0.3s ease;
+  filter: drop-shadow(0 0 8px rgba(150, 242, 215, 0));
 }
 
 .quick-action-card:hover .action-arrow {
   color: #96f2d7;
-  transform: translateX(4px);
+  transform: translateX(8px);
+  filter: drop-shadow(0 0 12px rgba(150, 242, 215, 0.5));
 }
 
 /* Recent Activity */
@@ -623,11 +681,12 @@
 }
 
 .activity-list {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(150, 242, 215, 0.1);
-  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
   overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
 }
 
 .activity-item {
@@ -691,11 +750,12 @@
 }
 
 .performance-card {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(150, 242, 215, 0.1);
-  border-radius: 16px;
-  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
 }
 
 .performance-header {
@@ -741,6 +801,7 @@
 .chart-placeholder svg {
   color: #96f2d7;
   margin-bottom: 0.5rem;
+  filter: drop-shadow(0 0 16px rgba(150, 242, 215, 0.3));
 }
 
 .chart-placeholder p {
